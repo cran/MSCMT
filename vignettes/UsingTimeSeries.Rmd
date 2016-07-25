@@ -1,0 +1,116 @@
+---
+title: "SCM Using Time Series"
+vignette: >
+  %\VignetteIndexEntry{SCM Using Time Series}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: 
+  html_vignette:
+    toc: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.width  = 7,
+  fig.height = 4,
+  fig.align  = "center",
+#  cache      = TRUE,
+  autodep    = TRUE
+)
+```
+
+## Introduction
+
+This vignette illustrates the syntax of SCM**T** models. For a more general introduction to package `MSCMT` see its [main vignette](WorkingWithMSCMT.html).
+
+Although SCM models are usually based on time series data of predictor variables, standard SCM estimation does not exploit this particular characteristic. 
+Instead, time series data of predictors are either aggregated, mostly by calculating (a bunch of) means, or every instant of time is considered as a separate input variable with individual predictor weight.
+With package `MSCMT`, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM**T**.
+
+This vignette illustrates the syntax of SCM**T** models and how SCM**T** models may lead to more meaningful predictor weights without drawbacks concerning the model fit. 
+
+
+## Definition of the Standard Model
+
+We use the `basque` dataset in package `Synth` as an example and replicate the preparation of the data from the [main vignette](WorkingWithMSCMT.html) of this package:
+
+```{r}
+library(Synth)
+data(basque)
+library(MSCMT)
+Basque <- listFromLong(basque, unit.variable="regionno", time.variable="year", unit.names.variable="regionname")
+school.sum <- with(Basque,colSums(school.illit + school.prim + school.med + school.high  + school.post.high))
+Basque$school.higher <- Basque$school.high + Basque$school.post.high
+for (item in c("school.illit", "school.prim", "school.med", "school.higher"))      
+  Basque[[item]] <- 5 * 100 * t(t(Basque[[item]]) / school.sum)
+```
+
+We also replicate model specification of the [main vignette](WorkingWithMSCMT.html) which reproduces the model in [AER 2003]^[Abadie, Alberto and Javier Gardeazabal. 2003. "The Economic Costs of Conflict: A Case Study of the Basque Country". American Economic Review, 93(1): 113-132.]:
+
+[AER 2003]: https://www.aeaweb.org/articles?id=10.1257/000282803321455188 "Abadie and Gardeazabal (2003)"
+
+```{r}
+treatment.identifier <- "Basque Country (Pais Vasco)"
+controls.identifier  <- setdiff(colnames(Basque[[1]]),
+                                c(treatment.identifier, "Spain (Espana)"))
+times.dep  <- cbind("gdpcap"                = c(1960,1969))
+times.pred <- cbind("school.illit"          = c(1964,1969),
+                    "school.prim"           = c(1964,1969),
+                    "school.med"            = c(1964,1969),
+                    "school.higher"         = c(1964,1969),
+                    "invest"                = c(1964,1969),
+                    "gdpcap"                = c(1960,1969),
+                    "sec.agriculture"       = c(1961,1969),
+                    "sec.energy"            = c(1961,1969),
+                    "sec.industry"          = c(1961,1969),
+                    "sec.construction"      = c(1961,1969),
+                    "sec.services.venta"    = c(1961,1969),
+                    "sec.services.nonventa" = c(1961,1969),
+                    "popdens"               = c(1969,1969))
+agg.fns <- rep("mean", ncol(times.pred))                       
+```
+
+Estimation of the model gives:
+```{r}
+res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res
+```
+
+It is remarkable that the mean of the lagged dependent variable `gdpcap.mean.1960.1969` is by far the most important predictor with a weight of `r res$v[6,"max.order"]`, 
+all other predictors are only marginally relevant due to their tiny 
+(at most `r format(max(res$v[-6,"max.order"]),scientific=FALSE)`) 
+weights.^[Notice that the weight vector `v` is obtained by maximizing the order statistics of `v` (while fixing the sum of `v` to 1). 
+This choice of 'v' attributes weights as large as possible to even the least relevant predictor(s).]
+
+## Removing the Lagged Dependent Variable
+
+Omitting the lagged dependent variable `gdpcap.mean.1960.1969` from the model definition, however, leads to a significant increase of the dependent loss:
+```{r}
+times.pred <- times.pred[,-6]
+agg.fns <- rep("mean", ncol(times.pred))                       
+res2 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res2
+```
+
+The dependent loss (MSPE) increased considerably from `r res$loss.v` to `r res2$loss.v`. Trying to give more meaning to the economic predictors in this way obviously has the drawback of worsening the fit
+of the dependent variable.
+
+## SCMT without the Lagged Dependent Variable
+
+Leaving the lagged dependent variable `gdpcap.mean.1960.1969` aside, but considering all other predictor variables as **time series** instead of aggregating their values leads to the following results:
+```{r}
+agg.fns <- rep("id", ncol(times.pred))   # Omitting agg.fns has the same effect (as "id" is the default)
+res3 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res3
+```
+
+Notice that this specification's model type is 'SCMT', in contrast to the previous models which were 'SCM' models. 
+By using the 'SCMT' model, the dependent loss (`r res3$loss.v`) is even smaller than that of the original model (`r res$loss.v`) which used the dependent variable's mean as an extra economic predictor. 
+``r rownames(res3$v)[which.max(res3$v[,"max.order"])]`` has now become the most important predictor with weight `r max(res3$v[,"max.order"])`, 
+all other predictor weights are at least `r format(min(res3$v[,"max.order"]),scientific=FALSE)`.
+
+## Summary
+
+This vignette illustrated that considering predictors as *true* time series (without intermediate aggregation) may have various benefits. 
+In this example, by excluding the mean of the lagged dependent variable from the set of economic predictors and considering all other predictors as time series,
+more meaningful predictor weights could be obtained and the dependent variable's fit could be slightly improved, too.

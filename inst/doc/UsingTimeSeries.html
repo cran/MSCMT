@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>SCM Using Time Series</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">SCM Using Time Series</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#definition-of-the-standard-model">Definition of the Standard Model</a></li>
+<li><a href="#removing-the-lagged-dependent-variable">Removing the Lagged Dependent Variable</a></li>
+<li><a href="#scmt-without-the-lagged-dependent-variable">SCMT without the Lagged Dependent Variable</a></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette illustrates the syntax of SCM<strong>T</strong> models. For a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
+<p>Although SCM models are usually based on time series data of predictor variables, standard SCM estimation does not exploit this particular characteristic. Instead, time series data of predictors are either aggregated, mostly by calculating (a bunch of) means, or every instant of time is considered as a separate input variable with individual predictor weight. With package <code>MSCMT</code>, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM<strong>T</strong>.</p>
+<p>This vignette illustrates the syntax of SCM<strong>T</strong> models and how SCM<strong>T</strong> models may lead to more meaningful predictor weights without drawbacks concerning the model fit.</p>
+</div>
+<div id="definition-of-the-standard-model" class="section level2">
+<h2>Definition of the Standard Model</h2>
+<p>We use the <code>basque</code> dataset in package <code>Synth</code> as an example and replicate the preparation of the data from the <a href="WorkingWithMSCMT.html">main vignette</a> of this package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(Synth)
+<span class="kw">data</span>(basque)
+<span class="kw">library</span>(MSCMT)
+Basque &lt;-<span class="st"> </span><span class="kw">listFromLong</span>(basque, <span class="dt">unit.variable=</span><span class="st">&quot;regionno&quot;</span>, <span class="dt">time.variable=</span><span class="st">&quot;year&quot;</span>, <span class="dt">unit.names.variable=</span><span class="st">&quot;regionname&quot;</span>)
+school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<span class="kw">colSums</span>(school.illit +<span class="st"> </span>school.prim +<span class="st"> </span>school.med +<span class="st"> </span>school.high  +<span class="st"> </span>school.post.high))
+Basque$school.higher &lt;-<span class="st"> </span>Basque$school.high +<span class="st"> </span>Basque$school.post.high
+for (item in <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      
+  Basque[[item]] &lt;-<span class="st"> </span><span class="dv">5</span> *<span class="st"> </span><span class="dv">100</span> *<span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) /<span class="st"> </span>school.sum)</code></pre></div>
+<p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the model in <a href="https://www.aeaweb.org/articles?id=10.1257/000282803321455188" title="Abadie and Gardeazabal (2003)">AER 2003</a><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">treatment.identifier &lt;-<span class="st"> &quot;Basque Country (Pais Vasco)&quot;</span>
+controls.identifier  &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">colnames</span>(Basque[[<span class="dv">1</span>]]),
+                                <span class="kw">c</span>(treatment.identifier, <span class="st">&quot;Spain (Espana)&quot;</span>))
+times.dep  &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>))
+times.pred &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;school.illit&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;school.prim&quot;</span>           =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;school.med&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;school.higher&quot;</span>         =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;invest&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;sec.agriculture&quot;</span>       =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;sec.energy&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;sec.industry&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;sec.construction&quot;</span>      =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;sec.services.venta&quot;</span>    =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;sec.services.nonventa&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),
+                    <span class="st">&quot;popdens&quot;</span>               =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1969</span>,<span class="dv">1969</span>))
+agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </code></pre></div>
+<p>Estimation of the model gives:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">4711</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">outer.optim=</span><span class="st">&quot;DEoptim&quot;</span>)
+res</code></pre></div>
+<pre><code>## Specification:
+## --------------
+## 
+## Model type:     SCM
+## Treated unit:   Basque Country (Pais Vasco)
+## Control units:  Andalucia, Aragon, Principado De Asturias, 
+##                 Baleares (Islas), Canarias, Cantabria, Castilla Y Leon, 
+##                 Castilla-La Mancha, Cataluna, Comunidad Valenciana, 
+##                 Extremadura, Galicia, Madrid (Comunidad De), 
+##                 Murcia (Region de), Navarra (Comunidad Foral De), 
+##                 Rioja (La)
+## Dependent(s):   gdpcap with optimization period from 1960 to 1969
+## Predictors:     
+##                 school.illit          from 1964 to 1969, aggregated via 'mean', 
+##                 school.prim           from 1964 to 1969, aggregated via 'mean', 
+##                 school.med            from 1964 to 1969, aggregated via 'mean', 
+##                 school.higher         from 1964 to 1969, aggregated via 'mean', 
+##                 invest                from 1964 to 1969, aggregated via 'mean', 
+##                 gdpcap                from 1960 to 1969, aggregated via 'mean', 
+##                 sec.agriculture       from 1961 to 1969, aggregated via 'mean', 
+##                 sec.energy            from 1961 to 1969, aggregated via 'mean', 
+##                 sec.industry          from 1961 to 1969, aggregated via 'mean', 
+##                 sec.construction      from 1961 to 1969, aggregated via 'mean', 
+##                 sec.services.venta    from 1961 to 1969, aggregated via 'mean', 
+##                 sec.services.nonventa from 1961 to 1969, aggregated via 'mean', 
+##                 popdens               from 1969 to 1969, aggregated via 'mean'
+## 
+## 
+## Results:
+## --------
+## 
+## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
+##                 and the predictors always impose some restrictions on the 
+##                 optimization of the 'dependent' loss.
+## Optimal W:      Baleares (Islas)     : 21.93332%, 
+##                 Cataluna             : 63.26005%, 
+##                 Madrid (Comunidad De): 14.80663%
+## Dependent loss: MSPE ('loss V'): 0.004286083, 
+##                 RMSPE          : 0.065468184
+## (Optimal) V:    Single predictor weights V requested. The optimal weight 
+##                 vector V is:
+##                                                         max.order
+##                 school.illit.mean.1964.1969          1.291593e-05
+##                 school.prim.mean.1964.1969           1.291593e-05
+##                 school.med.mean.1964.1969            1.291593e-05
+##                 school.higher.mean.1964.1969         2.380106e-04
+##                 invest.mean.1964.1969                2.446862e-04
+##                 gdpcap.mean.1960.1969                9.993881e-01
+##                 sec.agriculture.mean.1961.1969       1.291593e-05
+##                 sec.energy.mean.1961.1969            1.291593e-05
+##                 sec.industry.mean.1961.1969          1.291593e-05
+##                 sec.construction.mean.1961.1969      1.291593e-05
+##                 sec.services.venta.mean.1961.1969    1.291593e-05
+##                 sec.services.nonventa.mean.1961.1969 1.291593e-05
+##                 popdens.mean.1969.1969               1.291593e-05
+##                 ----------                                       
+##                 pred. loss                           2.762428e-04
+##                 (Predictor weights V are standardized by sum(V)=1)
+## </code></pre>
+<p>It is remarkable that the mean of the lagged dependent variable <code>gdpcap.mean.1960.1969</code> is by far the most important predictor with a weight of 0.9993881, all other predictors are only marginally relevant due to their tiny (at most 0.0002446862) weights.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+</div>
+<div id="removing-the-lagged-dependent-variable" class="section level2">
+<h2>Removing the Lagged Dependent Variable</h2>
+<p>Omitting the lagged dependent variable <code>gdpcap.mean.1960.1969</code> from the model definition, however, leads to a significant increase of the dependent loss:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">times.pred &lt;-<span class="st"> </span>times.pred[,-<span class="dv">6</span>]
+agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       
+res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">4711</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">outer.optim=</span><span class="st">&quot;DEoptim&quot;</span>)
+res2</code></pre></div>
+<pre><code>## Specification:
+## --------------
+## 
+## Model type:     SCM
+## Treated unit:   Basque Country (Pais Vasco)
+## Control units:  Andalucia, Aragon, Principado De Asturias, 
+##                 Baleares (Islas), Canarias, Cantabria, Castilla Y Leon, 
+##                 Castilla-La Mancha, Cataluna, Comunidad Valenciana, 
+##                 Extremadura, Galicia, Madrid (Comunidad De), 
+##                 Murcia (Region de), Navarra (Comunidad Foral De), 
+##                 Rioja (La)
+## Dependent(s):   gdpcap with optimization period from 1960 to 1969
+## Predictors:     
+##                 school.illit          from 1964 to 1969, aggregated via 'mean', 
+##                 school.prim           from 1964 to 1969, aggregated via 'mean', 
+##                 school.med            from 1964 to 1969, aggregated via 'mean', 
+##                 school.higher         from 1964 to 1969, aggregated via 'mean', 
+##                 invest                from 1964 to 1969, aggregated via 'mean', 
+##                 sec.agriculture       from 1961 to 1969, aggregated via 'mean', 
+##                 sec.energy            from 1961 to 1969, aggregated via 'mean', 
+##                 sec.industry          from 1961 to 1969, aggregated via 'mean', 
+##                 sec.construction      from 1961 to 1969, aggregated via 'mean', 
+##                 sec.services.venta    from 1961 to 1969, aggregated via 'mean', 
+##                 sec.services.nonventa from 1961 to 1969, aggregated via 'mean', 
+##                 popdens               from 1969 to 1969, aggregated via 'mean'
+## 
+## 
+## Results:
+## --------
+## 
+## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
+##                 and the predictors always impose some restrictions on the 
+##                 optimization of the 'dependent' loss.
+## Optimal W:      Cataluna             : 85.0814%, 
+##                 Madrid (Comunidad De): 14.9186%
+## Dependent loss: MSPE ('loss V'): 0.008864545, 
+##                 RMSPE          : 0.094151712
+## (Optimal) V:    Single predictor weights V requested. The optimal weight 
+##                 vector V is:
+##                                                       max.order
+##                 school.illit.mean.1964.1969          0.02710923
+##                 school.prim.mean.1964.1969           0.02710923
+##                 school.med.mean.1964.1969            0.09108600
+##                 school.higher.mean.1964.1969         0.23068005
+##                 invest.mean.1964.1969                0.02710923
+##                 sec.agriculture.mean.1961.1969       0.02710923
+##                 sec.energy.mean.1961.1969            0.02710923
+##                 sec.industry.mean.1961.1969          0.23068005
+##                 sec.construction.mean.1961.1969      0.02710923
+##                 sec.services.venta.mean.1961.1969    0.02710923
+##                 sec.services.nonventa.mean.1961.1969 0.02710923
+##                 popdens.mean.1969.1969               0.23068005
+##                 ----------                                     
+##                 pred. loss                           0.31473799
+##                 (Predictor weights V are standardized by sum(V)=1)
+## </code></pre>
+<p>The dependent loss (MSPE) increased considerably from 0.0042861 to 0.0088645. Trying to give more meaning to the economic predictors in this way obviously has the drawback of worsening the fit of the dependent variable.</p>
+</div>
+<div id="scmt-without-the-lagged-dependent-variable" class="section level2">
+<h2>SCMT without the Lagged Dependent Variable</h2>
+<p>Leaving the lagged dependent variable <code>gdpcap.mean.1960.1969</code> aside, but considering all other predictor variables as <strong>time series</strong> instead of aggregating their values leads to the following results:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;id&quot;</span>, <span class="kw">ncol</span>(times.pred))   <span class="co"># Omitting agg.fns has the same effect (as &quot;id&quot; is the default)</span>
+res3 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">4711</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">outer.optim=</span><span class="st">&quot;DEoptim&quot;</span>)
+res3</code></pre></div>
+<pre><code>## Specification:
+## --------------
+## 
+## Model type:     SCMT
+## Treated unit:   Basque Country (Pais Vasco)
+## Control units:  Andalucia, Aragon, Principado De Asturias, 
+##                 Baleares (Islas), Canarias, Cantabria, Castilla Y Leon, 
+##                 Castilla-La Mancha, Cataluna, Comunidad Valenciana, 
+##                 Extremadura, Galicia, Madrid (Comunidad De), 
+##                 Murcia (Region de), Navarra (Comunidad Foral De), 
+##                 Rioja (La)
+## Dependent(s):   gdpcap with optimization period from 1960 to 1969
+## Predictors:     school.illit          from 1964 to 1969, 
+##                 school.prim           from 1964 to 1969, 
+##                 school.med            from 1964 to 1969, 
+##                 school.higher         from 1964 to 1969, 
+##                 invest                from 1964 to 1969, 
+##                 sec.agriculture       from 1961 to 1969, 
+##                 sec.energy            from 1961 to 1969, 
+##                 sec.industry          from 1961 to 1969, 
+##                 sec.construction      from 1961 to 1969, 
+##                 sec.services.venta    from 1961 to 1969, 
+##                 sec.services.nonventa from 1961 to 1969, 
+##                 popdens               from 1969 to 1969
+## 
+## 
+## Results:
+## --------
+## 
+## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
+##                 and the predictors always impose some restrictions on the 
+##                 optimization of the 'dependent' loss.
+## Optimal W:      Baleares (Islas)            : 31.60130%, 
+##                 Cataluna                    : 24.20919%, 
+##                 Madrid (Comunidad De)       : 31.58227%, 
+##                 Navarra (Comunidad Foral De): 12.60724%
+## Dependent loss: MSPE ('loss V'): 0.004217877, 
+##                 RMSPE          : 0.064945185
+## (Optimal) V:    Single predictor weights V requested. The optimal weight 
+##                 vector V is:
+##                                          max.order
+##                 school.illit          0.0049444280
+##                 school.prim           0.0001560072
+##                 school.med            0.9838406955
+##                 school.higher         0.0001560072
+##                 invest                0.0001560072
+##                 sec.agriculture       0.0068589934
+##                 sec.energy            0.0001560072
+##                 sec.industry          0.0001560072
+##                 sec.construction      0.0001560072
+##                 sec.services.venta    0.0001560072
+##                 sec.services.nonventa 0.0001560072
+##                 popdens               0.0031078256
+##                 ----------                        
+##                 pred. loss            0.0140189068
+##                 (Predictor weights V are standardized by sum(V)=1)
+## </code></pre>
+<p>Notice that this specification’s model type is ‘SCMT’, in contrast to the previous models which were ‘SCM’ models. By using the ‘SCMT’ model, the dependent loss (0.0042179) is even smaller than that of the original model (0.0042861) which used the dependent variable’s mean as an extra economic predictor. <code>school.med</code> has now become the most important predictor with weight 0.9838407, all other predictor weights are at least 0.0001560072.</p>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>This vignette illustrated that considering predictors as <em>true</em> time series (without intermediate aggregation) may have various benefits. In this example, by excluding the mean of the lagged dependent variable from the set of economic predictors and considering all other predictors as time series, more meaningful predictor weights could be obtained and the dependent variable’s fit could be slightly improved, too.</p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Abadie, Alberto and Javier Gardeazabal. 2003. “The Economic Costs of Conflict: A Case Study of the Basque Country”. American Economic Review, 93(1): 113-132.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>Notice that the weight vector <code>v</code> is obtained by maximizing the order statistics of <code>v</code> (while fixing the sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as large as possible to even the least relevant predictor(s).<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

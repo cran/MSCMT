@@ -1,0 +1,38 @@
+Package: MSCMT
+Type: Package
+Version: 1.0.0
+Date: 2016-07-25
+Title: Multivariate Synthetic Control Method Using Time Series
+Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
+    email = "martin.becker@mx.uni-saarland.de"),
+    person("Stefan","Kloessner", role = c("aut"),
+    email = "S.Kloessner@mx.uni-saarland.de"),
+    person("Karline","Soetaert", role = c("com"),
+    email = "karline.soetaert@nioz.nl"),
+    person("LAPACK authors", role = "cph"))
+Depends: R (>= 3.0.0)
+Imports: stats, utils, optimx, lpSolve, parallel, DEoptim, rgenoud,
+        ggplot2
+Suggests: Synth, knitr, rmarkdown
+Description: Multivariate Synthetic Control Method Using Time Series. 
+    Two generalizations of the synthetic control method (which has already an 
+    implementation in package 'Synth') are implemented: first, 'MSCMT' allows 
+    for using multiple outcome variables, second, time series can be supplied as 
+    economic predictors. 
+    Much effort has been taken to make the implementation as stable as possible 
+    (including edge cases) without losing computational efficiency.
+License: GPL
+Copyright: inst/COPYRIGHTS
+LazyData: yes
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr
+BuildVignettes: yes
+NeedsCompilation: yes
+Packaged: 2016-07-25 06:20:22 UTC; mabe003
+Author: Martin Becker [aut, cre],
+  Stefan Kloessner [aut],
+  Karline Soetaert [com],
+  LAPACK authors [cph]
+Maintainer: Martin Becker <martin.becker@mx.uni-saarland.de>
+Repository: CRAN
+Date/Publication: 2016-07-25 15:15:12
