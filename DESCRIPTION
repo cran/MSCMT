@@ -1,7 +1,7 @@
 Package: MSCMT
 Type: Package
-Version: 1.0.0
-Date: 2016-07-25
+Version: 1.1.0
+Date: 2016-11-29
 Title: Multivariate Synthetic Control Method Using Time Series
 Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     email = "martin.becker@mx.uni-saarland.de"),
@@ -11,9 +11,10 @@ Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     email = "karline.soetaert@nioz.nl"),
     person("LAPACK authors", role = "cph"))
 Depends: R (>= 3.0.0)
-Imports: stats, utils, optimx, lpSolve, parallel, DEoptim, rgenoud,
-        ggplot2
-Suggests: Synth, knitr, rmarkdown
+Imports: stats, utils, parallel, lpSolve, ggplot2
+Suggests: Synth, DEoptim, rgenoud, DEoptimR, GenSA, GA, soma, cmaes,
+        Rmalschains, NMOF, nloptr, hydroPSO, pso, optimx, knitr,
+        rmarkdown
 Description: Multivariate Synthetic Control Method Using Time Series. 
     Two generalizations of the synthetic control method (which has already an 
     implementation in package 'Synth') are implemented: first, 'MSCMT' allows 
@@ -28,11 +29,11 @@ RoxygenNote: 5.0.1
 VignetteBuilder: knitr
 BuildVignettes: yes
 NeedsCompilation: yes
-Packaged: 2016-07-25 06:20:22 UTC; mabe003
+Packaged: 2016-11-29 14:10:14 UTC; mabe003
 Author: Martin Becker [aut, cre],
   Stefan Kloessner [aut],
   Karline Soetaert [com],
   LAPACK authors [cph]
 Maintainer: Martin Becker <martin.becker@mx.uni-saarland.de>
 Repository: CRAN
-Date/Publication: 2016-07-25 15:15:12
+Date/Publication: 2016-11-29 18:10:30

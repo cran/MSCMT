@@ -1,7 +1,7 @@
 ## ---- echo = FALSE-------------------------------------------------------
 knitr::opts_chunk$set(
   fig.width  = 7,
-  fig.height = 4,
+  fig.height = 4.5,
   fig.align  = "center",
 #  cache      = TRUE,
   autodep    = TRUE
@@ -49,7 +49,7 @@ times.pred <- cbind("school.illit"          = c(1964,1969),
 agg.fns <- rep("mean", ncol(times.pred))                       
 
 ## ------------------------------------------------------------------------
-res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=42, outer.optim="DEoptim")
+res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1)
 
 ## ------------------------------------------------------------------------
 res
@@ -67,7 +67,7 @@ ggplot(res, what=c("gdpcap","invest","school.higher","sec.energy"), type="compar
 ## ------------------------------------------------------------------------
 library(parallel)
 cl <- makeCluster(2)
-resplacebo <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, cl=cl, placebo=TRUE, seed=42, outer.optim="DEoptim")
+resplacebo <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, cl=cl, placebo=TRUE, seed=1)
 stopCluster(cl)
 
 ## ------------------------------------------------------------------------

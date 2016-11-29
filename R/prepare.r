@@ -55,15 +55,15 @@ prepare <- function(dat, predictors, predictors.op = "mean", special.predictors,
       if (scale) {
         divisor  <- sqrt(var(as.vector(tmp))*nrow(tmp))
         divisors <- c(divisors,divisor)
-        if ((length(betagamma[[i]])>1)&&(length(betagamma[[i]])!=nrow(tmp)))
-          stop("beta/gamma probably has incorrect length")
-        if (!is.null(betagamma))   
-          tmp <- tmp * if(length(betagamma[[i]])==1) 
-                         betagamma[[i]]^seq(nrow(tmp)-1,0,by=-1) else
-                         rev(betagamma[[i]])
-        if (!is.null(alpha)) tmp <- tmp * sqrt(alpha[[i]])                       
         tmp <- tmp/divisor
       }    
+      if ((length(betagamma[[i]])>1)&&(length(betagamma[[i]])!=nrow(tmp)))
+        stop("beta/gamma probably has incorrect length")
+      if (!is.null(betagamma))   
+        tmp <- tmp * if(length(betagamma[[i]])==1) 
+                       betagamma[[i]]^seq(nrow(tmp)-1,0,by=-1) else
+                       rev(betagamma[[i]])
+      if (!is.null(alpha)) tmp <- tmp * sqrt(alpha[[i]])                       
       X0X1    <- rbind(X0X1,tmp)
       len     <- c(len,nrow(tmp))
       names.v <- c(names.v,

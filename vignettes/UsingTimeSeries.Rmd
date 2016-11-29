@@ -72,7 +72,7 @@ agg.fns <- rep("mean", ncol(times.pred))
 
 Estimation of the model gives:
 ```{r}
-res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1, single.v=TRUE, verbose=FALSE)
 res
 ```
 
@@ -88,7 +88,7 @@ Omitting the lagged dependent variable `gdpcap.mean.1960.1969` from the model de
 ```{r}
 times.pred <- times.pred[,-6]
 agg.fns <- rep("mean", ncol(times.pred))                       
-res2 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res2 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1, single.v=TRUE, verbose=FALSE)
 res2
 ```
 
@@ -100,7 +100,7 @@ of the dependent variable.
 Leaving the lagged dependent variable `gdpcap.mean.1960.1969` aside, but considering all other predictor variables as **time series** instead of aggregating their values leads to the following results:
 ```{r}
 agg.fns <- rep("id", ncol(times.pred))   # Omitting agg.fns has the same effect (as "id" is the default)
-res3 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res3 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1, single.v=TRUE, verbose=FALSE)
 res3
 ```
 

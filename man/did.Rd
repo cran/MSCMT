@@ -49,7 +49,7 @@ the treated unit are excluded from the analysis.}
 }
 \value{
 A list with components \code{effect.size}, \code{average.pre} and
-\code{everage.post}. If \code{x} contains the results of a placebo study,
+\code{average.post}. If \code{x} contains the results of a placebo study,
 three components \code{p.value}, \code{rank}, and \code{excluded} (with the 
 names of the excluded units) are included additionally.
 }

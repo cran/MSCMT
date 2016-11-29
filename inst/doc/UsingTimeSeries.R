@@ -38,17 +38,17 @@ times.pred <- cbind("school.illit"          = c(1964,1969),
 agg.fns <- rep("mean", ncol(times.pred))                       
 
 ## ------------------------------------------------------------------------
-res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1, single.v=TRUE, verbose=FALSE)
 res
 
 ## ------------------------------------------------------------------------
 times.pred <- times.pred[,-6]
 agg.fns <- rep("mean", ncol(times.pred))                       
-res2 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res2 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1, single.v=TRUE, verbose=FALSE)
 res2
 
 ## ------------------------------------------------------------------------
 agg.fns <- rep("id", ncol(times.pred))   # Omitting agg.fns has the same effect (as "id" is the default)
-res3 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=4711, single.v=TRUE, verbose=FALSE, outer.optim="DEoptim")
+res3 <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1, single.v=TRUE, verbose=FALSE)
 res3
 

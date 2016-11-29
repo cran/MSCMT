@@ -8,7 +8,7 @@ mscmt(data, treatment.identifier = NULL, controls.identifier = NULL,
   times.dep = NULL, times.pred = NULL, agg.fns = NULL, placebo = FALSE,
   placebo.with.treated = FALSE, univariate = FALSE,
   univariate.with.dependent = FALSE, check.global = TRUE,
-  inner.optim = "wnnlsOpt", inner.opar = list(), outer.optim = "genoud",
+  inner.optim = "wnnlsOpt", inner.opar = list(), outer.optim = "DEoptC",
   outer.par = list(), outer.opar = list(), std.v = c("sum", "mean", "min",
   "max"), alpha = NULL, beta = NULL, gamma = NULL, return.ts = TRUE,
   single.v = FALSE, verbose = TRUE, debug = FALSE, seed = NULL,
@@ -113,11 +113,12 @@ optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
 meaningful further parameters.)}
 
 \item{outer.optim}{A character scalar containing the name of the optimization
-method for the outer optimization. Defaults to \code{"genoud"}, 
-which (currently) is the recommended optimizer 
-(see \code{\link[rgenoud]{genoud}}).
-Also supported is \code{"DEoptim"} (see \code{\link[DEoptim]{DEoptim}}),
-other optimizers may be supported in future releases.}
+method for the outer optimization. Defaults to \code{"DEoptC"}, 
+which (currently) is the recommended global optimizer. 
+Also supported, apart from others, are the global optimizers \code{"DEoptim"} 
+(see \code{\link[DEoptim]{DEoptim}}) and \code{genoud} (see 
+\code{\link[rgenoud]{genoud}}). Documentation for these and other optimizers 
+will be added in future releases.}
 
 \item{outer.par}{A list containing further parameters for the outer 
 optimization procedure. Defaults to the empty list. Entries in this list may 
@@ -133,7 +134,8 @@ separate optimizations (one for each predictor).
 
 \item{outer.opar}{A list containing further parameters for the outer 
 optimizer. Defaults to the empty list. Entries in this list may override
-the following hard-coded defaults for \code{\link[rgenoud]{genoud}}: 
+hard-coded defaults for the individual optimizers. Hard-coded defaults
+for \code{\link[rgenoud]{genoud}} are, e.g.: 
 \itemize{
 \item \code{print.level=0},
 \item \code{max.generations=1000},
@@ -190,8 +192,7 @@ converted to time series.}
 
 \item{single.v}{A logical scalar. If \code{FALSE} (default), a selection
 of feasible (optimal!) predictor weight vectors is generated. If \code{TRUE}, 
-the one optimal weight vector which has maximal order statistics is generated 
-to facilitate cross validation studies.}
+only one set of optimal predictor weights is generated.}
 
 \item{verbose}{A logical scalar. If \code{TRUE} (default), output is verbose.}
 
@@ -244,15 +245,6 @@ is expected to be in "list" format, possibly after conversion from a
 \code{\link[base]{data.frame}}
 with function \code{\link{listFromLong}}) and the call to the appropriate
 MSCMT optimization procedures (depending on the input parameters).
-}
-\section{Note}{
-
-When using a cluster for placebo studies, almost all \code{R} objects needed 
-on the cluster are exported automatically to the cluster, with one exception:
-Since \code{agg.fns} only contains the names of the aggregation functions
-as character strings, non-standard (self-defined) aggregation functions 
-must be exported manually using \code{\link[parallel]{clusterExport}} before
-calling \code{\link{mscmt}}.
 }
 \examples{
 \dontrun{

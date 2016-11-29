@@ -1,15 +1,16 @@
 ## internal functions
 
 M <- function(w,X,trafo.v) {
-	M <- (diag(1,ncol(X))-rep(1,ncol(X))%*%t(w)) %*% t(X) %*% diag(drop(X%*%w))
-	if (trafo.v$has.trafo) M %*% trafo.v$A else M
+  M <- (diag(1,ncol(X))-rep(1,ncol(X))%*%t(w)) %*% t(X) %*% 
+    (if (nrow(X)>1) diag(drop(X%*%w)) else drop(X%*%w))
+  if (trafo.v$has.trafo) M %*% trafo.v$A else M 
 }
 
 all_v <- function(w,X,trafo.v,lb=1e-8) 
   cbind("min.loss.w" = loss_v(w,X,trafo.v,lb)$loss.w,single_v(w,X,trafo.v,lb))
                    
 exists_v <- function(w,X,trafo.v,lb=1e-8,scale=196L,tol=1e-14)
-  single_v(w,X,trafo.v,lb,check.exists=TRUE,tol_feasible=tol)
+  isTRUE(single_v(w,X,trafo.v,lb,check.exists=TRUE,tol_feasible=tol))
 
 ## currently not used
 unique_v <- function(w,X,trafo.v,lb=1e-8,tol=1e-12) 
@@ -44,17 +45,19 @@ loss_v <- function(w,X,trafo.v,lb=1e-8,scale=196L,tol=1e-8) {                   
                 scale=scale)
   res <- lp_res[1:K] + lb
   comp <- res/sum(res)
-  k <- 1
-  unique.v <- TRUE
-  while (unique.v && (k<=K)) {
-  	tmp <- lpr(direction="max",a0=lb,a=1*(k==1:K),d0=lb*K,d=rep(1,K),
-               const.mat=const.mat,const.rhs=const.rhs,const.dir=const.dir,
-               scale=scale)
-    if (any(is.na(tmp))) 
-      warning("lp for calculating unique.v could not be solved") else 
-      unique.v <- (max(abs((tmp[1:K]+lb)/sum(tmp[1:K]+lb)-comp)) <= tol) 
-    k <- k+1
-  }	
+  if (any(is.na(res))) unique.v <- NA else {
+    k <- 1
+    unique.v <- TRUE
+    while (unique.v && (k<=K)) {
+    	tmp <- lpr(direction="max",a0=lb,a=1*(k==1:K),d0=lb*K,d=rep(1,K),
+                 const.mat=const.mat,const.rhs=const.rhs,const.dir=const.dir,
+                 scale=scale)
+      if (any(is.na(tmp))) 
+        warning("lp for calculating unique.v could not be solved") else 
+        unique.v <- (max(abs((tmp[1:K]+lb)/sum(tmp[1:K]+lb)-comp)) <= tol) 
+      k <- k+1
+    }
+  }  	
   names(res) <- trafo.v$names.v
   list(loss.w=res,unique.v=unique.v)
 }

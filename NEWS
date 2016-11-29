@@ -1,4 +1,45 @@
-Changes in version 1.0.0 (2016-07-13)
+Changes in version 1.1.0 (2016-11-29)
+
+New features
+
+- newly supported outer optimizer "none" to implant 'artificial' solutions 
+  (fixed w and optionally fixed v).
+
+- many new outer optimizers are now supported, more documentation will follow.
+  
+- function compare() for comparison of estimation results, 
+  including corresponding updates for print.mscmt and ggplot.mscmt.
+
+Changes
+
+- names of agg.fns (component of mscmt results) are now set automatically.
+
+- user-defined agg.fns are now automatically exported to the cluster.
+
+- changed default optimizer to DEoptC.
+
+- predictor weights are not printed any more as verbose output in estimations.
+
+- some packages were moved from "Imports" to "Suggests".
+
+- number of calls to inner optimizer is now counted for benchmarking purposes.
+
+- package startup message added.
+
+Bug fixes
+
+- objective function weights alpha/beta/gamma are now treated correctly.
+
+- calls to the lp solver are now more robust.
+
+- some typos in vignettes have been corrected.
+
+- all data had to be sorted chronologically, this is now optional.
+
+- improveSynth reported wrong 'True' W*(V) if W*(V) was not optimal.
+
+
+Changes in version 1.0.0 (2016-07-25)
 
 New features
 

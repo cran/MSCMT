@@ -116,7 +116,7 @@ times.pred &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span cla
                     <span class="st">&quot;popdens&quot;</span>               =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1969</span>,<span class="dv">1969</span>))
 agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </code></pre></div>
 <p>Estimation of the model gives:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">4711</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">outer.optim=</span><span class="st">&quot;DEoptim&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)
 res</code></pre></div>
 <pre><code>## Specification:
 ## --------------
@@ -152,39 +152,39 @@ res</code></pre></div>
 ## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
 ##                 and the predictors always impose some restrictions on the 
 ##                 optimization of the 'dependent' loss.
-## Optimal W:      Baleares (Islas)     : 21.93332%, 
-##                 Cataluna             : 63.26005%, 
-##                 Madrid (Comunidad De): 14.80663%
-## Dependent loss: MSPE ('loss V'): 0.004286083, 
-##                 RMSPE          : 0.065468184
+## Optimal W:      Baleares (Islas)     : 21.92728%, 
+##                 Cataluna             : 63.27857%, 
+##                 Madrid (Comunidad De): 14.79414%
+## Dependent loss: MSPE ('loss V'): 0.004286071, 
+##                 RMSPE          : 0.065468095
 ## (Optimal) V:    Single predictor weights V requested. The optimal weight 
 ##                 vector V is:
 ##                                                         max.order
-##                 school.illit.mean.1964.1969          1.291593e-05
-##                 school.prim.mean.1964.1969           1.291593e-05
-##                 school.med.mean.1964.1969            1.291593e-05
-##                 school.higher.mean.1964.1969         2.380106e-04
-##                 invest.mean.1964.1969                2.446862e-04
-##                 gdpcap.mean.1960.1969                9.993881e-01
-##                 sec.agriculture.mean.1961.1969       1.291593e-05
-##                 sec.energy.mean.1961.1969            1.291593e-05
-##                 sec.industry.mean.1961.1969          1.291593e-05
-##                 sec.construction.mean.1961.1969      1.291593e-05
-##                 sec.services.venta.mean.1961.1969    1.291593e-05
-##                 sec.services.nonventa.mean.1961.1969 1.291593e-05
-##                 popdens.mean.1969.1969               1.291593e-05
+##                 school.illit.mean.1964.1969          1.578398e-05
+##                 school.prim.mean.1964.1969           1.578398e-05
+##                 school.med.mean.1964.1969            1.578398e-05
+##                 school.higher.mean.1964.1969         2.903475e-04
+##                 invest.mean.1964.1969                2.990163e-04
+##                 gdpcap.mean.1960.1969                9.992528e-01
+##                 sec.agriculture.mean.1961.1969       1.578398e-05
+##                 sec.energy.mean.1961.1969            1.578398e-05
+##                 sec.industry.mean.1961.1969          1.578398e-05
+##                 sec.construction.mean.1961.1969      1.578398e-05
+##                 sec.services.venta.mean.1961.1969    1.578398e-05
+##                 sec.services.nonventa.mean.1961.1969 1.578398e-05
+##                 popdens.mean.1969.1969               1.578398e-05
 ##                 ----------                                       
-##                 pred. loss                           2.762428e-04
+##                 pred. loss                           3.374961e-04
 ##                 (Predictor weights V are standardized by sum(V)=1)
 ## </code></pre>
-<p>It is remarkable that the mean of the lagged dependent variable <code>gdpcap.mean.1960.1969</code> is by far the most important predictor with a weight of 0.9993881, all other predictors are only marginally relevant due to their tiny (at most 0.0002446862) weights.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+<p>It is remarkable that the mean of the lagged dependent variable <code>gdpcap.mean.1960.1969</code> is by far the most important predictor with a weight of 0.9992528, all other predictors are only marginally relevant due to their tiny (at most 0.0002990163) weights.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
 </div>
 <div id="removing-the-lagged-dependent-variable" class="section level2">
 <h2>Removing the Lagged Dependent Variable</h2>
 <p>Omitting the lagged dependent variable <code>gdpcap.mean.1960.1969</code> from the model definition, however, leads to a significant increase of the dependent loss:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">times.pred &lt;-<span class="st"> </span>times.pred[,-<span class="dv">6</span>]
 agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       
-res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">4711</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">outer.optim=</span><span class="st">&quot;DEoptim&quot;</span>)
+res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)
 res2</code></pre></div>
 <pre><code>## Specification:
 ## --------------
@@ -228,7 +228,7 @@ res2</code></pre></div>
 ##                                                       max.order
 ##                 school.illit.mean.1964.1969          0.02710923
 ##                 school.prim.mean.1964.1969           0.02710923
-##                 school.med.mean.1964.1969            0.09108600
+##                 school.med.mean.1964.1969            0.09108599
 ##                 school.higher.mean.1964.1969         0.23068005
 ##                 invest.mean.1964.1969                0.02710923
 ##                 sec.agriculture.mean.1961.1969       0.02710923
@@ -248,7 +248,7 @@ res2</code></pre></div>
 <h2>SCMT without the Lagged Dependent Variable</h2>
 <p>Leaving the lagged dependent variable <code>gdpcap.mean.1960.1969</code> aside, but considering all other predictor variables as <strong>time series</strong> instead of aggregating their values leads to the following results:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;id&quot;</span>, <span class="kw">ncol</span>(times.pred))   <span class="co"># Omitting agg.fns has the same effect (as &quot;id&quot; is the default)</span>
-res3 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">4711</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>, <span class="dt">outer.optim=</span><span class="st">&quot;DEoptim&quot;</span>)
+res3 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)
 res3</code></pre></div>
 <pre><code>## Specification:
 ## --------------
@@ -282,32 +282,32 @@ res3</code></pre></div>
 ## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
 ##                 and the predictors always impose some restrictions on the 
 ##                 optimization of the 'dependent' loss.
-## Optimal W:      Baleares (Islas)            : 31.60130%, 
-##                 Cataluna                    : 24.20919%, 
-##                 Madrid (Comunidad De)       : 31.58227%, 
-##                 Navarra (Comunidad Foral De): 12.60724%
-## Dependent loss: MSPE ('loss V'): 0.004217877, 
-##                 RMSPE          : 0.064945185
+## Optimal W:      Baleares (Islas)            : 30.61618%, 
+##                 Cataluna                    : 25.64227%, 
+##                 Madrid (Comunidad De)       : 31.31920%, 
+##                 Navarra (Comunidad Foral De): 12.42236%
+## Dependent loss: MSPE ('loss V'): 0.004212379, 
+##                 RMSPE          : 0.064902846
 ## (Optimal) V:    Single predictor weights V requested. The optimal weight 
 ##                 vector V is:
-##                                          max.order
-##                 school.illit          0.0049444280
-##                 school.prim           0.0001560072
-##                 school.med            0.9838406955
-##                 school.higher         0.0001560072
-##                 invest                0.0001560072
-##                 sec.agriculture       0.0068589934
-##                 sec.energy            0.0001560072
-##                 sec.industry          0.0001560072
-##                 sec.construction      0.0001560072
-##                 sec.services.venta    0.0001560072
-##                 sec.services.nonventa 0.0001560072
-##                 popdens               0.0031078256
-##                 ----------                        
-##                 pred. loss            0.0140189068
+##                                         max.order
+##                 school.illit          0.001191182
+##                 school.prim           0.002720510
+##                 school.med            0.986287184
+##                 school.higher         0.000127276
+##                 invest                0.000127276
+##                 sec.agriculture       0.008782917
+##                 sec.energy            0.000127276
+##                 sec.industry          0.000127276
+##                 sec.construction      0.000127276
+##                 sec.services.venta    0.000127276
+##                 sec.services.nonventa 0.000127276
+##                 popdens               0.000127276
+##                 ----------                       
+##                 pred. loss            0.013824839
 ##                 (Predictor weights V are standardized by sum(V)=1)
 ## </code></pre>
-<p>Notice that this specification’s model type is ‘SCMT’, in contrast to the previous models which were ‘SCM’ models. By using the ‘SCMT’ model, the dependent loss (0.0042179) is even smaller than that of the original model (0.0042861) which used the dependent variable’s mean as an extra economic predictor. <code>school.med</code> has now become the most important predictor with weight 0.9838407, all other predictor weights are at least 0.0001560072.</p>
+<p>Notice that this specification’s model type is ‘SCMT’, in contrast to the previous models which were ‘SCM’ models. By using the ‘SCMT’ model, the dependent loss (0.0042124) is even smaller than that of the original model (0.0042861) which used the dependent variable’s mean as an extra economic predictor. <code>school.med</code> has now become the most important predictor with weight 0.9862872, all other predictor weights are at least 0.000127276.</p>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>

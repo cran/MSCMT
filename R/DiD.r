@@ -40,7 +40,7 @@
 #' of more then \code{exclude.ratio} times the average pre-treatment gap of
 #' the treated unit are excluded from the analysis.
 #' @return A list with components \code{effect.size}, \code{average.pre} and
-#' \code{everage.post}. If \code{x} contains the results of a placebo study,
+#' \code{average.post}. If \code{x} contains the results of a placebo study,
 #' three components \code{p.value}, \code{rank}, and \code{excluded} (with the 
 #' names of the excluded units) are included additionally.
 #' @export did

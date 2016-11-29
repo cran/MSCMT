@@ -76,6 +76,8 @@
 #' }
 #' @importFrom stats sd
 improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,verbose=TRUE) {
+  storage.mode(dataprep.out$X0) <- storage.mode(dataprep.out$X1) <- 
+    storage.mode(dataprep.out$Z0) <- storage.mode(dataprep.out$Z1) <- "double"
   v   <- as.numeric(synth.out$solution.v)
   Xu  <- cbind(dataprep.out$X0, dataprep.out$X1)                                # generate (scaled!) X from dataprep object
   Xs  <- Xu/apply(Xu, 1, sd)
@@ -121,7 +123,7 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,verbose=TRUE) {
          "====================\n\n")
     if (infeasible.w) {
       catw("WARNING","W*(V) is NOT optimal and thus infeasible!")
-      catw("'True' W*(V)",paste0(synth.out$solution.w,sep=" "))
+      catw("'True' W*(V)",paste0(w,sep=" "))
       catf("with corresponding predictor loss ('loss W') of ",
            new.loss.w," ",
            "and corresponding dependent loss ('loss V') of ",
@@ -133,7 +135,7 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,verbose=TRUE) {
   }     
 
   tmp    <- modOptim(X,0,Z,0,outer.par=list(lb=lb),verbose=FALSE,
-                     outer.optim="genoud")     
+                     outer.optim="DEoptC",seed=1)
   v      <- favourite_v(tmp$w,X,tmp$trafo.v,lb=lb)
   v      <- v/sum(v)
   loss.w <- lossPred(X,tmp$w,v,tmp$trafo.v)

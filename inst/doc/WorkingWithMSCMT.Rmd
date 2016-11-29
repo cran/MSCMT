@@ -12,7 +12,7 @@ output:
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   fig.width  = 7,
-  fig.height = 4,
+  fig.height = 4.5,
   fig.align  = "center",
 #  cache      = TRUE,
   autodep    = TRUE
@@ -136,15 +136,11 @@ Apart from the function parameters concerning data and model specification, ther
 *   initiate placebo studies 
 *   allow to use the computational power of a multi-core cpu or cluster for placebo studies.
 
-By default, `genoud` from package `rgenoud` is used as the optimizer for the (outer) optimization. 
-`MSCMT` supports other (outer) optimizers, one of which is `DEoptim` of package `DEoptim`, another evolutionary optimizer.
-Although using the default `genoud` as outer optimizer is recommended, we use `DEoptim` in the vignettes for speed reasons.
-
 ### Example 
 
 A simple estimation (without a placebo study) produces the following console output (if parameter `verbose` is `TRUE`, which is the default):
 ```{r}
-res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=42, outer.optim="DEoptim")
+res <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, seed=1)
 ```
 
 Package `MSCMT` ships with an `S3` method for `print`, which gives a nice human-readable summary of the estimation results:
@@ -194,11 +190,11 @@ In the following example, a (local) cluster with two nodes is used for the estim
 ```{r}
 library(parallel)
 cl <- makeCluster(2)
-resplacebo <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, cl=cl, placebo=TRUE, seed=42, outer.optim="DEoptim")
+resplacebo <- mscmt(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, cl=cl, placebo=TRUE, seed=1)
 stopCluster(cl)
 ```
 
-Object `res` now contains single SCM estimations for each unit as well as aggregated information concerning original data, synthesized data, and gaps for all units.
+Object `resplacebo` now contains single SCM estimations for each unit as well as aggregated information concerning original data, synthesized data, and gaps for all units.
 The individual SCM estimations can be accessed separately (as list elements with names corresponding to the units' names). 
 With the following plot, one can inspect whether there is some effect for Catalonia:
 
@@ -248,7 +244,7 @@ did(resplacebo, range.post=c(1970,1990), exclude.ratio=5, alternative="less")
 
 In this vignette, the basic workflow of preparing the data, defining and estimating the model, and evaluating the results of a (simple) SCM application with package `MSCMT` has been illustrated.
 
-Many features and options of package `MSCMT` remained untouched, because this would have lead far beyond the scope of this simple example. 
+Many features and options of package `MSCMT` remained untouched, because this would have led far beyond the scope of this simple example. 
 There are more specialized vignettes which illustrate
 
 *   [how to check the feasibility of (and potentially improve) the results obtained by function `synth` of package `Synth`,](CheckingSynth.html)

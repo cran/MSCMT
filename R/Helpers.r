@@ -78,6 +78,7 @@ seqAQM <- function(from,to,by=1) {
 ## TO DO(?): export?
 ## @export AQM2ts
 AQM2ts <- function(data) {
+  data  <- data[order(names(data))]
   sanitize <- function(nam,fre) 
     switch(as.character(fre),
            "4"  = paste0(substr(nam,1,4),"Q",substr(nam,nchar(nam),nchar(nam))),
@@ -302,6 +303,17 @@ solveNoSunny <- function(X,Z,trafo.v,method=c("wnnls","lsei"),                  
        rmspe=sqrt(lossDep(Z,w)),conv=0,single.v=TRUE)
 }
 
+## 'solve' outer optimization when there is exactly one sunny donor
+solveOneSunny <- function(X,Z,trafo.v) {
+  w        <- 1
+  names(w) <- colnames(X)             
+  v        <- rep(1/trafo.v$n.v,trafo.v$n.v)
+  names(v) <- trafo.v$names.v
+  loss.w   <- lossPred(X,w,v,trafo.v)
+  list(w=w,loss.w=loss.w,v=cbind("max.order"=v),loss.v=lossDep(Z,w),
+       rmspe=sqrt(lossDep(Z,w)),conv=0,single.v=TRUE)
+}
+
 ################################################################################
 ################################################################################
 # Helper functions for NICE OUTPUT                                             #
@@ -312,7 +324,7 @@ solveNoSunny <- function(X,Z,trafo.v,method=c("wnnls","lsei"),                  
 csl <- function(title,x,max.width=options()$width,min.indent=0,newline=FALSE,
                 sep=", ") {
   n1  <- max(min.indent,nchar(title)+2)
-  na  <- max(0,min.indent - nchar(title) - 2)
+  na  <- max(0,n1 - nchar(title) - 2)
   n2  <- max.width - n1
   nc  <- nchar(x)
   i   <- n1
@@ -341,6 +353,41 @@ tab <- function(nam,val,sep=": ") {
 wrap <- function(title,x,max.width=options()$width,min.indent=0) {
   x <- unlist(strsplit(x," "))
   csl(title,x,max.width,min.indent,sep=" ")
+}
+
+## wrap matrices with titles (as argument names)
+wrapM <- function(...,max.width=options()$width,min.indent=0,matrix.width=12) {
+  out <- ""
+  arg <- list(`...`)
+  argnames <- names(arg)
+  if (is.null(argnames)) argnames <- rep("",length(arg))
+  op  <- options()
+  n1  <- max(min.indent,max(nchar(argnames))+2)
+  n2  <- max.width - n1
+  options(width=n2)
+  for (i in seq_along(arg)) 
+    if (is.null(rownames(arg[[i]]))) 
+      rownames(arg[[i]]) <- rep("",nrow(arg[[i]]))
+  lrn <- max(sapply(arg,function(x) max(nchar(rownames(x)))))
+  for (i in seq_along(arg)) {
+    rownames(arg[[i]]) <- format(rownames(arg[[i]]),width=lrn)
+    na  <- max(0,n1 - nchar(argnames[i]) - 2)
+    out <- paste0(out,argnames[i],if (argnames[i]!="") ": " else "  ",
+                  paste0(rep(" ",na),collapse=""),collapse="")
+    if (any(is.character(arg[[i]]))) {
+      tmp <- as.data.frame(arg[[i]])
+    } else {
+      colnames(arg[[i]]) <- format(colnames(arg[[i]]),width=matrix.width,
+                                   justify="right")
+      tmp <- format(arg[[i]],justify="right",width=matrix.width,na.encode=TRUE)
+      tmp[which(tmp==format("NA",justify="right",width=matrix.width))] <- NA
+    }                  
+    tmp <- capture.output(print(tmp,na.print="",quote=FALSE))
+    tmp <- paste0(tmp,sep=paste0("\n",paste0(rep(" ",n1),collapse=""),sep=""))
+    out <- paste0(out,paste0(tmp,collapse=""),"\n",collapse="")
+  }
+  options(op)
+  out
 }
 
 ## wrap text with title (... version)

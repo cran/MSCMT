@@ -59,7 +59,8 @@
 #' of the x axis as documented in \code{\link[base]{strptime}}. Defaults to
 #' \code{"\%b \%y"} or \code{"\%Y"}, depending on the granularity of the data.
 #' @param unit.name A character string with the title of the legend 
-#' for placebo plots. Defaults to "Unit".
+#' for comparison and placebo plots. Defaults to "Estimation" for comparison 
+#' and "Unit" for placebo plots.
 #' @param full.legend A logical scalar. If \code{TRUE} (default), a full legend
 #' of all units (donors) is constructed. If \code{FALSE}, only the treated and
 #' the control units are distinguished.
@@ -108,6 +109,10 @@
 #' @param alternative A character string giving the alternative of the test for 
 #' plots of type \code{"p.value"}. Either \code{"two.sided"} (default), 
 #' \code{"less"}, or \code{"greater"}.
+#' @param draw.points A logical scalar. If \code{TRUE} (default), points are
+#' added to the line plots to enhance visibility.
+#' @param control.name A character string for the naming of the non-treated
+#' units in placebo plots. Defaults to \code{"control units"}.
 #' @return An object of class \code{\link[ggplot2]{ggplot}}.
 #' @importFrom ggplot2 ggplot aes_string geom_line labs scale_x_date geom_hline
 #' @importFrom ggplot2 scale_colour_manual scale_linetype_manual 
@@ -122,32 +127,50 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                                        "placebo.data","p.value"),
                          treatment.time,zero.line=TRUE,ylab,xlab="Date",main,
                          col,lty,lwd,legend=TRUE,bw=FALSE,date.format,
-                         unit.name="Unit",full.legend=TRUE,include.smooth=FALSE,
+                         unit.name,full.legend=TRUE,include.smooth=FALSE,
                          include.mean=FALSE,include.synth=FALSE,
                          draw.estwindow=TRUE,what.set,limits=NULL,
                          alpha=1,alpha.min=0.1,exclude.units=NULL,
                          exclude.ratio=Inf,ratio.type=c("rmspe","mspe"),
-                         alternative=c("two.sided", "less", "greater")) {
+                         alternative=c("two.sided", "less", "greater"),
+                         draw.points=TRUE,control.name="control units") {
   ratio.type  <- match.arg(ratio.type)                         
-  alternative <- match.arg(alternative)  
+  alternative <- match.arg(alternative) 
+  if (!missing(what.set)) 
+    what.set <- match.arg(what.set,c("dependents","predictors","all")) 
   if (missing(type)&&(!is.null(x$placebo))) type <- "placebo.gaps"
   type        <- match.arg(type) 
   if (exclude.ratio<1) { 
     warning("exclude.ratio too small, using 1")
     exclude.ratio <- 1
   }  
-  tmp  <- if (is.null(x$placebo)) x else x[[1]]
-  if (missing(what)) what <- tmp$dependent[1]
+  fixTimes <- function(a,b) {                                                   # helper function for results of compare()
+    resA <- as.vector(a)
+    names(resA) <- rep(rownames(a),times=ncol(a))
+    resB <- as.vector(b)
+    names(resB) <- rep(rownames(b),times=ncol(b))
+    res <- rbind(Start=resA,End=resB)
+    res[,apply(res,2,function(x) !all(is.na(x))),drop=FALSE]
+  }
+  if (is.null(x$placebo)) {                                                     # special treatment for placebo studies and comparions
+    if (is.null(x$comparison)) tmp  <- x else {
+      tmp <- x$comparison$results
+      tmp$times.dep  <- fixTimes(tmp$dependent.start,tmp$dependent.end)
+      tmp$times.pred <- fixTimes(tmp$predictor.start,tmp$predictor.end)
+      tmp$dependent <- rownames(tmp$dependent)
+    }
+  } else tmp  <- x[[1]]
+  if (missing(what)) what <- tmp$dependent[1]                                   # try to guess good defaults...
   if (!missing(what.set)) what <- switch(what.set,
     "dependents" = colnames(tmp$times.dep),
     "predictors" = colnames(tmp$times.pred),
-    "all"        = c(colnames(tmp$times.dep),colnames(tmp$times.pred)))
-  if (!missing(treatment.time)) if (!inherits(treatment.time,"Date")) {
+    "all"        = c(colnames(tmp$times.dep),colnames(tmp$times.pred)))         # make this unique??? CHECK!!!
+  if (!missing(treatment.time)) if (!inherits(treatment.time,"Date")) {         # convert treatment.time to Date
     if (is.numeric(treatment.time)) 
       treatment.time <- as.Date(paste0(treatment.time,"-01-01")) else
       treatment.time <- as.Date(treatment.time)
   }  
-  if (!is.null(limits)) if (!inherits(limits,"Date")) {
+  if (!is.null(limits)) if (!inherits(limits,"Date")) {                         # convert limits to Date
     if (is.numeric(limits)) 
       limits <- as.Date(paste0(limits,"-01-01")) else
       limits <- as.Date(limits)
@@ -161,11 +184,11 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
             AQM2Date))
   estwindow <- lapply(estwindow,function(x) 
                         range(as.Date(as.vector(x),origin="1970-01-01")))
-  res <- ggplot() 
-  if (!missing(treatment.time)) 
+  res <- ggplot()                                                               # initialize the ggplot object
+  if (!missing(treatment.time))                                                 # add line for treatment time
     res <- res + geom_vline(xintercept=as.numeric(treatment.time),
                             color="grey50")
-  if ((type=="placebo.gaps")||(type=="placebo.data")||(type=="p.value")) {
+  if ((type=="placebo.gaps")||(type=="placebo.data")||(type=="p.value")) {      # placebo-based plots
     if (is.null(x$placebo)) stop("results of placebo study missing")
     what.missing <- !(what %in% names(x$placebo))
     if (any(what.missing))
@@ -216,6 +239,7 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
     if (missing(ylab)) ylab=paste(if (type=="placebo.gaps") "Gaps" else "Data",
                                   if (length(what)==1) 
                                     paste0(" for ",what[[1]],collapse=""))
+    if (missing(unit.name)) unit.name <- "Unit"
     dat  <- NULL
     dat2 <- NULL
     for (wh in what) {
@@ -256,14 +280,16 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
         geom_line(data=dat,aes_string("date","values",colour=unit.name,
                   linetype=unit.name,size=unit.name,alpha=unit.name),
                   na.rm=TRUE) +
-        geom_point(data=dat,aes_string("date","values",colour=unit.name,
-                   size=unit.name,alpha=unit.name),na.rm=TRUE) +
         geom_line(data=dat[dat$treated=="treated",],aes_string("date","values",
                   colour=unit.name,linetype=unit.name,size=unit.name,
-                  alpha=unit.name),na.rm=TRUE) +
-        geom_point(data=dat[dat$treated=="treated",],aes_string("date","values",
-                   colour=unit.name,size=unit.name,alpha=unit.name),
-                   na.rm=TRUE) +
+                  alpha=unit.name),na.rm=TRUE)
+      if (draw.points) res <- res + 
+        geom_point(data=dat,aes_string("date","values",
+                   colour=unit.name,size=unit.name,alpha=unit.name),na.rm=TRUE) +
+        geom_point(data=dat[dat$treated=="treated",],
+                   aes_string("date","values",colour=unit.name,size=unit.name,
+                   alpha=unit.name),na.rm=TRUE)
+      res <- res + 
         scale_linetype_manual(values=lvals) +
         scale_size_manual(values=c(lwd[1],rep(lwd[2],length(unames)-1))) +
         scale_alpha_manual(values=alpha) +                          
@@ -275,20 +301,23 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
         geom_line(data=dat,aes_string("date","values",colour="treated",
                   linetype="treated",size="treated",group=unit.name,
                   alpha=unit.name),na.rm=TRUE) +
-        geom_point(data=dat,aes_string("date","values",colour="treated",
-                   size="treated",group=unit.name,alpha=unit.name),na.rm=TRUE) +
         geom_line(data=dat[dat$treated=="treated",],aes_string("date","values",
                   colour="treated",linetype="treated",size="treated",
-                  alpha=unit.name,group=unit.name),na.rm=TRUE) +
-        geom_point(data=dat[dat$treated=="treated",],aes_string("date","values",
-                   colour="treated",size="treated",alpha=unit.name,
-                   group=unit.name),na.rm=TRUE) +
+                  alpha=unit.name,group=unit.name),na.rm=TRUE)
+      if (draw.points) res <- res + 
+        geom_point(data=dat,aes_string("date","values",
+                   colour="treated",size="treated",group=unit.name,
+                   alpha=unit.name),na.rm=TRUE) + 
+        geom_point(data=dat[dat$treated=="treated",],
+                   aes_string("date","values",colour="treated",size="treated",
+                   alpha=unit.name,group=unit.name),na.rm=TRUE)
+      res <- res + 
         scale_colour_manual("",values=col,
-                            labels=c("treated unit","control units")) +
+                            labels=c("treated unit",control.name)) +
         scale_linetype_manual("",values=lty,
-                              labels=c("treated unit","control units")) +
+                              labels=c("treated unit",control.name)) +
         scale_size_manual("",values=lwd,
-                          labels=c("treated unit","control units")) +
+                          labels=c("treated unit",control.name)) +
         scale_alpha_manual("",values=alpha) +                          
         if (legend) guides(colour=guide_legend(override.aes=list(alpha=1)),
                            alpha="none") else
@@ -312,75 +341,157 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
     if (zero.line&&(type=="placebo.gaps")) 
       res <- res + geom_hline(yintercept=0,colour="grey50")
   }
-  if ((type=="comparison")||(type=="gaps")) {
-    if (is.null(x$combined)) stop("input is not an individual mscmt result")
-    what.missing <- !(what %in% names(x$combined))
-    if (any(what.missing))
-      stop(paste("variable(s)",paste0(what[what.missing],collapse=", "),
-                 "missing in results"))
-    dat <- NULL
-    for (wh in what) {
-      das <- ts2df(x$combined[[wh]])
-      if (type=="comparison") das <- cbind(date=das[,1],stack(das,select=2:3))
-      das <- cbind(das,
-                  start.estwindow=c(estwindow[[wh]][[1]],
-                                 rep(NA,nrow(das)-!is.null(estwindow[[wh]]))),
-                  end.estwindow=c(estwindow[[wh]][[2]],
-                                 rep(NA,nrow(das)-!is.null(estwindow[[wh]]))),
-                  which.data=wh)
-      estwindow[[wh]] <- NULL                                                   
-      if (type=="comparison") 
-        das$ind <- factor(das$ind,levels=c(as.character(das$ind[1]),
-                                           setdiff(levels(das$ind),
-                                                   as.character(das$ind[1]))))
-      dat <- rbind(dat,das)
-    }  
-    dat  <- if (type=="comparison") dat[!is.na(dat$values),] else 
-                                    dat[!is.na(dat$gaps),]
-    if (length(what)>1) res <- res + facet_wrap(~which.data,scales="free")
-    if (missing(date.format)) 
-      date.format <- if (frequency(x$combined[[what[[1]]]])>1) "%b %y" else "%Y" 
-  }
-  if (type=="comparison") {
-    if (missing(col)&&bw) col=rep("black",2)
-    if (missing(col)&&(!bw)) col=c("black","red")
-    if (missing(lty)&&bw) lty=c(1,2)
-    if (missing(lty)&&(!bw)) lty=rep(1,2)
-    if (missing(lwd)) lwd=c(2,2)
-    if (missing(ylab)) ylab=if (length(what)==1) what else ""
-    if (missing(main)) main=if (length(what)==1) 
-                              paste("Comparison of",what) else ""
-    res <- res + 
-      geom_line(data=dat,aes_string("date","values",colour="ind",size="ind",
-                linetype="ind"),na.rm=TRUE) +
-      geom_point(data=dat,aes_string("date","values",colour="ind",size="ind"),
-                 na.rm=TRUE) +
-      scale_colour_manual("",values=col,
-                          labels=c("actual data","synthesized data")) +
-      scale_linetype_manual("",values=lty,
+  if ((type=="comparison")||(type=="gaps")) {                                   # non-placebo based plots
+    if (is.null(x$combined)) {                                                  # input is a comparison
+      if (missing(unit.name)) unit.name <- "Estimation"
+      if (is.null(x$comparison)) stop("input is not an individual mscmt result")
+      what.missing <- !(what %in% names(x$comparison$variables))
+      if (any(what.missing))
+        stop(paste("variable(s)",paste0(what[what.missing],collapse=", "),
+                   "missing in results"))
+      unames <- colnames(x$comparison$variables[[what[1]]]$gaps)
+      nunits <- length(unames)
+#      if (missing(col)&&bw) col=c("black","grey20")
+#      if (missing(col)&&(!bw)) col=c("red","grey20")
+      if (missing(col)) col=rep("black",nunits)
+      if (missing(lty)) lty=rep(1,nunits)                                       # change this, see below?
+      if (missing(lwd)) lwd=rep(1,nunits)
+      if (missing(main)) main=if (length(what)==1) what[[1]] else ""
+      if (missing(date.format)) date.format <- 
+        if (frequency(x$comparison$variables[[what[[1]]]]$gaps)>1) "%b %y" else 
+                                                                   "%Y" 
+      if (missing(ylab)) ylab=paste(if (type=="gaps") "Gaps" else "Data",
+                                    if (length(what)==1) 
+                                      paste0(" for ",what[[1]],collapse=""))
+      dat  <- NULL
+      dat2 <- NULL
+      for (wh in what) {
+        tmpdf <- ts2df(if (type=="gaps") 
+          x$comparison$variables[[wh]]$gaps else 
+          x$comparison$variables[[wh]]$data.synth)
+        das <- cbind(date=tmpdf[,1],stack(tmpdf,select=-1))
+        das <- cbind(das,
+                     start.estwindow=c(estwindow[[wh]][[1]],
+                                   rep(NA,nrow(das)-!is.null(estwindow[[wh]]))),
+                     end.estwindow=c(estwindow[[wh]][[2]],
+                                   rep(NA,nrow(das)-!is.null(estwindow[[wh]]))),
+                     which.data=wh)
+#        das$ind <- factor(das$ind,levels=c(as.character(das$ind[1]),
+#                                           setdiff(levels(das$ind),
+#                                                   as.character(das$ind[1]))))
+        estwindow[[wh]] <- NULL                                                   
+        dat  <- rbind(dat,das)
+        dat2 <- rbind(dat2,
+                      cbind(ts2df(x$comparison$variables[[wh]]$data.treat)[,1:2],
+                            which.data=wh))
+      }
+      names(dat)[names(dat)=="ind"] <- unit.name
+      names(dat2)[2] <- "value"
+      dat  <- dat[!is.na(dat$values),]
+      dat2 <- dat2[!is.na(dat2$value),]
+      if (length(what)>1) res <- res + facet_wrap(~which.data,scales="free")
+      if (length(alpha)==1) alpha <- rep(alpha,nunits)
+      lvals <- (1:6)[((seq_len(nunits)-1)%%5)+1]                                # change this, see above?
+      res <- res + 
+        geom_line(data=dat,aes_string("date","values",colour=unit.name,
+                  linetype=unit.name,size=unit.name,alpha=unit.name),
+                  na.rm=TRUE) +
+        geom_line(data=dat[dat$treated=="treated",],aes_string("date","values",
+                  colour=unit.name,linetype=unit.name,size=unit.name,
+                  alpha=unit.name),na.rm=TRUE)
+      if (draw.points) res <- res + 
+        geom_point(data=dat,aes_string("date","values",colour=unit.name,
+                   size=unit.name,shape=unit.name,alpha=unit.name),
+                   na.rm=TRUE) +
+        geom_point(data=dat[dat$treated=="treated",],
+                   aes_string("date","values",colour=unit.name,size=unit.name,
+                   shape=unit.name,alpha=unit.name),na.rm=TRUE) 
+      res <- res + 
+        scale_linetype_manual(values=lvals) +
+        scale_size_manual(values=lwd) +
+        scale_alpha_manual(values=alpha) +                          
+        if (legend) guides(colour=guide_legend(override.aes=list(alpha=1))) else
+                    guides(colour="none",linetype="none",size="none",
+                           shape="none",alpha="none")    
+        if ((type=="comparison")&&
+            (length(unique(x$comparison$results$treated.unit))==1))
+          res <- res + geom_line(data=dat2,aes_string("date","value"),size=2,
+                                 linetype=1,col="black",alpha=0.5)
+      if (zero.line&&(type=="gaps")) 
+        res <- res + geom_hline(yintercept=0,colour="grey50")
+                            
+    } else {                                                                    # input is not a comparison
+      what.missing <- !(what %in% names(x$combined))
+      if (any(what.missing))
+        stop(paste("variable(s)",paste0(what[what.missing],collapse=", "),
+                   "missing in results"))
+      dat <- NULL
+      for (wh in what) {
+        das <- ts2df(x$combined[[wh]])
+        if (type=="comparison") das <- cbind(date=das[,1],stack(das,select=2:3))
+        das <- cbind(das,
+                    start.estwindow=c(estwindow[[wh]][[1]],
+                                   rep(NA,nrow(das)-!is.null(estwindow[[wh]]))),
+                    end.estwindow=c(estwindow[[wh]][[2]],
+                                   rep(NA,nrow(das)-!is.null(estwindow[[wh]]))),
+                    which.data=wh)
+        estwindow[[wh]] <- NULL                                                   
+        if (type=="comparison") 
+          das$ind <- factor(das$ind,levels=c(as.character(das$ind[1]),
+                                             setdiff(levels(das$ind),
+                                                     as.character(das$ind[1]))))
+        dat <- rbind(dat,das)
+      }  
+      dat  <- if (type=="comparison") dat[!is.na(dat$values),] else 
+                                      dat[!is.na(dat$gaps),]
+      if (length(what)>1) res <- res + facet_wrap(~which.data,scales="free")
+      if (missing(date.format)) 
+        date.format <- if (frequency(x$combined[[what[[1]]]])>1) "%b %y" else 
+                                                                 "%Y" 
+      if (type=="comparison") {
+        if (missing(col)&&bw) col=rep("black",2)
+        if (missing(col)&&(!bw)) col=c("black","red")
+        if (missing(lty)&&bw) lty=c(1,2)
+        if (missing(lty)&&(!bw)) lty=rep(1,2)
+        if (missing(lwd)) lwd=c(2,2)
+        if (missing(ylab)) ylab=if (length(what)==1) what else ""
+        if (missing(main)) main=if (length(what)==1) 
+                                  paste("Comparison of",what) else ""
+        res <- res + 
+          geom_line(data=dat,aes_string("date","values",colour="ind",size="ind",
+                    linetype="ind"),na.rm=TRUE)
+        if (draw.points) res <- res + 
+          geom_point(data=dat,aes_string("date","values",
+                     colour="ind",size="ind"),na.rm=TRUE)
+        res <- res + 
+          scale_colour_manual("",values=col,
+                              labels=c("actual data","synthesized data")) +
+          scale_linetype_manual("",values=lty,
+                                labels=c("actual data","synthesized data")) +
+          scale_size_manual("",values=lwd,
                             labels=c("actual data","synthesized data")) +
-      scale_size_manual("",values=lwd,
-                        labels=c("actual data","synthesized data")) +
-      if (legend) guides(colour=guide_legend(override.aes=list(alpha=1))) else
-                  guides(colour="none",linetype="none",size="none")
-  }
-  if (type=="gaps") {
-    if (missing(col)&&bw) col="black"
-    if (missing(col)&&(!bw)) col="black"
-    if (missing(lty)&&bw) lty=1
-    if (missing(lty)&&(!bw)) lty=1
-    if (missing(lwd)) lwd=2
-    if (missing(ylab)) ylab="gap"
-    if (missing(main)) main=if (length(what)==1) 
-                              paste("Gap for",what) else ""
-    res <- res + geom_line(data=dat,
-                           aes_string("date","gaps"),colour=col[1],
-                           size=lwd[1],linetype=lty[1],na.rm=TRUE) +
-                 geom_point(data=dat,
-                            aes_string("date","gaps"),colour=col[1],
-                            size=lwd[1],na.rm=TRUE)
-    if (zero.line) res <- res + geom_hline(yintercept=0,colour="grey50")
-  }
+          if (legend) guides(colour=guide_legend(override.aes=list(alpha=1))) else
+                      guides(colour="none",linetype="none",size="none")
+      }
+      if (type=="gaps") {
+        if (missing(col)&&bw) col="black"
+        if (missing(col)&&(!bw)) col="black"
+        if (missing(lty)&&bw) lty=1
+        if (missing(lty)&&(!bw)) lty=1
+        if (missing(lwd)) lwd=2
+        if (missing(ylab)) ylab="gap"
+        if (missing(main)) main=if (length(what)==1) 
+                                  paste("Gap for",what) else ""
+        res <- res + geom_line(data=dat,
+                               aes_string("date","gaps"),colour=col[1],
+                               size=lwd[1],linetype=lty[1],na.rm=TRUE)
+        if (draw.points) res <- res + geom_point(data=dat,
+                                aes_string("date","gaps"),colour=col[1],
+                                size=lwd[1],na.rm=TRUE) 
+        if (zero.line) res <- res + geom_hline(yintercept=0,colour="grey50")
+      }  
+    }
+  }  
   res <- res + labs(title=main,x=xlab,y=ylab) +
                scale_x_date(date_labels=date.format,limits=limits)
   if (draw.estwindow)

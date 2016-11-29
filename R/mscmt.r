@@ -47,7 +47,7 @@
 #' "2016/03" or "2016-10",
 #' }
 #' will be constructed; these dates are looked for in the row names of
-#' the respective matrices in \code{data}.
+#' the respective matrices in \code{data}. 
 #' @param times.pred A matrix with two rows (containing start times in
 #' the first and end times in the second row) and one column for each predictor
 #' variable, where the column names must exactly match the names of the
@@ -61,7 +61,7 @@
 #' "2016/03" or "2016-10",
 #' }
 #' will be constructed; these dates are looked for in the row names of
-#' the respective matrices in \code{data}.
+#' the respective matrices in \code{data}. 
 #' @param agg.fns Either \code{NULL} (default) or a character vector containing
 #' one name of an aggregation function for each predictor variable (i.e., each
 #' column of \code{times.pred}). The character string "id" may be used as a
@@ -95,11 +95,12 @@
 #' optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
 #' meaningful further parameters.)
 #' @param outer.optim A character scalar containing the name of the optimization
-#' method for the outer optimization. Defaults to \code{"genoud"}, 
-#' which (currently) is the recommended optimizer 
-#' (see \code{\link[rgenoud]{genoud}}).
-#' Also supported is \code{"DEoptim"} (see \code{\link[DEoptim]{DEoptim}}),
-#' other optimizers may be supported in future releases.
+#' method for the outer optimization. Defaults to \code{"DEoptC"}, 
+#' which (currently) is the recommended global optimizer. 
+#' Also supported, apart from others, are the global optimizers \code{"DEoptim"} 
+#' (see \code{\link[DEoptim]{DEoptim}}) and \code{genoud} (see 
+#' \code{\link[rgenoud]{genoud}}). Documentation for these and other optimizers 
+#' will be added in future releases.
 #' @param outer.par A list containing further parameters for the outer 
 #' optimization procedure. Defaults to the empty list. Entries in this list may 
 #' override the following hard-coded general defaults:
@@ -113,7 +114,8 @@
 #' }
 #' @param outer.opar A list containing further parameters for the outer 
 #' optimizer. Defaults to the empty list. Entries in this list may override
-#' the following hard-coded defaults for \code{\link[rgenoud]{genoud}}: 
+#' hard-coded defaults for the individual optimizers. Hard-coded defaults
+#' for \code{\link[rgenoud]{genoud}} are, e.g.: 
 #' \itemize{
 #' \item \code{print.level=0},
 #' \item \code{max.generations=1000},
@@ -164,8 +166,7 @@
 #' converted to time series.
 #' @param single.v A logical scalar. If \code{FALSE} (default), a selection
 #' of feasible (optimal!) predictor weight vectors is generated. If \code{TRUE}, 
-#' the one optimal weight vector which has maximal order statistics is generated 
-#' to facilitate cross validation studies.
+#' only one set of optimal predictor weights is generated.
 #' @param verbose A logical scalar. If \code{TRUE} (default), output is verbose.
 #' @param debug A logical scalar. If \code{TRUE}, output is very verbose. 
 #' Defaults to \code{FALSE}.
@@ -201,13 +202,13 @@
 #' unit (as treated unit), starting with the original treated unit, as well
 #' as a list element named \code{placebo} with aggregated results for each
 #' dependent and predictor variable.
-#' @section Note:
-#' When using a cluster for placebo studies, almost all \code{R} objects needed 
-#' on the cluster are exported automatically to the cluster, with one exception:
-#' Since \code{agg.fns} only contains the names of the aggregation functions
-#' as character strings, non-standard (self-defined) aggregation functions 
-#' must be exported manually using \code{\link[parallel]{clusterExport}} before
-#' calling \code{\link{mscmt}}.
+## @section Note:
+## When using a cluster for placebo studies, almost all \code{R} objects needed 
+## on the cluster are exported automatically to the cluster, with one exception:
+## Since \code{agg.fns} only contains the names of the aggregation functions
+## as character strings, non-standard (self-defined) aggregation functions 
+## must be exported manually using \code{\link[parallel]{clusterExport}} before
+## calling \code{\link{mscmt}}.
 #' @importFrom stats sd
 #' @importFrom parallel clusterExport parLapplyLB clusterEvalQ
 #' @rdname MSCMTfunction
@@ -222,7 +223,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                   placebo=FALSE, placebo.with.treated=FALSE, univariate=FALSE,
                   univariate.with.dependent=FALSE,
                   check.global=TRUE, inner.optim="wnnlsOpt",inner.opar=list(),
-                  outer.optim="genoud",outer.par=list(),
+                  outer.optim="DEoptC",outer.par=list(),
                   outer.opar=list(), std.v=c("sum","mean","min","max"),
                   alpha=NULL,beta=NULL,gamma=NULL,return.ts=TRUE,single.v=FALSE,
                   verbose=TRUE, debug=FALSE, seed=NULL, cl=NULL) {
@@ -233,6 +234,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
   is.dataprep <- isTRUE(all.equal(names(data),c("X0","X1","Z0","Z1","Y0plot",
                                   "Y1plot","names.and.numbers","tag")))
   if (is.dataprep) {
+    storage.mode(data$X0) <- storage.mode(data$X1) <- 
+      storage.mode(data$Z0) <- storage.mode(data$Z1) <- "double"
     univariate <- FALSE
     unit.names <- data$names.and.numbers$unit.names
     if (is.null(colnames(data$X1))) colnames(data$X1) <- colnames(data$Z1)      # correct potentially missing names
@@ -359,13 +362,14 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
     for (i in seq_along(gaps)) 
       combined[[i]] <- cbind(treated=data.treat[[i]],synth=data.synth[[i]],
                              gaps=gaps[[i]])
+    names(agg.fns)  <- colnames(times.pred)                             
   
     res <- c(res,list(
                dataprep.scaled=dat,data.synth=data.synth,data.treat=data.treat,
                gaps=gaps,combined=combined,treated.unit=treatment.identifier,
                control.units=controls.identifier,dependent=dependent,
                predictor=predictor,agg.fns=agg.fns,agg.pred=rownames(dat$X0),
-               times.dep=times.dep,times.pred=times.pred,std.v=std.v))          # hier alpha, beta, gamma, ...?
+               times.dep=times.dep,times.pred=times.pred,std.v=std.v))          # insert alpha, beta, gamma, ...?
                
     if (dat$Z.scaled) {
       Zu    <- dat$Z0u - drop(dat$Z1u)
@@ -400,8 +404,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       res
     }  
     if (!is.null(cl)) clusterExport(cl,c("mySynth","treatment.identifier",
-      "controls.identifier","times.dep","times.pred","agg.fns","all.units"),
-      envir=environment())
+      "controls.identifier","times.dep","times.pred","agg.fns","all.units",
+      setdiff(unique(agg.fns),"id")),envir=environment())
     if (verbose) catn("Starting placebo study, ",
       if (placebo.with.treated) "in" else "ex","cluding original treated ",
       "unit.")
@@ -442,7 +446,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                                          times.dep[,-i,drop=FALSE] else NULL)
       agg.fnsT <- if (is.null(agg.fns)) NULL else c(agg.fns,
         if (univariate.with.dependent) rep("id",length(dependent)-1) else NULL)
-      
+
       res[[i]] <- synthFun(treatment.identifier, controls.identifier, 
                            times.dep[,i,drop=FALSE], times.predT, agg.fnsT)
       class(res[[i]]) <- "mscmt"
@@ -456,9 +460,10 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
   
   # do it!
   res <- synthFun(treatment.identifier, controls.identifier, times.dep, 
-                  times.pred,agg.fns)
-                  
-  if (placebo&&(!is.null(cl))&&verbose) catn("Placebo study on cluster finished.")
+                  times.pred, agg.fns)
   class(res) <- "mscmt"
+				  
+  if (placebo&&(!is.null(cl))&&verbose) 
+    catn("Placebo study on cluster finished.")
   res                  
 }

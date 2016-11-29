@@ -7,12 +7,12 @@
 \method{ggplot}{mscmt}(x, what, type = c("gaps", "comparison", "placebo.gaps",
   "placebo.data", "p.value"), treatment.time, zero.line = TRUE, ylab,
   xlab = "Date", main, col, lty, lwd, legend = TRUE, bw = FALSE,
-  date.format, unit.name = "Unit", full.legend = TRUE,
-  include.smooth = FALSE, include.mean = FALSE, include.synth = FALSE,
-  draw.estwindow = TRUE, what.set, limits = NULL, alpha = 1,
-  alpha.min = 0.1, exclude.units = NULL, exclude.ratio = Inf,
-  ratio.type = c("rmspe", "mspe"), alternative = c("two.sided", "less",
-  "greater"))
+  date.format, unit.name, full.legend = TRUE, include.smooth = FALSE,
+  include.mean = FALSE, include.synth = FALSE, draw.estwindow = TRUE,
+  what.set, limits = NULL, alpha = 1, alpha.min = 0.1,
+  exclude.units = NULL, exclude.ratio = Inf, ratio.type = c("rmspe",
+  "mspe"), alternative = c("two.sided", "less", "greater"),
+  draw.points = TRUE, control.name = "control units")
 }
 \arguments{
 \item{x}{An object of class \code{"mscmt"}, usually obtained as
@@ -80,7 +80,8 @@ of the x axis as documented in \code{\link[base]{strptime}}. Defaults to
 \code{"\%b \%y"} or \code{"\%Y"}, depending on the granularity of the data.}
 
 \item{unit.name}{A character string with the title of the legend 
-for placebo plots. Defaults to "Unit".}
+for comparison and placebo plots. Defaults to "Estimation" for comparison 
+and "Unit" for placebo plots.}
 
 \item{full.legend}{A logical scalar. If \code{TRUE} (default), a full legend
 of all units (donors) is constructed. If \code{FALSE}, only the treated and
@@ -142,6 +143,12 @@ are considered for the exclusion of control units (see \code{exclude.ratio}).}
 \item{alternative}{A character string giving the alternative of the test for 
 plots of type \code{"p.value"}. Either \code{"two.sided"} (default), 
 \code{"less"}, or \code{"greater"}.}
+
+\item{draw.points}{A logical scalar. If \code{TRUE} (default), points are
+added to the line plots to enhance visibility.}
+
+\item{control.name}{A character string for the naming of the non-treated
+units in placebo plots. Defaults to \code{"control units"}.}
 }
 \value{
 An object of class \code{\link[ggplot2]{ggplot}}.

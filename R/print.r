@@ -47,6 +47,7 @@ print.mscmt <- function(x,...) {
         fixed = paste0("Vector V was fixed, outer optimization bypassed."),
         regression = paste0("Vector V was determined by regression, ",
           "outer optimization bypassed."),
+        artificial = paste0("Artificial solution, vector W was fixed."),
         paste0("Ordinary solution, ie. no perfect preditor fit possible and ",
           "the predictors always impose some restrictions on the optimization ",
           "of the 'dependent' loss.")),mwd,ind),
@@ -64,10 +65,12 @@ print.mscmt <- function(x,...) {
         fixed = paste0("Fixed predictor weights V (not necessarily optimal)."),
         regression = paste0("Regression-based predictor weights V (not ",
                             "necessarily optimal)."),
-        paste0(if (x1$single.v) "Single predictor weights V requested. ",
-          if (!x1$single.v) "Some optimal " else "The optimal ",
+        artificial = paste0("Artificial solution, vector V was either fixed ",
+                            "or artificially constructed based on fixed W."),
+        paste0(if (isTRUE(x1$single.v)) "Single predictor weights V requested. ",
+          if (!isTRUE(x1$single.v)) "Some optimal " else "The optimal ",
           "weight vector",
-          if (!x1$single.v) "s V are:" else " V is:")),mwd,ind),
+          if (!isTRUE(x1$single.v)) "s V are:" else " V is:")),mwd,ind),
       if (x1$solution.type!="nosunny") paste0(
         paste0(paste0(paste0(rep(" ",ind),collapse=""),Vmat),collapse="\n"),
         "\n",
@@ -78,8 +81,52 @@ print.mscmt <- function(x,...) {
     )
   }
 
-  is.univariate <- is.null(x$placebo) && is.null(x$combined)
-  if (is.univariate) {
+  printComparison <- function(x2) {
+    nam   <- x2$names    
+    x1    <- x2$results
+    Vmat  <- rbind(x1$v,"----------"=NA,"pred. loss"=x1$loss.w)
+
+    mymerge <- function(a,b) {
+      nc  <- max(nchar(rownames(a)),nchar(rownames(b)))
+      res <- matrix(NA,nrow=nrow(a)+nrow(b),ncol=ncol(a))
+      colnames(res) <- colnames(a)
+      rownames(res) <- rep("",nrow(res))
+      rownames(res)[2*seq_len(nrow(a))-1] <- 
+        paste(format(rownames(a),width=nc),"from")
+      rownames(res)[2*seq_len(nrow(a))] <- 
+        paste(format(rownames(b),width=nc),"  to")
+      res[2*seq_len(nrow(a))-1,]  <- a
+      res[2*seq_len(nrow(a)),]    <- b
+      res
+    }
+                                 
+    paste0(
+      "Specification:\n--------------\n\n",
+      wrapM("Model types"    = rbind(x1$model.type),
+            "Treated unit"   = rbind(x1$treated.unit),
+            max.width=mwd,min.indent=ind),
+      wrapM("Control units"  = x1$control.units,
+#            "Dependent(s)"   = x1$dependent,
+            "Dependent(s)"   = mymerge(x1$dependent.start,x1$dependent.end),
+#            "Predictors"     = x1$predictor,
+            "Predictors"     = mymerge(x1$predictor.start,x1$predictor.end),
+#            "Predictors"     = x1$agg.pred,
+            max.width=mwd,min.indent=ind),
+      "Results:\n--------\n\n",
+      wrapM("Result.type"    = rbind(x1$solution.type),
+            max.width=mwd,min.indent=ind),
+      wrapM("Optimal W (%)"  = 100*x1$w,
+            "Dependent loss" = rbind("MSPE"=x1$loss.v,"RMSPE"=x1$rmspe),
+            "Optimal V"      = Vmat,
+#            "V std. by"      = rbind(x1$std.v),
+            max.width=mwd,min.indent=ind)
+    )
+  }
+
+  if (!is.null(x$comparison)) {
+    out <- "Comparison of (M)SCM(T) optimizations\n\n"
+    out <- paste0(out,printComparison(x$comparison))
+  } else if (is.null(x$placebo) && is.null(x$combined)) {
     out <- "Collection of univariate SCM(T) optimizations\n\n"
     for (i in seq_along(x)) out <- paste0(out,
       "Dependent variable: ",names(x)[i],"\n",
