@@ -26,7 +26,7 @@ For convenience, \code{data} may alternatively be the
 result of function \code{\link[Synth]{dataprep}} of package 
 \code{'Synth'}. In this case, the parameters \code{treatment.identifier},
 \code{controls.identifier}, \code{times.dep}, \code{times.pred}, 
-and \code{agg.fns} are ignored, as these input are generated
+and \code{agg.fns} are ignored, as these input parameters are generated
 automatically from \code{data}. The parameters \code{univariate}, 
 \code{alpha}, \code{beta}, and \code{gamma} are ignored by fixing them to 
 their defaults.
@@ -100,25 +100,31 @@ dependent variable are included as predictors in the series of univariate
 SCMT optimizations. Defaults to \code{FALSE}.}
 
 \item{check.global}{A logical scalar. If \code{TRUE} (default), a check for
-the feasibility of the "global" optimum (where actually no 
+the feasibility of the unrestricted outer optimum (where actually no 
 restrictions are imposed by the predictor variables) is made before 
 starting the actual optimization procedure.}
 
 \item{inner.optim}{A character scalar containing the name of the optimization
 method for the inner optimization. Defaults to \code{"wnnlsOpt"}, which
-(currently) is the only implementation.}
+(currently) is the only supported implementation, because it outperforms
+all other inner optimizers we are aware of. 
+\code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}}, and 
+\code{LowRankQPOpt}, which uses \code{\link[LowRankQP]{LowRankQP}} as inner
+optimizer have experimental support for benchmark purposes.}
 
 \item{inner.opar}{A list containing further parameters for the inner 
 optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
 meaningful further parameters.)}
 
-\item{outer.optim}{A character scalar containing the name of the optimization
-method for the outer optimization. Defaults to \code{"DEoptC"}, 
+\item{outer.optim}{A character vector containing the name(s) of the 
+optimization method(s) for the outer optimization. Defaults to \code{"DEoptC"}, 
 which (currently) is the recommended global optimizer. 
-Also supported, apart from others, are the global optimizers \code{"DEoptim"} 
-(see \code{\link[DEoptim]{DEoptim}}) and \code{genoud} (see 
-\code{\link[rgenoud]{genoud}}). Documentation for these and other optimizers 
-will be added in future releases.}
+The optimizers currently supported can be found in the documentation of
+parameter \code{outer.opar}, where the default control parameters for
+the various optimizers are listed.
+If \code{outer.optim} has length greater
+than 1, one optimization is invoked for each outer optimizer (and, 
+potentially, each random seed, see below), and the best result is used.}
 
 \item{outer.par}{A list containing further parameters for the outer 
 optimization procedure. Defaults to the empty list. Entries in this list may 
@@ -132,20 +138,42 @@ to an improved outer optimization where each predictor is treated as the
 separate optimizations (one for each predictor).
 }}
 
-\item{outer.opar}{A list containing further parameters for the outer 
-optimizer. Defaults to the empty list. Entries in this list may override
-hard-coded defaults for the individual optimizers. Hard-coded defaults
-for \code{\link[rgenoud]{genoud}} are, e.g.: 
-\itemize{
-\item \code{print.level=0},
-\item \code{max.generations=1000},
-\item \code{solution.tolerance=1e-12},
-\item \code{pop.size=1000},
-\item \code{wait.generations=10},
-\item \code{boundary.enforcement=2},
-\item \code{gradient.check=FALSE},
-\item \code{MemoryMatrix=FALSE}.
-}}
+\item{outer.opar}{A list (or a list of lists, if \code{outer.optim} has
+length greater than 1) containing further parameters for the outer 
+optimizer(s). Defaults to the empty list. Entries in this list may override
+the following hard-coded defaults for the individual optimizers, which
+are quite modest concerning the computing time. 
+\code{dim} is a variable holding the problem dimension, 
+typically the number of predictors minus one.
+\tabular{lll}{
+\bold{Optimizer}  \tab \bold{Package}     \tab \bold{Default parameters} \cr 
+\code{DEoptC}     \tab \code{MSCMT}       \tab \code{nG=500}, \code{nP=20*dim}, \code{waitgen=100}, \cr
+                  \tab                    \tab \code{minimpr=1e-14}, \code{F=0.5}, \code{CR=0.9} \cr
+\code{cma_es}     \tab \code{cmaes}       \tab \code{maxit=2500} \cr
+\code{crs}        \tab \code{nloptr}      \tab \code{maxeval=2.5e4}, \code{xtol_rel=1e-14}, \cr
+                  \tab                    \tab \code{population=20*dim}, \code{algorithm="NLOPT_GN_CRS2_LM"} \cr
+\code{DEopt}      \tab \code{NMOF}        \tab \code{nG=100}, \code{nP=20*dim} \cr
+\code{DEoptim}    \tab \code{DEoptim}     \tab \code{nP=20*dim} \cr
+\code{ga}         \tab \code{GA}          \tab \code{maxiter=50}, \code{monitor=FALSE}, \cr
+                  \tab                    \tab \code{popSize=20*dim} \cr
+\code{genoud}     \tab \code{rgenoud}     \tab \code{print.level=0}, \code{max.generations=70}, \cr
+                  \tab                    \tab \code{solution.tolerance=1e-12}, \code{pop.size=20*dim}, \cr
+                  \tab                    \tab \code{wait.generations=dim}, \code{boundary.enforcement=2}, \cr
+                  \tab                    \tab \code{gradient.check=FALSE}, \code{MemoryMatrix=FALSE} \cr
+\code{GenSA}      \tab \code{GenSA}       \tab \code{max.call=1e7}, \code{max.time=25/dim},  \cr
+                  \tab                    \tab \code{trace.mat=FALSE} \cr
+\code{hydroPSO}   \tab \code{hydroPSO}    \tab \code{maxit=300}, \code{reltol=1e-14}, \code{npart=3*dim} \cr
+\code{isres}      \tab \code{nloptr}      \tab \code{maxeval=2e4}, \code{xtol_rel=1e-14}, \cr
+                  \tab                    \tab \code{population=20*dim}, \code{algorithm="NLOPT_GN_ISRES"} \cr
+\code{malschains} \tab \code{Rmalschains} \tab \code{popsize=20*dim}, \code{maxEvals=25000} \cr
+\code{nlminbOpt}  \tab \code{MSCMT/stats} \tab \code{nrandom=30} \cr
+\code{optimOpt}   \tab \code{MSCMT/stats} \tab \code{nrandom=25} \cr
+\code{PSopt}      \tab \code{NMOF}        \tab \code{nG=100}, \code{nP=20*dim} \cr
+\code{psoptim}    \tab \code{pso}         \tab \code{maxit=700} \cr
+\code{soma}       \tab \code{soma}        \tab \code{nMigrations=100} 
+}
+If \code{outer.opar} is a list of lists, its names must correspond to (a 
+subset of) the outer optimizers chosen in \code{outer.optim}.}
 
 \item{std.v}{A character scalar containing one of the function names
 "sum", "mean", "min", or "max" for the standardization of the predictor 
@@ -199,18 +227,21 @@ only one set of optimal predictor weights is generated.}
 \item{debug}{A logical scalar. If \code{TRUE}, output is very verbose. 
 Defaults to \code{FALSE}.}
 
-\item{seed}{A numerical scalar or \code{NULL}. If not \code{NULL}, the
-random number generator is initialized with \code{set.seed(seed)} (see
-\link[base]{Random}) before
-calling the optimizer. Defaults to \code{NULL}. Beware: the seeds for 
-\code{\link[rgenoud]{genoud}} must be set separately (if necessary) via the
-list elements \code{int.seed} (default: 53058) and \code{unif.seed}
-(default: 812821) of \code{outer.opar}.}
+\item{seed}{A numerical vector or \code{NULL}. If not \code{NULL}, the
+random number generator is initialized with the elements of \code{seed} via
+\code{set.seed(seed)} (see \link[base]{Random}) before
+calling the optimizer, performing repeated optimizations (and staying with 
+the best) if \code{seed} has length greater than 1. Defaults to \code{NULL}. 
+If not \code{NULL}, the seeds \code{int.seed} (default: 53058) and 
+\code{unif.seed} (default: 812821) for \code{\link[rgenoud]{genoud}} are 
+also initialized to the corresponding element of \code{seed}, but this can 
+be overridden with the list elements \code{int.seed} and \code{unif.seed} 
+of (the corresponding element of) \code{outer.opar}.}
 
 \item{cl}{\code{NULL} (default) or an object of class \code{cluster}
 obtained by \code{\link[parallel]{makeCluster}} of package \code{parallel}. 
-Placebo studies will make use of the cluster \code{cl} 
-(if not \code{NULL}).}
+Repeated estimations (see \code{outer.optim} and \code{seed}) and
+placebo studies will make use of the cluster \code{cl} (if not \code{NULL}).}
 }
 \value{
 An object of class \code{"mscmt"}, which is essentially a list

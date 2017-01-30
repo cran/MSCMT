@@ -5,7 +5,7 @@
 \title{Check (and Improve) Results of Package Synth}
 \usage{
 improveSynth(synth.out, dataprep.out, lb = 1e-08, tol = 1e-05,
-  verbose = TRUE)
+  verbose = TRUE, seed = 1, ...)
 }
 \arguments{
 \item{synth.out}{A result of \code{\link[Synth]{synth}} from package 
@@ -25,6 +25,14 @@ exceed \code{tol}, this is reported
 
 \item{verbose}{A logical scalar. Should the ouput be verbose (defaults to 
 \code{TRUE}).}
+
+\item{seed}{A numerical vector or \code{NULL}. See the corresponding
+documentation for \code{\link[MSCMT]{mscmt}}. Defaults to 1 in order to
+provide reproducibility of the results.}
+
+\item{...}{Further arguments to \code{\link[MSCMT]{mscmt}}. Supported 
+arguments are \code{check.global}, \code{inner.optim}, \code{inner.opar}, 
+\code{outer.optim}, and \code{outer.opar}.}
 }
 \value{
 An updated version of \code{synth.out}, where \code{solution.v},

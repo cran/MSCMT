@@ -116,10 +116,10 @@ dataprep.out &lt;-
     ),
     <span class="dt">treatment.identifier =</span> <span class="dv">7</span>,
     <span class="dt">controls.identifier =</span> <span class="kw">c</span>(<span class="dv">29</span>, <span class="dv">2</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">32</span>, <span class="dv">38</span>),
-    <span class="dt">time.predictors.prior =</span> <span class="kw">c</span>(<span class="dv">1984</span>:<span class="dv">1989</span>),
-    <span class="dt">time.optimize.ssr =</span> <span class="kw">c</span>(<span class="dv">1984</span>:<span class="dv">1990</span>),
+    <span class="dt">time.predictors.prior =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1989</span>),
+    <span class="dt">time.optimize.ssr =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1990</span>),
     <span class="dt">unit.names.variable =</span> <span class="st">&quot;name&quot;</span>,
-    <span class="dt">time.plot =</span> <span class="dv">1984</span>:<span class="dv">1996</span>
+    <span class="dt">time.plot =</span> <span class="dv">1984</span><span class="op">:</span><span class="dv">1996</span>
   )
 
 synth.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out)</code></pre></div>
@@ -185,7 +185,7 @@ synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(sy
 <div id="generating-the-result-of-package-synth-1" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
 <p><code>genoud</code> is switched on by the corresponding function argument. We capture the output with <code>capture.output</code> because it is <strong>very</strong> verbose. Furthermore, the calculation is quite lengthy, therefore the results have been cached.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (<span class="kw">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) else {
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="kw">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) <span class="cf">else</span> {
   <span class="kw">set.seed</span>(<span class="dv">42</span>)
   out &lt;-<span class="st"> </span><span class="kw">capture.output</span>(synth3.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out,<span class="dt">genoud=</span><span class="ot">TRUE</span>))
 }  </code></pre></div>

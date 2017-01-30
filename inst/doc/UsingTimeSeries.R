@@ -15,7 +15,7 @@ Basque <- listFromLong(basque, unit.variable="regionno", time.variable="year", u
 school.sum <- with(Basque,colSums(school.illit + school.prim + school.med + school.high  + school.post.high))
 Basque$school.higher <- Basque$school.high + Basque$school.post.high
 for (item in c("school.illit", "school.prim", "school.med", "school.higher"))      
-  Basque[[item]] <- 5 * 100 * t(t(Basque[[item]]) / school.sum)
+  Basque[[item]] <- 6 * 100 * t(t(Basque[[item]]) / school.sum)
 
 ## ------------------------------------------------------------------------
 treatment.identifier <- "Basque Country (Pais Vasco)"

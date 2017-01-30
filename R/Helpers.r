@@ -263,7 +263,7 @@ checkGlobalOpt <- function(X,Z,trafo.v,lb,single.v=FALSE) {
 }
 
 ## calculate 'global' optimum with wnnls
-wnnlsGetGlobalOpt <- function(X) {                                              # TO DO(?): check whether w is unique or not (-> SK)
+wnnlsGetGlobalOpt <- function(X) {
   w <- wnnls(A=X,B=matrix(0,nrow=nrow(X)),E=matrix(rep(1,ncol(X)),nrow=1),
              F=matrix(1),check.input=FALSE)$x
   list(w=w,rmspe=sqrt(lossDep(X,w)))
@@ -285,7 +285,7 @@ solveNoSunny <- function(X,Z,trafo.v,method=c("wnnls","lsei"),                  
   method <- match.arg(method)                           
   n <- ncol(X)
   w <- switch(method,
-              "lsei"  = lsei(A=Z,B=matrix(0,nrow=nrow(Z)),E=rbind(X,rep(1,n)),  # more stable than 'wnnls' (for *this* application). EDIT: Really???
+              "lsei"  = lsei(A=Z,B=matrix(0,nrow=nrow(Z)),E=rbind(X,rep(1,n)),
                              F=matrix(c(rep(0,nrow(X)),1),ncol=1),
                              G=diag(n),H=matrix(0,nrow=n))$x,
               "wnnls" = wnnls(A=Z,B=matrix(0,nrow=nrow(Z)),E=rbind(X,rep(1,n)),

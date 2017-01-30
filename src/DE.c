@@ -148,6 +148,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
     }  
     */
     for (;j<nP*d;j++) mP[j] = vmin + unif_rand() * (vmax-vmin);                  // generate (remainder of) initial population at random
+//    for (;j<nP*d;j++) mP[j] = vmin + pow(1.0-pow(unif_rand(),5.0),20.0) * (vmax-vmin);                  // generate (remainder of) initial population at random
 
     // evaluate initial population
     for (j=0;j<nP;j++) { 

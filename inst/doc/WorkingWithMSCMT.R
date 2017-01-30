@@ -26,7 +26,7 @@ school.sum <- with(Basque,colSums(school.illit + school.prim + school.med + scho
 Basque$school.higher <- Basque$school.high + Basque$school.post.high
 # calculate ratios and multiply by number of observations to obtain percentages from totals 
 for (item in c("school.illit", "school.prim", "school.med", "school.higher"))      
-  Basque[[item]] <- 5 * 100 * t(t(Basque[[item]]) / school.sum)
+  Basque[[item]] <- 6 * 100 * t(t(Basque[[item]]) / school.sum)
 
 ## ------------------------------------------------------------------------
 treatment.identifier <- "Basque Country (Pais Vasco)"

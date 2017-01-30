@@ -1,3 +1,23 @@
+Changes in version 1.2.0 (2017-01-30)
+
+New features
+
+- automatic repeated estimation with different outer optimizers and random 
+  seeds, optionally on a cluster.
+
+Changes
+
+- reasonable default parameters and documentation for outer optimizers
+  have been added.
+
+- improved cluster support: (malfunctioning) load balancing with parLapplyLB 
+  replaced by load balancing via clusterApplyLB.
+
+Bug fixes
+
+- fixed special treatment of 'one sunny donor' case.
+
+
 Changes in version 1.1.0 (2016-11-29)
 
 New features

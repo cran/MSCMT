@@ -42,7 +42,7 @@ Basque <- listFromLong(basque, unit.variable="regionno", time.variable="year", u
 school.sum <- with(Basque,colSums(school.illit + school.prim + school.med + school.high  + school.post.high))
 Basque$school.higher <- Basque$school.high + Basque$school.post.high
 for (item in c("school.illit", "school.prim", "school.med", "school.higher"))      
-  Basque[[item]] <- 5 * 100 * t(t(Basque[[item]]) / school.sum)
+  Basque[[item]] <- 6 * 100 * t(t(Basque[[item]]) / school.sum)
 ```
 
 We also replicate model specification of the [main vignette](WorkingWithMSCMT.html) which reproduces the model in [AER 2003]^[Abadie, Alberto and Javier Gardeazabal. 2003. "The Economic Costs of Conflict: A Case Study of the Basque Country". American Economic Review, 93(1): 113-132.]:

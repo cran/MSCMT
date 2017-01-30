@@ -33,6 +33,12 @@
 #' (independent of the value of \code{tol}).
 #' @param verbose A logical scalar. Should the ouput be verbose (defaults to 
 #' \code{TRUE}).
+#' @param seed A numerical vector or \code{NULL}. See the corresponding
+#' documentation for \code{\link[MSCMT]{mscmt}}. Defaults to 1 in order to
+#' provide reproducibility of the results. 
+#' @param ... Further arguments to \code{\link[MSCMT]{mscmt}}. Supported 
+#' arguments are \code{check.global}, \code{inner.optim}, \code{inner.opar}, 
+#' \code{outer.optim}, and \code{outer.opar}.
 #' @return An updated version of \code{synth.out}, where \code{solution.v},
 #' \code{solution.w}, \code{loss.v}, and \code{loss.w} are replaced by the
 #' optimum obtained by package \code{'MSCMT'} and all other components 
@@ -75,7 +81,8 @@
 #' }
 #' }
 #' @importFrom stats sd
-improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,verbose=TRUE) {
+improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
+                         verbose=TRUE,seed=1,...) {
   storage.mode(dataprep.out$X0) <- storage.mode(dataprep.out$X1) <- 
     storage.mode(dataprep.out$Z0) <- storage.mode(dataprep.out$Z1) <- "double"
   v   <- as.numeric(synth.out$solution.v)
@@ -134,8 +141,8 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,verbose=TRUE) {
     }       
   }     
 
-  tmp    <- modOptim(X,0,Z,0,outer.par=list(lb=lb),verbose=FALSE,
-                     outer.optim="DEoptC",seed=1)
+  tmp    <- multiOpt(X,0,Z,0,outer.par=list(lb=lb),verbose=FALSE,
+                     seed=seed,...)
   v      <- favourite_v(tmp$w,X,tmp$trafo.v,lb=lb)
   v      <- v/sum(v)
   loss.w <- lossPred(X,tmp$w,v,tmp$trafo.v)

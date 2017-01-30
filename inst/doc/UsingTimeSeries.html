@@ -92,10 +92,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="kw">data</span>(basque)
 <span class="kw">library</span>(MSCMT)
 Basque &lt;-<span class="st"> </span><span class="kw">listFromLong</span>(basque, <span class="dt">unit.variable=</span><span class="st">&quot;regionno&quot;</span>, <span class="dt">time.variable=</span><span class="st">&quot;year&quot;</span>, <span class="dt">unit.names.variable=</span><span class="st">&quot;regionname&quot;</span>)
-school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<span class="kw">colSums</span>(school.illit +<span class="st"> </span>school.prim +<span class="st"> </span>school.med +<span class="st"> </span>school.high  +<span class="st"> </span>school.post.high))
-Basque$school.higher &lt;-<span class="st"> </span>Basque$school.high +<span class="st"> </span>Basque$school.post.high
-for (item in <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      
-  Basque[[item]] &lt;-<span class="st"> </span><span class="dv">5</span> *<span class="st"> </span><span class="dv">100</span> *<span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) /<span class="st"> </span>school.sum)</code></pre></div>
+school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<span class="kw">colSums</span>(school.illit <span class="op">+</span><span class="st"> </span>school.prim <span class="op">+</span><span class="st"> </span>school.med <span class="op">+</span><span class="st"> </span>school.high  <span class="op">+</span><span class="st"> </span>school.post.high))
+Basque<span class="op">$</span>school.higher &lt;-<span class="st"> </span>Basque<span class="op">$</span>school.high <span class="op">+</span><span class="st"> </span>Basque<span class="op">$</span>school.post.high
+<span class="cf">for</span> (item <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      
+  Basque[[item]] &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">*</span><span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) <span class="op">/</span><span class="st"> </span>school.sum)</code></pre></div>
 <p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the model in <a href="https://www.aeaweb.org/articles?id=10.1257/000282803321455188" title="Abadie and Gardeazabal (2003)">AER 2003</a><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">treatment.identifier &lt;-<span class="st"> &quot;Basque Country (Pais Vasco)&quot;</span>
 controls.identifier  &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">colnames</span>(Basque[[<span class="dv">1</span>]]),
@@ -150,8 +150,8 @@ res</code></pre></div>
 ## --------
 ## 
 ## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
-##                 and the predictors always impose some restrictions on the 
-##                 optimization of the 'dependent' loss.
+##                 and the predictors impose some restrictions on the outer 
+##                 optimization.
 ## Optimal W:      Baleares (Islas)     : 21.92728%, 
 ##                 Cataluna             : 63.27857%, 
 ##                 Madrid (Comunidad De): 14.79414%
@@ -182,7 +182,7 @@ res</code></pre></div>
 <div id="removing-the-lagged-dependent-variable" class="section level2">
 <h2>Removing the Lagged Dependent Variable</h2>
 <p>Omitting the lagged dependent variable <code>gdpcap.mean.1960.1969</code> from the model definition, however, leads to a significant increase of the dependent loss:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">times.pred &lt;-<span class="st"> </span>times.pred[,-<span class="dv">6</span>]
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">times.pred &lt;-<span class="st"> </span>times.pred[,<span class="op">-</span><span class="dv">6</span>]
 agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       
 res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)
 res2</code></pre></div>
@@ -217,8 +217,8 @@ res2</code></pre></div>
 ## --------
 ## 
 ## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
-##                 and the predictors always impose some restrictions on the 
-##                 optimization of the 'dependent' loss.
+##                 and the predictors impose some restrictions on the outer 
+##                 optimization.
 ## Optimal W:      Cataluna             : 85.0814%, 
 ##                 Madrid (Comunidad De): 14.9186%
 ## Dependent loss: MSPE ('loss V'): 0.008864545, 
@@ -280,8 +280,8 @@ res3</code></pre></div>
 ## --------
 ## 
 ## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
-##                 and the predictors always impose some restrictions on the 
-##                 optimization of the 'dependent' loss.
+##                 and the predictors impose some restrictions on the outer 
+##                 optimization.
 ## Optimal W:      Baleares (Islas)            : 30.61618%, 
 ##                 Cataluna                    : 25.64227%, 
 ##                 Madrid (Comunidad De)       : 31.31920%, 
