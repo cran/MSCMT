@@ -67,4 +67,3 @@ Control Method.
  vignette("WorkingWithMSCMT",package="MSCMT")
 }
 }
-

@@ -8,6 +8,8 @@
 #' \code{\link[base]{data.frame}}
 #' with function \code{\link{listFromLong}}) and the call to the appropriate
 #' MSCMT optimization procedures (depending on the input parameters).
+#' For details on the input parameters \code{alpha}, \code{beta}, and 
+#' \code{gamma}, see [1]. For details on cross-validation, see [2].
 #'
 #' @param data Typically, a list of matrices with rows corresponding to times 
 #' and columns corresponding to units for all relevant features (dependent as
@@ -47,7 +49,8 @@
 #' "2016/03" or "2016-10",
 #' }
 #' will be constructed; these dates are looked for in the row names of
-#' the respective matrices in \code{data}. 
+#' the respective matrices in \code{data}. In applications with 
+#' cross-validation, \code{times.dep} belongs to the main period.
 #' @param times.pred A matrix with two rows (containing start times in
 #' the first and end times in the second row) and one column for each predictor
 #' variable, where the column names must exactly match the names of the
@@ -61,7 +64,8 @@
 #' "2016/03" or "2016-10",
 #' }
 #' will be constructed; these dates are looked for in the row names of
-#' the respective matrices in \code{data}. 
+#' the respective matrices in \code{data}. In applications with 
+#' cross-validation, \code{times.pred} belongs to the main period.
 #' @param agg.fns Either \code{NULL} (default) or a character vector containing
 #' one name of an aggregation function for each predictor variable (i.e., each
 #' column of \code{times.pred}). The character string "id" may be used as a
@@ -94,13 +98,13 @@
 #' all other inner optimizers we are aware of. 
 #' \code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}}, and 
 #' \code{LowRankQPOpt}, which uses \code{\link[LowRankQP]{LowRankQP}} as inner
-#' optimizer have experimental support for benchmark purposes.
+#' optimizer, have experimental support for benchmark purposes.
 #' @param inner.opar A list containing further parameters for the inner 
 #' optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
 #' meaningful further parameters.)
 #' @param outer.optim A character vector containing the name(s) of the 
-#' optimization method(s) for the outer optimization. Defaults to \code{"DEoptC"}, 
-#' which (currently) is the recommended global optimizer. 
+#' optimization method(s) for the outer optimization. Defaults to 
+#' \code{"DEoptC"}, which (currently) is the recommended global optimizer. 
 #' The optimizers currently supported can be found in the documentation of
 #' parameter \code{outer.opar}, where the default control parameters for
 #' the various optimizers are listed.
@@ -116,7 +120,7 @@
 #' \item \code{opt.separate=TRUE}, corresponding
 #' to an improved outer optimization where each predictor is treated as the 
 #' (potentially) most important predictor (i.e. with maximal weight) in 
-#' separate optimizations (one for each predictor).
+#' separate optimizations (one for each predictor), see [1].
 #' }
 #' @param outer.opar A list (or a list of lists, if \code{outer.optim} has
 #' length greater than 1) containing further parameters for the outer 
@@ -194,7 +198,8 @@
 #' converted to time series.
 #' @param single.v A logical scalar. If \code{FALSE} (default), a selection
 #' of feasible (optimal!) predictor weight vectors is generated. If \code{TRUE}, 
-#' only one set of optimal predictor weights is generated.
+#' the one optimal weight vector which has maximal order statistics is generated 
+#' to facilitate cross validation studies.
 #' @param verbose A logical scalar. If \code{TRUE} (default), output is verbose.
 #' @param debug A logical scalar. If \code{TRUE}, output is very verbose. 
 #' Defaults to \code{FALSE}.
@@ -212,6 +217,25 @@
 #' obtained by \code{\link[parallel]{makeCluster}} of package \code{parallel}. 
 #' Repeated estimations (see \code{outer.optim} and \code{seed}) and
 #' placebo studies will make use of the cluster \code{cl} (if not \code{NULL}).
+#' @param times.pred.training A matrix with two rows (containing start times in
+#' the first and end times in the second row) and one column for each predictor
+#' variable, where the column names must exactly match the names of the
+#' corresponding predictor variables (or \code{NULL} by default).
+#' If not \code{NULL}, \code{times.pred.training} defines training periods
+#' for cross-validation applications. For the format of the start and end times,
+#' see the documentation of parameter \code{times.pred}.
+#' @param times.dep.validation A matrix with two rows (containing start times in
+#' the first and end times in the second row) and one column for each dependent
+#' variable, where the column names must exactly match the names of the
+#' corresponding dependent variables (or \code{NULL} by default). 
+#' If not \code{NULL}, \code{times.dep.validation} defines validation period(s)
+#' for cross-validation applications. For the format of the start and end times,
+#' see the documentation of parameter \code{times.dep}.
+#' @param v.special integer vector containing indices of important predictors
+#' with special treatment (see below). Defaults to the empty set.
+#' @param cv.alpha numeric scalar containing the minimal proportion (of the
+#' maximal feasible weight) for the weights of the predictors selected by 
+#' \code{v.special}. Defaults to \code{0}.
 #' @return An object of class \code{"mscmt"}, which is essentially a list
 #' containing the results of the estimation and, if applicable, the placebo
 #' study.
@@ -227,12 +251,22 @@
 #' \item a list of multivariate time series \code{combined} containing, 
 #' for each dependent and predictor variable, a multivariate time series 
 #' with elements \code{treated} for the actual values of the treated unit,
-#' \code{synth} for the synthesized values and \code{gaps} for the differences.
+#' \code{synth} for the synthesized values, and \code{gaps} for the differences.
 #' }
 #' Placebo studies produce a list containing individual results for each 
 #' unit (as treated unit), starting with the original treated unit, as well
 #' as a list element named \code{placebo} with aggregated results for each
 #' dependent and predictor variable.
+#'
+#' If \code{times.pred.training} and \code{times.dep.validation} are not 
+#' \code{NULL}, a cross-validation is done and a list of elements \code{cv}
+#' with the results of the cross-validation period and \code{main} with
+#' the results of the main period is returned.
+#' @references
+#' [1] \insertRef{FastReliable}{MSCMT} 
+#'
+#' [2] \insertRef{CV}{MSCMT}
+#'
 #' @importFrom stats sd
 #' @importFrom parallel clusterExport clusterApplyLB clusterEvalQ
 #' @rdname MSCMTfunction
@@ -250,13 +284,25 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                   outer.optim="DEoptC",outer.par=list(),
                   outer.opar=list(), std.v=c("sum","mean","min","max"),
                   alpha=NULL,beta=NULL,gamma=NULL,return.ts=TRUE,single.v=FALSE,
-                  verbose=TRUE, debug=FALSE, seed=NULL, cl=NULL) {
+                  verbose=TRUE, debug=FALSE, seed=NULL, cl=NULL,
+                  times.pred.training=NULL, times.dep.validation=NULL,
+                  v.special=integer(),cv.alpha=0) {
   # check input                  
   std.v <- match.arg(std.v)
+
+  # shall we do cross validation?
+  is.cv <- !(is.null(times.pred.training)||is.null(times.dep.validation))
   
   # is data a dataprep object?
   is.dataprep <- isTRUE(all.equal(names(data),c("X0","X1","Z0","Z1","Y0plot",
                                   "Y1plot","names.and.numbers","tag")))
+  # initialize v
+  v <- NULL                                  
+
+  if (is.dataprep&&is.cv) {
+    warning("cross validation not supported for dataprep input")                # cross validation not supported for dataprep input
+	  is.cv <- FALSE
+  }								  
 								  
   if (placebo&&(!is.null(cl))) { 
     n.placebo <- length(controls.identifier)+1
@@ -294,7 +340,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
 
   # main workhorse
   synthSingle <- function(treatment.identifier, controls.identifier, 
-                          times.dep, times.pred, agg.fns) {
+                          times.dep, times.pred, agg.fns, v=NULL) {
     if (!is.matrix(times.dep)) stop("times.dep must be a matrix")
     dependent <- colnames(times.dep)
     predictor <- colnames(times.pred)
@@ -354,7 +400,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                     check.global=check.global,
                     inner.optim=inner.optim,inner.opar=inner.opar,
                     starting.values=NULL,outer.par=outer.par,
-                    outer.optim=outer.optim,outer.opar=outer.opar,
+                    outer.optim=if (is.null(v)) outer.optim else "fixed",
+                    outer.opar=if (is.null(v)) outer.opar else list(v=v),
                     std.v=std.v,single.v=single.v,verbose=verbose,debug=debug,
                     seed=seed,cl=if (placebo.on.cluster) NULL else cl)
                     
@@ -416,14 +463,15 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
   }           
 
   synthPlacebo <- function(treatment.identifier, controls.identifier, 
-                           times.dep, times.pred, agg.fns) {
+                           times.dep, times.pred, agg.fns, v=NULL) {
     all.units <- c(treatment.identifier,controls.identifier)
     mySynth <- function(treated) {
       if (verbose) catn("Using ",treated," as treated unit now.")
       res <- synthSingle(treated, 
         if (placebo.with.treated) setdiff(all.units,treated) else 
                                   setdiff(controls.identifier,treated),
-        times.dep, times.pred, agg.fns)
+        times.dep, times.pred, agg.fns,
+        v=if (!is.null(v)) v[[treated]] else NULL)
       class(res) <- "mscmt"
       res
     }  
@@ -432,8 +480,9 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       "unit",if (placebo.on.cluster) ", on the cluster. Please hold the line",
       ".")
     if (placebo.on.cluster) clusterExport(cl,c("mySynth","treatment.identifier",
-      "controls.identifier","times.dep","times.pred","agg.fns","all.units",
-      setdiff(unique(agg.fns),"id"),"multiOpt","atomOpt"),envir=environment())
+      "controls.identifier","times.dep","times.pred","agg.fns","all.units","v",
+      setdiff(unique(agg.fns),"id"),"multiOpt","atomOpt"),
+      envir=environment())
     res <- if (placebo.on.cluster) clusterApplyLB(cl,all.units,mySynth) else
                                    lapply(all.units,mySynth)
                             
@@ -458,7 +507,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
 
   # separate univariate SCM for many dependent variables
   synthUnivariate <- function(treatment.identifier, controls.identifier, 
-                              times.dep, times.pred, agg.fns) {
+                              times.dep, times.pred, agg.fns, v=NULL) {
     if (verbose) catn("Starting univariate SCMT for single dependent ",
       "variables, ",if (univariate.with.dependent) "in" else "ex",
       "cluding other dependent variables as predictors.")
@@ -472,9 +521,9 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                                          times.dep[,-i,drop=FALSE] else NULL)
       agg.fnsT <- if (is.null(agg.fns)) NULL else c(agg.fns,
         if (univariate.with.dependent) rep("id",length(dependent)-1) else NULL)
-
       res[[i]] <- synthFun(treatment.identifier, controls.identifier, 
-                           times.dep[,i,drop=FALSE], times.predT, agg.fnsT)
+                           times.dep[,i,drop=FALSE], times.predT, agg.fnsT, 
+                           if (!is.null(v)) v[[i]] else NULL)
       class(res[[i]]) <- "mscmt"
     }
     res
@@ -485,10 +534,42 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                  if (placebo) synthPlacebo else synthSingle
   
   # do it!
-  res <- synthFun(treatment.identifier, controls.identifier, times.dep, 
-                  times.pred, agg.fns)
-  class(res) <- "mscmt"
-
+  if (is.cv) {
+    lb <- if(!is.null(outer.par$lb)) outer.par$lb else 1e-8
+    genV <- function(x,xname=NULL) {                                            # cross-validation
+      if (is.list(x)) {
+        if (is.null(x[["v"]])) {
+          tmp <- lapply(seq_along(x),function(i) genV(x[[i]],names(x)[[i]])) 
+          names(tmp) <- names(x)
+          tmp
+        } else {
+          if (verbose) catn("Determining cross-validation predictor weights",
+            if (!is.null(xname)) paste0(" for ",xname),".")
+          cbind(single_v(x$w,x$dataprep.scaled$X0-drop(x$dataprep.scaled$X1),
+                         x$dataprep.scaled$Z0-drop(x$dataprep.scaled$Z1),
+                         x$trafo.v,cv.alpha=cv.alpha,v.special=v.special,
+                         verbose=verbose,debug=debug,lb=lb,backup.v=x$v))
+        }  
+      } else NULL
+    }  
+    if (verbose) catn("Starting optimization for cross-validation period.")
+    resCV <- synthFun(treatment.identifier, controls.identifier, 
+                      times.dep.validation, times.pred.training, agg.fns, v)  
+    if ("v" %in% names(outer.opar)) v <- outer.opar$v
+    if (is.null(v)) {
+      v <- genV(resCV)
+      if (!(univariate||placebo)) if (!is.null(v)) v=v[,1]
+    }  
+    if (verbose) catn("Starting calculations for main period.")
+    resM <- synthFun(treatment.identifier, controls.identifier, 
+                     times.dep, times.pred, agg.fns, v)  
+    class(resCV) <- class(resM) <- "mscmt"
+    res <- list(cv=resCV, main=resM)
+  } else {                                                                      # no cross-validation
+    res <- synthFun(treatment.identifier, controls.identifier, times.dep, 
+                    times.pred, agg.fns, v)
+    class(res) <- "mscmt"
+  }
   if (placebo.on.cluster&&verbose) 
     catn("Placebo study on cluster finished.")
   res                  

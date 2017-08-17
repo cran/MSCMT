@@ -251,13 +251,17 @@ isSunny <- function(w0,X)
       ))$objval,1))
 
 ## calculate 'global' optimum and check for feasibility
-checkGlobalOpt <- function(X,Z,trafo.v,lb,single.v=FALSE) {
+checkGlobalOpt <- function(X,Z,trafo.v,lb,single.v=FALSE,verbose=FALSE,
+                           debug=FALSE) {
   tmp   <- wnnlsGetGlobalOpt(Z)
   w     <- tmp$w
   rmspe <- tmp$rmspe
-  if (exists_v(w,X,trafo.v,lb)) {
-    list(w=w,v=if (single.v) single_v(w,X,trafo.v,lb) else 
-                             all_v(w,X,trafo.v,lb),
+  if (exists_v(w,X,Z,trafo.v,lb)) {
+    list(w=w,
+         v=if (single.v) 
+             cbind("max.order"=single_v(w,X,Z,trafo.v,lb,verbose=verbose,
+                                        debug=debug)) else 
+             all_v(w,X,Z,trafo.v,lb,verbose=verbose,debug=debug),
          loss.v=rmspe^2,rmspe=rmspe,conv=0,single.v=single.v)
   } else list(w=w,v=NA,loss.v=rmspe^2,rmspe=rmspe,conv=NA,single.v=NA)
 }
@@ -426,73 +430,296 @@ align <- function(...) {
 ################################################################################
 ################################################################################
 
-## linear programs for ratios in target function
-#' @importFrom lpSolve lp
-lpr <- function(direction = "min", a0, a, d0,d, const.mat, const.dir, 
-                const.rhs, ...) {
-  tmp <- lp(direction=direction,objective.in=c(a0,a),
-            const.mat=cbind(c(-const.rhs,d0),rbind(const.mat,d)),
-            const.dir=c(const.dir,"=="),
-            const.rhs=c(rep(0,length(const.rhs)),1),...)
-  if (tmp$status==0) tmp$solution[-1]/tmp$solution[1] else rep(NA,length(a))
-}       
+#' @importFrom lpSolveAPI lp.control make.lp set.rhs set.objfn set.column
+#' @importFrom lpSolveAPI set.constr.type set.bounds get.objective get.variables
+lp3 <- function(direction,objective.in,const.mat,const.rhs,const.dir,
+                #vmin=0,vmax=1,
+                ...) {
+  n <- ncol(const.mat)
+#  const.mat <- const.mat[const.dir!="<=",]
+#  const.rhs <- const.rhs[const.dir!="<="]
+#  const.dir <- const.dir[const.dir!="<="]
+  const.dir[const.dir=="=="] <- "="
+  mylp <- make.lp(nrow(const.mat),n)
+  set.rhs(mylp,const.rhs)
+  set.constr.type(mylp,const.dir)
+  for (i in 1:n) set.column(mylp,i,const.mat[,i])
+#  set.bounds(mylp,lower=rep(vmin,n),upper=rep(vmax,n))
+  set.objfn(mylp,objective.in)
+  lp.control(mylp,presolve=c("lindep","rows","rowdominate"),
+             sense=direction,timeout=10,verbose="neutral")
+  status <- solve(mylp)
+  list(solution=if (status==0) get.variables(mylp) else NA, status=status,
+       objval=if (status==0) get.objective(mylp) else NA)
+}
 
+#' @importFrom Rglpk Rglpk_solve_LP
+#' @importFrom lpSolve lp
+lpsolve <- function(direction,objective.in,const.mat,const.rhs,const.dir,
+                    not.fixed=NULL,scale=196L,tol.lp=1e-13,
+                    verbose=TRUE,debug=FALSE,check.min=FALSE,...) {
+  tol_mul <- 1 + sqrt(.Machine$double.eps)
+  rglpk <- Rglpk_solve_LP(obj=objective.in,mat=const.mat,rhs=const.rhs,         # 1st try: solve lp via Rglpk
+                          dir=const.dir,max=isTRUE(direction=="max"),
+                          control=list(tm_limit=5000,presolve=TRUE))
+  rglpk$objval <- rglpk$optimum
+  dglpk <- lp_diag(objective.in,const.mat,const.rhs,const.dir,rglpk)
+  mglpk <- if (check.min)                                                       # variable defined as minimum indeed minimal?
+             isTRUE(rglpk$solution[length(rglpk$solution)] <=
+                      min(rglpk$solution[not.fixed]) * tol_mul) else TRUE
+  sglpk <- isTRUE(rglpk$status==0)
+  score.glpk <- (!mglpk) + (!sglpk) + max(dglpk[2:3])
+  if (score.glpk > tol.lp) {                                                    # minimum not ok or status not ok or constraints violated?
+    rlpA <- lp3(objective.in,const.mat=const.mat,const.rhs=const.rhs,           # 2nd try: solve lp via lpSolveAPI
+                const.dir=const.dir,direction=direction,scale=scale)
+    dlpA <- lp_diag(objective.in,const.mat,const.rhs,const.dir,rlpA)
+    mlpA <- if (check.min)                                                      # variable defined as minimum indeed minimal?
+               isTRUE(rlpA$solution[length(rlpA$solution)] <=
+                        min(rlpA$solution[not.fixed]) * tol_mul) else TRUE
+    slpA <- isTRUE(rlpA$status==0)
+    score.lpA <- (!mlpA) + (!slpA) + max(dlpA[2:3])
+    if (score.lpA > tol.lp) {                                                   # minimum not ok or status not ok or constraints violated?
+      rlp <- lp(objective.in,const.mat=const.mat,const.rhs=const.rhs,           # 3rd try: solve lp via lpSolve
+                const.dir=const.dir,direction=direction,scale=scale)
+      dlp <- lp_diag(objective.in,const.mat,const.rhs,const.dir,rlp)
+      mlp <- if (check.min)                                                     # variable defined as minimum indeed minimal?
+                 isTRUE(rlp$solution[length(rlp$solution)] <=
+                          min(rlp$solution[not.fixed]) * tol_mul) else TRUE
+      slp <- isTRUE(rlp$status==0)
+      score.lp <- (!mlp) + (!slp) + max(dlp[2:3])
+      if (score.lp > tol.lp) {                                                  # minimum not ok or status not ok or constraints violated?
+        if (min(score.glpk,score.lpA,score.lp)>100*tol.lp) {
+          if (debug) 
+            catn("lp solvers Rglpk, lpSolveAPI and lpSolve failed severely. score: ", min(score.glpk,score.lpA,score.lp))
+        } else if (debug) catn("lp solvers failed.")
+        if (debug) print(rbind("glpk"=dglpk,"lpSolveAPI"=dlpA,"lpSolve"=dlp))
+      } 
+      switch(which.min(c(score.glpk,score.lpA,score.lp)),
+              "1" = rglpk, "2" = rlpA, "3" = rlp)
+    } else rlpA
+  } else rglpk
+}
+
+## linear programs for ratios in target function
+lprsolve <- function(direction = "min", a0, a, d0,d, const.mat, const.dir, 
+                     const.rhs, tol.lp=1e-13, scale=196L,
+                     verbose=FALSE,debug=FALSE,...) {
+  const.mat    <- cbind(c(-const.rhs,d0),rbind(const.mat,d))
+  objective.in <- c(a0,a)
+  const.dir    <- c(const.dir,"==")
+  const.rhs    <- c(rep(0,length(const.rhs)),1)
+  tmp <- lpsolve(objective.in=objective.in,const.mat=const.mat,
+                 const.dir=const.dir,const.rhs=const.rhs,direction=direction,
+                 tol.lp=tol.lp,check.min=FALSE,scale=scale,verbose=verbose,
+                 debug=debug,...)
+  if (tmp$status==0) {
+    if (tmp$solution[1]>0) tmp$solution[-1]/tmp$solution[1] else 
+                           rep(0,length(a))
+  } else rep(NA,length(a))
+}
 
 # new version of PUFAS which allows for inequality constraints as well as 
 #   checking for unique optimal solution (default) and for unique feasible 
 #   solution (by setting optimal=FALSE)
-#' @importFrom lpSolve lp
-PUFAS <- function(objective,const.mat,const.rhs,const.dir,solution,tol=0,
+pufas <- function(objective.in,const.mat,const.rhs,const.dir,solution,tol=0,
                   do.check=FALSE,tol.check=tol,tol.cond=.Machine$double.eps,
-                  optimal=TRUE,...) {
-	# x is an optimal basic (!) solution of max objective x 
-	# s.t. const.mat x = const.rhs, x >= 0
-	# Appa (2002): solve linear program max d x s.t. const.mat x = const.rhs, 
-	#              objective x = objective solution, x >= 0, with d = 1 for 
-	#              zero components of solution and 0 else
-	
-	if (do.check && !(rcond(const.mat[,solution>tol.check])>tol.cond)) return(NA) # check whether given solution is a basis solution, return NA else
+                  optimal=TRUE,scale=196L,verbose=FALSE,debug=FALSE,...) {
+  # x is an optimal basic (!) solution of max objective x 
+  # s.t. const.mat x = const.rhs, x >= 0
+  # Appa (2002): solve linear program max d x s.t. const.mat x = const.rhs, 
+  #              objective x = objective solution, x >= 0, with d = 1 for 
+  #              zero components of solution and 0 else
+  
+  if (do.check && !(rcond(const.mat[,solution>tol.check])>tol.cond)) return(NA) # check whether given solution is a basis solution, return NA else
 
-	eqs <- const.dir %in% c("=","==")
-	ineq_less <- const.dir %in% c("<","<=")
-	ineq_more <- const.dir %in% c(">",">=")
-	mat_slack <- const.mat
-	mat_slack[eqs,] <- 0
-	mat_slack[ineq_more,] <- -mat_slack[ineq_more,]
-	slack_zero <- rep(NA,nrow(const.mat))
-	slack_zero[eqs] <- FALSE
-	slack_zero[ineq_less] <- ( const.mat[ineq_less,] %*% 
+  eqs       <- const.dir %in% c("=","==")
+  ineq_less <- const.dir %in% c("<","<=")
+  ineq_more <- const.dir %in% c(">",">=")
+  mat_slack <- const.mat
+  mat_slack[eqs,] <- 0
+  mat_slack[ineq_more,] <- -mat_slack[ineq_more,]
+  slack_zero      <- rep(NA,nrow(const.mat))
+  slack_zero[eqs] <- FALSE
+  slack_zero[ineq_less] <- ( const.mat[ineq_less,] %*% 
                                               solution >= const.rhs[ineq_less] )
-	slack_zero[ineq_more] <- ( const.mat[ineq_more,] %*% 
+  slack_zero[ineq_more] <- ( const.mat[ineq_more,] %*% 
                                               solution <= const.rhs[ineq_more] )
-	
-	obj.new <- 1*(solution<=tol)-colSums(mat_slack[slack_zero,,drop=FALSE])
-	
-	if (optimal)
-	{
-		mat.new <- rbind(const.mat,objective)
-		new.rhs <- c(const.rhs,sum(objective*solution))
-		if (length(const.dir)==1) const.dir <- rep(const.dir,nrow(const.mat))
-		new.dir <- c(const.dir,"==")
-	} else
-	{
-		mat.new <- const.mat
-		new.rhs <- const.rhs
-		new.dir <- const.dir
-	}
-	new_lp_res <- lp(direction="max",objective.in=obj.new,const.mat=mat.new,
-						const.rhs=new.rhs,const.dir=new.dir,...)
-	# print(new_lp_res$solution)			   
-	if (new_lp_res$status==3) return(FALSE)                                       # if new_lp is unbounded, then there are many alternative solutions
-	if (new_lp_res$status!=0) return(NA)
-	# max(abs(solution-new_lp_res$solution))<=tol                                 # return TRUE if no new solution has been found
-	new_slack_zero <- rep(NA,nrow(const.mat))
-	new_slack_zero[eqs] <- FALSE
-	new_slack_zero[ineq_less] <- ( const.mat[ineq_less,] %*% 
+  
+  obj.new <- 1*(solution<=tol)-colSums(mat_slack[slack_zero,,drop=FALSE])
+  
+  if (optimal) {
+    mat.new <- rbind(const.mat,objective.in)
+    new.rhs <- c(const.rhs,sum(objective.in*solution))
+    if (length(const.dir)==1) const.dir <- rep(const.dir,nrow(const.mat))
+    new.dir <- c(const.dir,"==")
+  } else {
+    mat.new <- const.mat
+    new.rhs <- const.rhs
+    new.dir <- const.dir
+  }
+
+  new_lp_res <- lpsolve(objective.in=obj.new,const.mat=mat.new,
+                        const.rhs=new.rhs,const.dir=new.dir,direction="max",
+                        verbose=verbose,debug=debug,scale=scale,...)
+
+# if (new_lp_res$status==3) return(FALSE)                                       # if new_lp is unbounded, then there are many alternative solutions, FIX ME!!!
+  if (new_lp_res$status!=0) return(NA)
+  new_slack_zero      <- rep(NA,nrow(const.mat))
+  new_slack_zero[eqs] <- FALSE
+  new_slack_zero[ineq_less] <- ( const.mat[ineq_less,] %*% 
                                    new_lp_res$solution >= const.rhs[ineq_less] )
-	new_slack_zero[ineq_more] <- ( const.mat[ineq_more,] %*% 
+  new_slack_zero[ineq_more] <- ( const.mat[ineq_more,] %*% 
                                    new_lp_res$solution <= const.rhs[ineq_more] )
-	all(new_lp_res$solution[solution<=tol]<=tol) && 
+  all(new_lp_res$solution[solution<=tol]<=tol) && 
     all( !slack_zero | new_slack_zero)
 }
+
+################################################################################
+################################################################################
+# Helper functions for evaluating and improving solutions of linear programs   #
+################################################################################
+################################################################################
   
+max_error <- function(a,b,subset=NULL,direction="==",correct="none") {
+  if (!is.null(subset)) { a <- a[subset]; b <- b[subset] }
+  abserr <- switch(direction,
+                   "==" = abs(a-b),"<=" = pmax(a-b,0),">=" = pmax(b-a,0))
+  base   <- switch(correct,
+                   "none" = pmax(abs(a),abs(b)),"a"=abs(a),"b"=abs(b))
+  relerr <- ifelse(base==0,Inf,abserr/base)
+  max(pmin(abserr,relerr))
+}
+
+lp_diag <- function(objective.in,const.mat,const.rhs,const.dir,lpres) {
+  if (is.null(lpres$solution)) {
+    sapply(lpres, function(x) lp_diag(objective.in,const.mat,const.rhs,
+                                      const.dir,x$solution)) 
+  } else {
+    if ((lpres$status==0)&&(length(lpres$solution)==ncol(const.mat))) {
+      obj     <- sum(objective.in*lpres$solution)
+      lhs     <- const.mat%*%lpres$solution
+      eqmax   <- max_error(lhs,const.rhs,subset=(const.dir=="=="))
+      ineqmax <- max(max_error(lhs,const.rhs,subset=(const.dir=="<="),
+                               direction="<="),
+                     max_error(lhs,const.rhs,subset=(const.dir==">="),
+                               direction=">="))
+      minimum <- min(lpres$solution[-length(lpres$solution)])
+      target  <- lpres$solution[length(lpres$solution)]
+    } else obj <- lhs <- eqmax <- ineqmax <- minimum <- target <- Inf  
+    c("objective"=obj,"eqmaxinf"=eqmax,"ineqmaxinf"=ineqmax,
+      "status"=lpres$status,"minimum"=minimum,"target"=target)
+  }
+}
+
+sanitize_w <- function(w,tol=1e-14) {
+  if (is.matrix(w)) apply(w,2,function(x) sanitize_w(x,tol=tol)) else {
+    w[w<tol] <- 0
+    w/sum(w)
+  }
+}
+
+sanitize_v <- function(v,X,Z,trafo.v,lb=1e-8,rel.tol=1e-3,tol.lpq=1e-13,
+                       tol.loss=1e-12,verbose=FALSE,debug=FALSE) {
+  v <- v/max(v)
+  check_lp <- function(v,w) {
+    M0   <- M(w,X,trafo.v)
+    K    <- ncol(M0)
+    J    <- nrow(M0)
+    const.mat <- M0
+    const.rhs <- rep(0,nrow(M0))
+    const.dir <- ifelse(w==0,">=","==")
+    lhs     <- const.mat%*%v
+    eqmax   <- max(c(0,abs(lhs-const.rhs)[const.dir=="=="]))
+    ineqmax <- max(c(0,(lhs-const.rhs)[const.dir=="<="],
+                       (const.rhs-lhs)[const.dir==">="]))
+    max(eqmax,ineqmax)
+  }
+  
+  if (any(is.na(v))) return(v)
+  oldv.w <- wnnlsExt(v,X,NULL,trafo.v,return.w=TRUE)
+  oldv.l <- lossDep(Z,oldv.w)
+  newv <- v
+  newv[v<lb*(1+rel.tol)] <- lb
+  newv[v>1*(1-rel.tol)]  <- 1
+  newv.w <- wnnlsExt(newv,X,NULL,trafo.v,return.w=TRUE)
+  newv.l <- lossDep(Z,newv.w)
+
+  if (debug) catn("sanitize_v: old v: ",oldv.l,", new v: ",newv.l,
+                  ", change new vs. old: ",newv.l-oldv.l)
+
+  if ((oldv.l>0)&&(min((newv.l-oldv.l)/oldv.l,newv.l-oldv.l)<tol.loss)&&
+      (check_lp(newv,newv.w)-check_lp(v,oldv.w)<tol.lpq)) newv else v
+}
+
+sanitize_res <- function(res,X,Z,trafo.v,lb=1e-8,rel.tol=1e-3,tol.lpq=1e-13,
+                         tol.loss=1e-12,verbose=FALSE,debug=FALSE) {
+  res$v <- res$v/max(res$v)
+  check_lp <- function(v,w) {
+    M0   <- M(w,X,trafo.v)
+    K    <- ncol(M0)
+    J    <- nrow(M0)
+    const.mat <- M0
+    const.rhs <- rep(0,nrow(M0))
+    const.dir <- ifelse(w==0,">=","==")
+    lhs     <- const.mat%*%v
+    eqmax   <- max(c(0,abs(lhs-const.rhs)[const.dir=="=="]))
+    ineqmax <- max(c(0,(lhs-const.rhs)[const.dir=="<="],
+                       (const.rhs-lhs)[const.dir==">="]))
+    max(eqmax,ineqmax)
+  }
+  
+  if (any(is.na(res$v))) return(res)
+  wnames <- names(res$w)
+  res$w  <- wnnlsExt(res$v,X,NULL,trafo.v,return.w=TRUE)
+  res$loss.v <- lossDep(Z,res$w)
+  res$rmspe  <- sqrt(res$loss.v)
+  newv <- res$v
+  newv[res$v<lb*(1+rel.tol)] <- lb
+  newv[res$v>1*(1-rel.tol)]  <- 1
+  newv.w <- wnnlsExt(newv,X,NULL,trafo.v,return.w=TRUE)
+  newv.l <- lossDep(Z,newv.w)
+
+  if (debug) catn("sanitize_res: old v: ",res$loss.v,", new v: ",newv.l,
+                  ", change new vs. old: ",newv.l-res$loss.v)
+
+  if ((res$loss.v>0)&&
+      (min((newv.l-res$loss.v)/res$loss.v,newv.l-res$loss.v)<tol.loss)&&
+      (check_lp(newv,newv.w)-check_lp(res$v,res$w)<tol.lpq)) {
+    res$w <- newv.w
+    res$v <- newv
+    res$loss.v <- newv.l
+    res$rmspe  <- sqrt(res$loss.v)
+  }
+  names(res$w) <- wnames
+  res
+}
+
+vdiff <- function(v) {
+  n <- ncol(v)
+  if (n==1) return(0)
+  idx   <- expand.grid(1:n,1:n)
+  idx   <- idx[idx[,1]<idx[,2],,drop=FALSE]
+  diffs <- apply(idx,1,function(x) 
+                         max(pmax(abs(v[,x[1]]-v[,x[2]]),
+                             abs(v[,x[1]]-v[,x[2]])/(v[,x[1]]+v[,x[2]]))))
+  max(diffs)
+}
+
+wdiff <- function(v) {
+  n <- ncol(v)
+  if (n==1) return(0)
+  idx   <- expand.grid(1:n,1:n)
+  idx   <- idx[idx[,1]<idx[,2],,drop=FALSE]
+  diffs <- apply(idx,1,function(x) max(abs(v[,x[1]]-v[,x[2]])))
+  max(diffs)
+}
+
+bestifnear <- function(v,X,Z,trafo.v,tol=1e-3) {
+  if(vdiff(v)<tol) {
+    losses <- apply(v,2,function(x) {
+      w <- wnnlsExt(x,X,NULL,trafo.v,return.w=TRUE)
+      lossDep(Z,w)
+    })
+    v[,which.min(losses)]
+  } else v[,1]
+}

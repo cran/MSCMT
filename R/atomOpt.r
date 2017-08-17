@@ -227,7 +227,8 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
       w <- do.call(inner.optim,args=c(list(v=opt.v),fn.min.par,
                    return.w=TRUE))
       names(w) <- colnames(X)
-      res  <- list(w=w, v=opt.v, loss.v=rmspe^2, rmspe=rmspe, conv=conv)
+      res  <- list(w=w, v=trafo.inner(opt.v), loss.v=rmspe^2, rmspe=rmspe, 
+                   conv=conv)
     } else {
       for (i in idx) {
         if (opt.separate) {
@@ -252,7 +253,7 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
                        do.call(inner.optim,args=c(list(v=v),fn.min.par))
         obj.fun.name <- if (outer.optim %in% c("DEopt","PSopt")) "OF" 
                         else if (outer.optim %in% c("nloptr","isres","crs")) 
-						  "eval_f" 
+                                                        "eval_f" 
                         else if (outer.optim=="ga")     "fitness"
                         else if (outer.optim=="soma")   "costFunction"
                         else "fn"                      
@@ -345,25 +346,48 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
                " generations/iterations.")
         if (rmspe < best) {
           best <- rmspe
-          res  <- list(w=w, v=opt.v, loss.v=rmspe^2, rmspe=rmspe, conv=conv)
+          res  <- list(w=w, v=trafo.inner(opt.v), loss.v=rmspe^2, rmspe=rmspe, 
+                       conv=conv)
         }
       }
     }
+    res <- sanitize_res(res,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
+                        debug=debug)
     w <- res$w
-    if (exists_v(w,X,trafo.v,outer.args1$lb)) {
-      res$v <- if (single.v) 
-                 single_v(w,X,trafo.v,outer.args1$lb) else
-                 all_v(w,X,trafo.v,outer.args1$lb)
-      res$single.v <- single.v
-    } else { 
-      warning("Optimal V could not be verified, using 'backup' V") 
-      res$v           <- cbind("backup"=trafo.inner(opt.v))
-      rownames(res$v) <- trafo.v$names.v
-      res$single.v    <- NA
-    } 
+    v <- res$v
+    if (!check_v(v,w,X,Z,trafo.v,lb=outer.args1$lb,verbose=verbose,
+                 debug=debug)) {
+      if(verbose) catn("optimizer's v violates optimality constraints!") else 
+                  warning("optimizer's v violates optimality constraints")
+    }
+    v_minlossw  <- loss_v(w,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
+                          debug=debug)
+    minlossw_ok <- check_v(v_minlossw,w,X,Z,trafo.v,outer.args1$lb,
+                           verbose=verbose,debug=debug)
+    v_maxorder  <- single_v(w,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
+                            debug=debug)
+    maxorder_ok <- check_v(v_maxorder,w,X,Z,trafo.v,outer.args1$lb,
+                           verbose=verbose,debug=debug)
+    if (minlossw_ok) {
+      v_minlossw <- bestifnear(cbind(v_minlossw,v),X,Z,trafo.v)
+      if (maxorder_ok) 
+        v_maxorder <- bestifnear(cbind(v_maxorder,v_minlossw),X,Z,trafo.v) else
+        v_maxorder <- bestifnear(cbind(v,v_minlossw),X,Z,trafo.v)
+    } else {
+      v_minlossw <- v
+      if (maxorder_ok) 
+        v_maxorder <- bestifnear(cbind(v_maxorder,v),X,Z,trafo.v) else
+        v_maxorder <- v
+    }
+    res$v <- if (single.v) cbind("max.order"=v_maxorder) else
+                           cbind(if (debug) "optimizer"=v,
+                                 "min.loss.w"=v_minlossw,
+                                 "max.order"=v_maxorder)
+    res$single.v <- single.v
+    rownames(res$v) <- trafo.v$names.v
   
-    if (verbose) catn("Optimization finished (",globals$NRUNS,
-                      " calls to inner optimizer), rmspe: ",res$rmspe,", mspe: ",
+    if (verbose) catn("Optimization finished (",globals$NRUNS," calls to ",
+                      "inner optimizer), rmspe: ",res$rmspe,", mspe: ",
                       res$loss.v,".")
   })[["user.self"]]  
   c(res,list(ncalls.inner=globals$NRUNS,user.self=timing))

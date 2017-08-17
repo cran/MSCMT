@@ -51,6 +51,24 @@ wnnlsOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,
   if (return.w) w else lossDep(Z,w)
 }
 
+wnnlsExt <- function(v,X,Z,trafo.v,debug=FALSE,return.w=FALSE,
+                     check.ambiguity=FALSE,...) {
+  if (any(is.na(v))) return(Inf) else tv  <- trafo.v$trafo(v)                   # needed for nlminb to work. Better drop nlminb-support for speed reasons?
+  ME  <- as.integer(1L)
+  MA  <- as.integer(sum(trafo.v$len.v))
+  N   <- as.integer(ncol(X))
+  MDW <- as.integer(ME+MA)
+  IWORK <- integer(MDW+N)
+  IWORK[1:2] <- as.integer(c(MDW+5*N,MDW+N))
+  sol <-.Fortran(C_wnnls,W=.Call(C_prepareW4,X,tv),
+                 MDW=MDW,ME=ME,MA=MA,N=N,L=0L,PRGOPT=1.0,X=double(N),
+                 RNORM=double(1),MODE=integer(1),IWORK=IWORK,
+                 WORK=double(MDW+5*N))
+  if ((any(is.infinite(sol$X))) || (sol$MODE>0)) warning("error in wnnls")                
+  w   <- if (check.ambiguity) improveZw(Z,X,sol$X) else sol$X
+  if (return.w) w else lossDep(Z,w)
+}
+
 LowRankQPOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,max.iter=1000L,
                          ...) {
   if (any(is.na(v))) return(Inf) else tv  <- trafo(v)                           # needed for nlminb to work. Better drop nlminb-support for speed reasons?

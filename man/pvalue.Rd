@@ -69,4 +69,3 @@ on Synthetic Control Methods.
  vignette("WorkingWithMSCMT",package="MSCMT")
 }
 }
-

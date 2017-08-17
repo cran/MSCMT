@@ -7,6 +7,7 @@ vignette: >
 output: 
   html_vignette:
     toc: true
+bibliography: ../inst/REFERENCES.bib
 ---
 
 ```{r, echo = FALSE}
@@ -22,9 +23,7 @@ knitr::opts_chunk$set(
 ## Introduction
 
 Based on the `basque` dataset and the corresponding example of package `Synth`, this vignette illustrates the usage of package `MSCMT`.
-Thereby, parts of [AER 2003]^[Abadie, Alberto and Javier Gardeazabal. 2003. "The Economic Costs of Conflict: A Case Study of the Basque Country". American Economic Review, 93(1): 113-132.] are reproduced in this example.
-
-[AER 2003]: https://www.aeaweb.org/articles?id=10.1257/000282803321455188 "Abadie and Gardeazabal (2003)"
+Thereby, parts of @Abadie2003 are reproduced in this example.
 
 ## Preparing the Data
 
@@ -255,3 +254,6 @@ In future releases of this package, additional vignettes will (probably) be adde
 *   applications of **M**SCM and **M**SCM**T**,
 *   alternatives for the optimizers and its parameters,
 *   more functionality of the `ggplot` method.
+*   the use of cross-validation, see @CV.
+
+## References

@@ -31,4 +31,3 @@ This aggregated information is used by the \code{\link{ggplot.mscmt}} and
 \code{\link{print.mscmt}} methods to present summaries of the different
 results.
 }
-

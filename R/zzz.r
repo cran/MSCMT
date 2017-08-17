@@ -5,7 +5,7 @@
     "# MSCMT version ",version,"\n#\n",
     "# When publishing results obtained using this package,\n",
     "# the original authors are to be cited as:\n",
-    "# Martin Becker and Stefan Kloessner (2017). \n",
+    "# Martin Becker and Stefan Kl\u00F6\u00DFner (2017). \n",
     "# MSCMT: Multivariate Synthetic Control Method Using Time Series. \n",
     "# R package version ",version,"."
   ))

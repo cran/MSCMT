@@ -44,7 +44,8 @@ prepare <- function(dat, predictors, predictors.op = "mean", special.predictors,
 		for (i in seq_along(vars)) {
       if (is.list(times[[i]])) {
         if (!is.null(betagamma)) 
-          if (sum(sapply(times[[i]],length))!=length(betagamma[[i]])) 
+          if ((length(betagamma[[i]])>1) && 
+              (sum(sapply(times[[i]],length))!=length(betagamma[[i]]))) 
             stop("beta/gamma probably has incorrect length")
         tmp <- NULL
         for (j in seq_along(times[[i]])) 
@@ -112,11 +113,14 @@ prepare <- function(dat, predictors, predictors.op = "mean", special.predictors,
 	tmpZu <- BuildMatrix(dat,dependent,time.optimize.ssr,controls.identifier,
                        treatment.identifier,scale=FALSE,alpha=alpha,
                        betagamma=beta)
-
+  storage.mode(tmpX$X0) <- storage.mode(tmpZ$X1) <- storage.mode(tmpZ$Z0) <- 
+    storage.mode(tmpX$Z0) <- "double"
   res <- list(X0=tmpX$X0,X1=tmpX$X1,Z0=tmpZ$X0,Z1=tmpZ$X1,trafo.v=tmpX$trafo.v,
               Z.scaled=scale.Z)
-  if (scale.Z) res <- c(res,
-                        list(Z0u=tmpZu$X0,Z1u=tmpZu$X1,
-                        Z.len=tmpZu$trafo.v$len.v))
+  if (scale.Z) {
+    storage.mode(tmpZu$X0) <- storage.mode(tmpZu$X1) <- "double"
+    res <- c(res,list(Z0u=tmpZu$X0,Z1u=tmpZu$X1,
+                      Z.len=tmpZu$trafo.v$len.v))
+  }
   res
 }

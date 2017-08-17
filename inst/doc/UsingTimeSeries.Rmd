@@ -7,6 +7,7 @@ vignette: >
 output: 
   html_vignette:
     toc: true
+bibliography: ../inst/REFERENCES.bib
 ---
 
 ```{r, echo = FALSE}
@@ -25,7 +26,7 @@ This vignette illustrates the syntax of SCM**T** models. For a more general intr
 
 Although SCM models are usually based on time series data of predictor variables, standard SCM estimation does not exploit this particular characteristic. 
 Instead, time series data of predictors are either aggregated, mostly by calculating (a bunch of) means, or every instant of time is considered as a separate input variable with individual predictor weight.
-With package `MSCMT`, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM**T**.
+With package `MSCMT`, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM**T**, see @KP16.
 
 This vignette illustrates the syntax of SCM**T** models and how SCM**T** models may lead to more meaningful predictor weights without drawbacks concerning the model fit. 
 
@@ -45,9 +46,7 @@ for (item in c("school.illit", "school.prim", "school.med", "school.higher"))
   Basque[[item]] <- 6 * 100 * t(t(Basque[[item]]) / school.sum)
 ```
 
-We also replicate model specification of the [main vignette](WorkingWithMSCMT.html) which reproduces the model in [AER 2003]^[Abadie, Alberto and Javier Gardeazabal. 2003. "The Economic Costs of Conflict: A Case Study of the Basque Country". American Economic Review, 93(1): 113-132.]:
-
-[AER 2003]: https://www.aeaweb.org/articles?id=10.1257/000282803321455188 "Abadie and Gardeazabal (2003)"
+We also replicate model specification of the [main vignette](WorkingWithMSCMT.html) which reproduces the model in @Abadie2003:
 
 ```{r}
 treatment.identifier <- "Basque Country (Pais Vasco)"
@@ -114,3 +113,5 @@ all other predictor weights are at least `r format(min(res3$v[,"max.order"]),sci
 This vignette illustrated that considering predictors as *true* time series (without intermediate aggregation) may have various benefits. 
 In this example, by excluding the mean of the lagged dependent variable from the set of economic predictors and considering all other predictors as time series,
 more meaningful predictor weights could be obtained and the dependent variable's fit could be slightly improved, too.
+
+## References

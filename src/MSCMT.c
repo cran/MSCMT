@@ -36,4 +36,5 @@ static R_FortranMethodDef fortranMethods[] = {
 // Register native C and Fortran routines
 void R_init_MSCMT(DllInfo *info) {
   R_registerRoutines(info, NULL, callMethods, fortranMethods, NULL);
+  R_useDynamicSymbols(info, FALSE);
 }

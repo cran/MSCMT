@@ -53,4 +53,3 @@ if (require("Synth")) {
   head(Basque$gdpcap)
 }
 }
-

@@ -76,4 +76,3 @@ synthetic values, as well as plots for placebo studies.
 Consider using \code{\link{ggplot.mscmt}} instead, which is the preferred
 plot method and has more functionality than \code{\link{plot.mscmt}}.
 }
-

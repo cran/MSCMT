@@ -28,13 +28,15 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
   solution.type <- "normal"
   std.v <- match.arg(std.v)
   X     <- X0 - drop(X1)                                                        # X0, X1 (Z0, Z1) have to be scaled already!
-	Z     <- Z0 - drop(Z1)                                                            
+  Z     <- Z0 - drop(Z1)                                                            
   nW    <- ncol(X)
   cnX   <- colnames(X)
   storage.mode(X) <- "double"
   storage.mode(Z) <- "double"
-  comb <- NULL
-
+  comb   <- NULL
+  gRmspe <- NA
+  X.orig <- X; Z.orig <- Z                                                      # make backup of original X&Z 
+  
   if (missing(trafo.v)) {
     if (missing(info.v)) {
       if (missing(n.v))     n.v     <- nrow(X)
@@ -69,7 +71,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     solution.type <- "fixed"  
     if (is.null(outer.opar$v)) {
       warning("element v of outer.opar is missing, using constant weights.")
-      outer.opar$v <- rep(1,nrow(X))
+      outer.opar$v <- rep(1,n.v)
     }  
     v <- cbind("fixed"=outer.opar$v)
   }
@@ -94,7 +96,12 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     solution.type <- "artificial"
     if (is.null(outer.opar$w)) 
       stop("outer.opar$w must be provided when outer.optim=='none'")
-    v <- outer.opar$v                                                           # may be NULL
+#    v     <- outer.opar$v                                                           # may be NULL
+    v     <- cbind("fixed"=outer.opar$v)
+    w     <- blow(outer.opar$w,cnX)
+    rmspe <- sqrt(lossDep(Z,w))
+    res   <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,conv=0,single.v=single.v,
+                  ncalls.inner=0)
   }
 
   # initialize variables for benchmarking if applicable
@@ -112,7 +119,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
   for (i in seq_len(nW)) is.sunny[i] <- isSunny(e(i,nW),X)
   nS <- sum(is.sunny)
 
-  if (nS<=1) {                                                                  # at most one 'sunny' donor, special cases!
+  if (nS<=1&&(!any(outer.optim == "none"))) {                                   # at most one 'sunny' donor, special cases!
     if (nS==0) {                                                                # no 'sunny' donors
       if (verbose) catn("No 'sunny' donors!")
       solution.type <- "nosunny"
@@ -131,8 +138,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
   } else {                                                                      # at least two 'sunny' donors, standard case
     if (verbose) catn("Number of 'sunny' donors: ",nS," out of ",nW)
 
-    # make backup of original X&Z and restrict optimization to sunny donors
-    X.orig <- X; Z.orig <- Z
+    # restrict optimization to sunny donors
     X <- X[,is.sunny,drop=FALSE]; Z <- Z[,is.sunny,drop=FALSE] 
 
     ############################
@@ -140,7 +146,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     ############################
     if (check.global) {
       res <- checkGlobalOpt(X.orig,Z.orig,trafo.v,outer.args1$lb,               # check for feasibility of 'true' outer optimum
-                            single.v=single.v)
+                            single.v=single.v,verbose=verbose,debug=debug)
       gRmspe <- res$rmspe
       if (!is.na(res$conv)) {
         if (verbose) catn("Unrestricted outer optimum (obtained by ignoring all ",
@@ -155,10 +161,14 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
                           "respecting the predictors.")
       }
       if (do.optimize) {                                                        # check for feasibility of 'sunny' outer optimum 
-        res <- checkGlobalOpt(X,Z,trafo.v,outer.args1$lb,single.v=single.v)
-        if (!is.na(res$conv)) do.optimize <- FALSE
+        res <- checkGlobalOpt(X,Z,trafo.v,outer.args1$lb,single.v=single.v,
+                              verbose=verbose,debug=debug)
+        if (!is.na(res$conv)) {
+          do.optimize <- FALSE
+          v <- res$v                                                            # check this !!! XXX changed 2017-04-19
+        }
       }  
-    } else gRmspe <- NA
+    } 
 
     # check availability of packages for inner optimizer
     if ((inner.optim=="ipopOpt")||(inner.optim=="benchmarkOpt"))
@@ -211,7 +221,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
                length(seed)," different seeds.")
         for (i in seq_along(results)) {
           if (verbose&&(length(results)>1)) 
-            catn("Optimization ",i," ouf of ",length(results),":")
+            catn("Optimization ",i," out of ",length(results),":")
           results[[i]] <- 
             atomOpt(cases[[i]],X,Z,trafo.v,single.v,inner.optim,
                     inner.args,outer.args1,starting.values,verbose,
@@ -248,21 +258,28 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
       colnames(all.w) <- colnames(all.v) <- 
         paste0(rep(outer.optim,each=length(seed)),".",
                rep(seed,times=length(outer.optim)))
-      bestrun <- which.min(loss.v)
+      tmploss <- loss.v
+      tmploss[tmploss==0] <- Inf
+      bestrun <- which.min(tmploss)
       if (verbose&&(length(cases)>1)) {
         catn("Best optimization run(s):")
         for (i in bestrun) catn("Run ",i," with optimizer ",
           cases[[i]]$outer.optim," and seed ",cases[[i]]$seed,".")
-      }    
+        if (isTRUE(any(is.infinite(tmploss)))) {
+        catn("Optimization run(s) with problems:")
+        for (i in which(is.infinite(tmploss))) catn("Run ",i," with optimizer ",
+          cases[[i]]$outer.optim," and seed ",cases[[i]]$seed,".")
+        }
+      }
       res     <- results[[bestrun[1]]]               
-    } else {                                                                  # outer optimization not needed
-      if (outer.optim=="none") {
+    } else {                                                                    # outer optimization not needed
+      if (any(outer.optim == "none")) {
         if (is.null(v)) {
           w     <- blow(outer.opar$w,colnames(X))
           rmspe <- sqrt(lossDep(Z,w))
-          if (exists_v(w,X,trafo.v,outer.args1$lb)) {
-            v <- if (single.v) single_v(w,X,trafo.v,outer.args1$lb) else 
-                               all_v(w,X,trafo.v,outer.args1$lb)
+          if (exists_v(w,X,Z,trafo.v,outer.args1$lb)) {
+            v <- if (single.v) single_v(w,X,Z,trafo.v,outer.args1$lb) else 
+                               all_v(w,X,Z,trafo.v,outer.args1$lb)
           } else v <- NA
         } else {
           w     <- blow(outer.opar$w,colnames(X.orig))
@@ -273,14 +290,17 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
                     single.v=single.v,ncalls.inner=0)
       } else if (solution.type!="global") {
         fn.min.par  <- c(list(X=X,Z=Z,trafo=trafo.v$trafo),inner.args)   
-        rownames(v) <- rownames(X)
+        if (!is.matrix(v)) {                                                    # check this !!! XXX changed 2017-04-19
+          v <- cbind(v)
+          colnames(v) <- outer.optim
+        }  
+        v <- v[,apply(v,2,function(x) !any(is.na(x))),drop=FALSE]
+        rownames(v) <- names.v
         mspe <- do.call(inner.optim,args=c(list(v=as.double(drop(v))),
                                            fn.min.par))
         w    <- do.call(inner.optim,args=c(list(v=as.double(drop(v))),
                                            fn.min.par,return.w=TRUE))
         names(w) <- colnames(X)
-        v <- cbind(v)
-        colnames(v) <- outer.optim
         res  <- list(w=w, v=v, loss.v=mspe, rmspe=sqrt(mspe), conv=0,
                      single.v=TRUE,ncalls.inner=2)
       }               
@@ -292,18 +312,34 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     res$v <- t(as.matrix(res$v))
     rownames(res$v) <- trafo.v$names.v
   }  
-  res$loss.w      <- apply(res$v,2,function(v) lossPred(X,res$w,v,trafo.v))
+
+  ws    <- apply(res$v,2,function(x) wnnlsExt(x,X.orig,NULL,trafo.v,
+                                              return.w=TRUE))
+  ws    <- sanitize_w(ws)
+  loss  <- apply(ws,2,function(w) lossDep(Z.orig,w))
+  idx   <- which.min(loss)[1]
+  res$loss.v   <- loss[idx]
+  res$rmspe    <- sqrt(res$loss.v)
+  rownames(ws) <- cnX
+  res$w        <- ws[,idx]
+  res$loss.w   <- apply(res$v,2,function(v) lossPred(X.orig,res$w,v,trafo.v))
   res$trafo.v     <- trafo.v
-  res$w           <- blow(res$w,cnX)
   res$outer.rmspe <- gRmspe
   
   if (verbose) {
     catf("Final rmspe: ",res$rmspe,", mspe (loss v): ",res$rmspe^2,"\n",                           
          "Optimal weights:")
     print(ess(res$w))
-    cat0("\n")
-  }	
-  
+  }
+  if (debug) {
+    print(res$v)
+    print(res$loss.w)
+    print(rbind(loss=loss,
+                increase=pmin((loss-min(loss))/min(loss),loss-min(loss))),
+          digits=16)
+  }
+  if (verbose||debug) cat("\n")
+
   if (inner.optim=="benchmarkOpt") {                                           
     c(res,list(solution.type=solution.type,
       raise_wnnls=globals$raise_wnnls[1:globals$NRUNS],

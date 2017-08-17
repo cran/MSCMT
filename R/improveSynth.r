@@ -143,7 +143,7 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
 
   tmp    <- multiOpt(X,0,Z,0,outer.par=list(lb=lb),verbose=FALSE,
                      seed=seed,...)
-  v      <- favourite_v(tmp$w,X,tmp$trafo.v,lb=lb)
+  v      <- favourite_v(tmp$v,tmp$w,X,Z,tmp$trafo.v,lb=lb)
   v      <- v/sum(v)
   loss.w <- lossPred(X,tmp$w,v,tmp$trafo.v)
   loss.v <- tmp$rmspe^2
@@ -177,4 +177,46 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
   synth2.out$rgV.optim       <- NULL
        
   invisible(synth2.out)
+}
+
+checkInner <- function(X0,X1,v,w,Z0=NULL,Z1=NULL,tol=sqrt(.Machine$double.eps),
+                       verbose=TRUE,...) {
+  storage.mode(X0) <- storage.mode(X1) <- 
+    storage.mode(Z0) <- storage.mode(Z1) <- "double"
+  Xu  <- cbind(X0,X1)
+  Xs  <- Xu/apply(Xu, 1, sd)
+  X   <- Xs[, -ncol(Xs)] - drop(Xs[, ncol(Xs)])
+  Z   <- if (!is.null(Z0)&&!is.null(Z1)) Z0 - drop(Z1) else NULL
+  ME  <- 1L
+  MA  <- length(v)
+  N   <- ncol(X)
+  MDW <- ME+MA
+  globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
+  globals$IWORK <- integer(MDW+N)
+  globals$WORK  <- double(MDW+5*N)
+  globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
+  globals$RNORM <- double(1)
+  globals$MODE  <- integer(1)
+  globals$X     <- double(N)
+  tv  <- as.numeric(v)
+  sol <-.Fortran(C_wnnls,W=.Call(C_prepareW4,X,tv),
+                 MDW=globals$Ipar[3],ME=globals$Ipar[1],MA=globals$Ipar[2],
+                 N=globals$Ipar[4],L=0L,PRGOPT=1.0,X=globals$X,
+                 RNORM=globals$RNORM,MODE=globals$MODE,IWORK=globals$IWORK,
+                 WORK=globals$WORK)
+  if ((any(is.infinite(sol$X))) || (sol$MODE>0)) 
+    warning("error in inner optimization (wnnls)")                
+  wnew <- sol$X
+  new.loss.w <- lossPred(X,wnew,tv)
+  old.loss.w <- lossPred(X,w,tv)
+  new.loss.v <- if (is.null(Z)) NULL else lossDep(Z,wnew)
+  old.loss.v <- if (is.null(Z)) NULL else lossDep(Z,w)
+  abs.diff   <- old.loss.w-new.loss.w
+  rel.diff   <- abs.diff/new.loss.w
+  changed    <- (abs(rel.diff) > tol) #|| (abs(abs.diff) > tol)
+  if (isTRUE(verbose&&changed))  
+    cat0("Old: ",old.loss.w,", New: ",new.loss.w,", Relative Difference: ",
+         (old.loss.w-new.loss.w)/new.loss.w,"\n")
+  c(old.loss.w=old.loss.w, new.loss.w=new.loss.w, old.loss.v=old.loss.v,
+    new.loss.v=new.loss.v)
 }

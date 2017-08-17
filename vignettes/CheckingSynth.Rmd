@@ -7,6 +7,7 @@ vignette: >
 output: 
   html_vignette:
     toc: true
+bibliography: ../inst/REFERENCES.bib
 ---
 
 ```{r, echo = FALSE}
@@ -24,7 +25,7 @@ knitr::opts_chunk$set(
 This vignette illustrates the usage of `improveSynth`. For a more general introduction to package `MSCMT` see its [main vignette](WorkingWithMSCMT.html).
 
 Estimating an SCM model involves searching for an approximate solution of a nested optimization problem. 
-Although the formulation of the optimization problem is quite simple, finding a (good approximate) solution can be hard for several reasons.
+Although the formulation of the optimization problem is quite simple, finding a (good approximate) solution can be hard for several reasons, see @Mafia and @FastReliable.
 While implementing package `MSCMT` we put a lot of effort into the design of a smart and robust (but still fast) optimization procedure.
 
 Apart from function `mscmt` for the estimation of SCM models based on our model syntax, we also included the convenience function `improveSynth`,
@@ -114,4 +115,6 @@ with a dependent loss of `r round(synth4.out$loss.v,6)``r if(!isTRUE(all.equal(r
 
 Issues with the inner and outer optimizers used in `synth` from package `Synth` may lead to infeasible or suboptimal solutions.
 This vignette illustrated the usage of the convenience function `improveSynth` from package `MSCMT` for checking and potentially improving results obtained from `synth`. 
+
+## References
 

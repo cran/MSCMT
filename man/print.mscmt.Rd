@@ -22,4 +22,3 @@ Nothing useful (function is called for its side effects).
 \details{
 A human-readable summary of \code{mscmt}'s results.
 }
-

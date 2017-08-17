@@ -12,7 +12,7 @@
   what.set, limits = NULL, alpha = 1, alpha.min = 0.1,
   exclude.units = NULL, exclude.ratio = Inf, ratio.type = c("rmspe",
   "mspe"), alternative = c("two.sided", "less", "greater"),
-  draw.points = TRUE, control.name = "control units")
+  draw.points = TRUE, control.name = "control units", size = 1)
 }
 \arguments{
 \item{x}{An object of class \code{"mscmt"}, usually obtained as
@@ -149,6 +149,9 @@ added to the line plots to enhance visibility.}
 
 \item{control.name}{A character string for the naming of the non-treated
 units in placebo plots. Defaults to \code{"control units"}.}
+
+\item{size}{A numerical scalar (default: \code{1}). If \code{draw.points} is
+\code{TRUE} (default), \code{size} specifies the size of the points.}
 }
 \value{
 An object of class \code{\link[ggplot2]{ggplot}}.
@@ -159,8 +162,7 @@ An object of class \code{\link[ggplot2]{ggplot}}.
 }
 \details{
 A unified plot method for gaps plots, comparison of treated and synthetic
-values, as well as plots for placebo studies based on 
+values, as well as plots for placebo studies, based on 
 \code{\link[ggplot2]{ggplot}}. \code{\link{ggplot.mscmt}} is the preferred
 plot method and has more functionality than \code{\link{plot.mscmt}}.
 }
-

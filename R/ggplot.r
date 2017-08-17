@@ -4,7 +4,7 @@
 #' \code{\link[ggplot2]{ggplot}}.
 #'
 #' A unified plot method for gaps plots, comparison of treated and synthetic
-#' values, as well as plots for placebo studies based on 
+#' values, as well as plots for placebo studies, based on 
 #' \code{\link[ggplot2]{ggplot}}. \code{\link{ggplot.mscmt}} is the preferred
 #' plot method and has more functionality than \code{\link{plot.mscmt}}.
 #'
@@ -113,6 +113,8 @@
 #' added to the line plots to enhance visibility.
 #' @param control.name A character string for the naming of the non-treated
 #' units in placebo plots. Defaults to \code{"control units"}.
+#' @param size A numerical scalar (default: \code{1}). If \code{draw.points} is
+#' \code{TRUE} (default), \code{size} specifies the size of the points.
 #' @return An object of class \code{\link[ggplot2]{ggplot}}.
 #' @importFrom ggplot2 ggplot aes_string geom_line labs scale_x_date geom_hline
 #' @importFrom ggplot2 scale_colour_manual scale_linetype_manual 
@@ -133,7 +135,8 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                          alpha=1,alpha.min=0.1,exclude.units=NULL,
                          exclude.ratio=Inf,ratio.type=c("rmspe","mspe"),
                          alternative=c("two.sided", "less", "greater"),
-                         draw.points=TRUE,control.name="control units") {
+                         draw.points=TRUE,control.name="control units",
+                         size=1) {
   ratio.type  <- match.arg(ratio.type)                         
   alternative <- match.arg(alternative) 
   if (!missing(what.set)) 
@@ -231,7 +234,7 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
     dat  <- dat[!is.na(dat$pvalue),]
     if (length(what)>1) res <- res + facet_wrap(~which.data,scales="free")
     if (missing(ylab)) ylab <- "p-value"
-    res <- res + geom_point(data=dat,aes_string("date","pvalue")) +
+    res <- res + geom_point(data=dat,aes_string("date","pvalue"),size=size) +
                  scale_y_continuous(limits=c(0,1))
     if (zero.line) res <- res + geom_hline(yintercept=0,colour="grey50")
   }
@@ -284,9 +287,9 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                   colour=unit.name,linetype=unit.name,size=unit.name,
                   alpha=unit.name),na.rm=TRUE)
       if (draw.points) res <- res + 
-        geom_point(data=dat,aes_string("date","values",
+        geom_point(data=dat,size=size,aes_string("date","values",
                    colour=unit.name,size=unit.name,alpha=unit.name),na.rm=TRUE) +
-        geom_point(data=dat[dat$treated=="treated",],
+        geom_point(data=dat[dat$treated=="treated",],size=size,
                    aes_string("date","values",colour=unit.name,size=unit.name,
                    alpha=unit.name),na.rm=TRUE)
       res <- res + 
@@ -305,10 +308,10 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                   colour="treated",linetype="treated",size="treated",
                   alpha=unit.name,group=unit.name),na.rm=TRUE)
       if (draw.points) res <- res + 
-        geom_point(data=dat,aes_string("date","values",
+        geom_point(data=dat,size=size,aes_string("date","values",
                    colour="treated",size="treated",group=unit.name,
                    alpha=unit.name),na.rm=TRUE) + 
-        geom_point(data=dat[dat$treated=="treated",],
+        geom_point(data=dat[dat$treated=="treated",],size=size,
                    aes_string("date","values",colour="treated",size="treated",
                    alpha=unit.name,group=unit.name),na.rm=TRUE)
       res <- res + 
@@ -319,10 +322,14 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
         scale_size_manual("",values=lwd,
                           labels=c("treated unit",control.name)) +
         scale_alpha_manual("",values=alpha) +                          
-        if (legend) guides(colour=guide_legend(override.aes=list(alpha=1)),
-                           alpha="none") else
-                    guides(colour="none",linetype="none",size="none",
-                           alpha="none")
+        if (legend) {
+          if (missing(col))
+            guides(colour=guide_legend(override.aes=list(alpha=1)),
+                   alpha="none") else
+            guides(colour=guide_legend(override.aes=list(alpha=1,colour=col)),
+                   alpha="none") 
+        } else guides(colour="none",linetype="none",size="none",
+                      alpha="none")
     }  
     if (include.smooth) 
       res <- res + geom_smooth(data=dat[dat$treated=="control",],
@@ -354,7 +361,7 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
 #      if (missing(col)&&bw) col=c("black","grey20")
 #      if (missing(col)&&(!bw)) col=c("red","grey20")
       if (missing(col)) col=rep("black",nunits)
-      if (missing(lty)) lty=rep(1,nunits)                                       # change this, see below?
+      if (missing(lty)) lty=(1:6)[((seq_len(nunits)-1)%%5)+1]                   # changed 2017-02-08
       if (missing(lwd)) lwd=rep(1,nunits)
       if (missing(main)) main=if (length(what)==1) what[[1]] else ""
       if (missing(date.format)) date.format <- 
@@ -391,7 +398,6 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
       dat2 <- dat2[!is.na(dat2$value),]
       if (length(what)>1) res <- res + facet_wrap(~which.data,scales="free")
       if (length(alpha)==1) alpha <- rep(alpha,nunits)
-      lvals <- (1:6)[((seq_len(nunits)-1)%%5)+1]                                # change this, see above?
       res <- res + 
         geom_line(data=dat,aes_string("date","values",colour=unit.name,
                   linetype=unit.name,size=unit.name,alpha=unit.name),
@@ -401,18 +407,27 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                   alpha=unit.name),na.rm=TRUE)
       if (draw.points) res <- res + 
         geom_point(data=dat,aes_string("date","values",colour=unit.name,
-                   size=unit.name,shape=unit.name,alpha=unit.name),
+                   size=unit.name,shape=unit.name,alpha=unit.name),size=size,
                    na.rm=TRUE) +
         geom_point(data=dat[dat$treated=="treated",],
                    aes_string("date","values",colour=unit.name,size=unit.name,
-                   shape=unit.name,alpha=unit.name),na.rm=TRUE) 
+                   shape=unit.name,alpha=unit.name),size=size,na.rm=TRUE) 
+      if (!missing(col)) res <- res + scale_colour_manual(values=col)
       res <- res + 
-        scale_linetype_manual(values=lvals) +
+        scale_linetype_manual(values=lty) +
         scale_size_manual(values=lwd) +
         scale_alpha_manual(values=alpha) +                          
-        if (legend) guides(colour=guide_legend(override.aes=list(alpha=1))) else
-                    guides(colour="none",linetype="none",size="none",
-                           shape="none",alpha="none")    
+        if (legend) {
+          if (missing(col))
+            guides(colour=guide_legend(override.aes=list(alpha=1)),
+                   alpha="none") else
+            guides(colour=guide_legend(override.aes=list(alpha=1,colour=col)),
+                   alpha="none") 
+        } else guides(colour="none",linetype="none",size="none",
+                      alpha="none")
+#        if (legend) guides(colour=guide_legend(override.aes=list(alpha=1))) else
+#                    guides(colour="none",linetype="none",size="none",
+#                           shape="none",alpha="none")    
         if ((type=="comparison")&&
             (length(unique(x$comparison$results$treated.unit))==1))
           res <- res + geom_line(data=dat2,aes_string("date","value"),size=2,
@@ -461,8 +476,10 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
           geom_line(data=dat,aes_string("date","values",colour="ind",size="ind",
                     linetype="ind"),na.rm=TRUE)
         if (draw.points) res <- res + 
+#          geom_point(data=dat,aes_string("date","values",
+#                     colour="ind",size="ind"),na.rm=TRUE)
           geom_point(data=dat,aes_string("date","values",
-                     colour="ind",size="ind"),na.rm=TRUE)
+                     colour="ind"),size=size,na.rm=TRUE)
         res <- res + 
           scale_colour_manual("",values=col,
                               labels=c("actual data","synthesized data")) +
@@ -487,7 +504,8 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                                size=lwd[1],linetype=lty[1],na.rm=TRUE)
         if (draw.points) res <- res + geom_point(data=dat,
                                 aes_string("date","gaps"),colour=col[1],
-                                size=lwd[1],na.rm=TRUE) 
+#                                size=lwd[1],na.rm=TRUE) 
+                                size=size,na.rm=TRUE) 
         if (zero.line) res <- res + geom_hline(yintercept=0,colour="grey50")
       }  
     }

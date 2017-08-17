@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -76,13 +76,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#removing-the-lagged-dependent-variable">Removing the Lagged Dependent Variable</a></li>
 <li><a href="#scmt-without-the-lagged-dependent-variable">SCMT without the Lagged Dependent Variable</a></li>
 <li><a href="#summary">Summary</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>This vignette illustrates the syntax of SCM<strong>T</strong> models. For a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
-<p>Although SCM models are usually based on time series data of predictor variables, standard SCM estimation does not exploit this particular characteristic. Instead, time series data of predictors are either aggregated, mostly by calculating (a bunch of) means, or every instant of time is considered as a separate input variable with individual predictor weight. With package <code>MSCMT</code>, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM<strong>T</strong>.</p>
+<p>Although SCM models are usually based on time series data of predictor variables, standard SCM estimation does not exploit this particular characteristic. Instead, time series data of predictors are either aggregated, mostly by calculating (a bunch of) means, or every instant of time is considered as a separate input variable with individual predictor weight. With package <code>MSCMT</code>, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM<strong>T</strong>, see <span class="citation">Klößner and Pfeifer (2015)</span>.</p>
 <p>This vignette illustrates the syntax of SCM<strong>T</strong> models and how SCM<strong>T</strong> models may lead to more meaningful predictor weights without drawbacks concerning the model fit.</p>
 </div>
 <div id="definition-of-the-standard-model" class="section level2">
@@ -96,7 +97,7 @@ school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<sp
 Basque<span class="op">$</span>school.higher &lt;-<span class="st"> </span>Basque<span class="op">$</span>school.high <span class="op">+</span><span class="st"> </span>Basque<span class="op">$</span>school.post.high
 <span class="cf">for</span> (item <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      
   Basque[[item]] &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">*</span><span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) <span class="op">/</span><span class="st"> </span>school.sum)</code></pre></div>
-<p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the model in <a href="https://www.aeaweb.org/articles?id=10.1257/000282803321455188" title="Abadie and Gardeazabal (2003)">AER 2003</a><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>:</p>
+<p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the model in <span class="citation">Abadie and Gardeazabal (2003)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">treatment.identifier &lt;-<span class="st"> &quot;Basque Country (Pais Vasco)&quot;</span>
 controls.identifier  &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">colnames</span>(Basque[[<span class="dv">1</span>]]),
                                 <span class="kw">c</span>(treatment.identifier, <span class="st">&quot;Spain (Espana)&quot;</span>))
@@ -177,7 +178,7 @@ res</code></pre></div>
 ##                 pred. loss                           3.374961e-04
 ##                 (Predictor weights V are standardized by sum(V)=1)
 ## </code></pre>
-<p>It is remarkable that the mean of the lagged dependent variable <code>gdpcap.mean.1960.1969</code> is by far the most important predictor with a weight of 0.9992528, all other predictors are only marginally relevant due to their tiny (at most 0.0002990163) weights.<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></p>
+<p>It is remarkable that the mean of the lagged dependent variable <code>gdpcap.mean.1960.1969</code> is by far the most important predictor with a weight of 0.9992528, all other predictors are only marginally relevant due to their tiny (at most 0.0002990163) weights.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 </div>
 <div id="removing-the-lagged-dependent-variable" class="section level2">
 <h2>Removing the Lagged Dependent Variable</h2>
@@ -313,11 +314,21 @@ res3</code></pre></div>
 <h2>Summary</h2>
 <p>This vignette illustrated that considering predictors as <em>true</em> time series (without intermediate aggregation) may have various benefits. In this example, by excluding the mean of the lagged dependent variable from the set of economic predictors and considering all other predictors as time series, more meaningful predictor weights could be obtained and the dependent variable’s fit could be slightly improved, too.</p>
 </div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references">
+<div id="ref-Abadie2003">
+<p>Abadie, Alberto, and Javier Gardeazabal. 2003. “The Economic Costs of Conflict: A Case Study of the Basque Country.” <em>The American Economic Review</em> 93 (1): 113–32. <a href="http://dx.doi.org/10.1257/000282803321455188" class="uri">http://dx.doi.org/10.1257/000282803321455188</a>.</p>
+</div>
+<div id="ref-KP16">
+<p>Klößner, Stefan, and Gregor Pfeifer. 2015. “Synthesizing Cash for Clunkers: Stabilizing the Car Market, Hurting the Environment.” Annual Conference 2015 (Münster): Economic Development - Theory and Policy. Verein für Socialpolitik/German Economic Association. <a href="https://ideas.repec.org/p/zbw/vfsc15/113207.html" class="uri">https://ideas.repec.org/p/zbw/vfsc15/113207.html</a>.</p>
+</div>
+</div>
+</div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Abadie, Alberto and Javier Gardeazabal. 2003. “The Economic Costs of Conflict: A Case Study of the Basque Country”. American Economic Review, 93(1): 113-132.<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Notice that the weight vector <code>v</code> is obtained by maximizing the order statistics of <code>v</code> (while fixing the sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as large as possible to even the least relevant predictor(s).<a href="#fnref2">↩</a></p></li>
+<li id="fn1"><p>Notice that the weight vector <code>v</code> is obtained by maximizing the order statistics of <code>v</code> (while fixing the sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as large as possible to even the least relevant predictor(s).<a href="#fnref1">↩</a></p></li>
 </ol>
 </div>
 
@@ -328,7 +339,7 @@ res3</code></pre></div>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

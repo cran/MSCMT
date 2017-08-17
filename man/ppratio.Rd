@@ -61,4 +61,3 @@ three columns containing the pre-treatment (r)mspe, the post-treatment
 \code{ppratio} calculates post-to-pre-(r)mspe-ratios for placebo studies based
 on Synthetic Control Methods.
 }
-

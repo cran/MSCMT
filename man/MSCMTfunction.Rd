@@ -12,7 +12,8 @@ mscmt(data, treatment.identifier = NULL, controls.identifier = NULL,
   outer.par = list(), outer.opar = list(), std.v = c("sum", "mean", "min",
   "max"), alpha = NULL, beta = NULL, gamma = NULL, return.ts = TRUE,
   single.v = FALSE, verbose = TRUE, debug = FALSE, seed = NULL,
-  cl = NULL)
+  cl = NULL, times.pred.training = NULL, times.dep.validation = NULL,
+  v.special = integer(), cv.alpha = 0)
 }
 \arguments{
 \item{data}{Typically, a list of matrices with rows corresponding to times 
@@ -55,7 +56,8 @@ A sequence of dates with the given start and end times of
 "2016/03" or "2016-10",
 }
 will be constructed; these dates are looked for in the row names of
-the respective matrices in \code{data}.}
+the respective matrices in \code{data}. In applications with 
+cross-validation, \code{times.dep} belongs to the main period.}
 
 \item{times.pred}{A matrix with two rows (containing start times in
 the first and end times in the second row) and one column for each predictor
@@ -70,7 +72,8 @@ A sequence of dates with the given start and end times of
 "2016/03" or "2016-10",
 }
 will be constructed; these dates are looked for in the row names of
-the respective matrices in \code{data}.}
+the respective matrices in \code{data}. In applications with 
+cross-validation, \code{times.pred} belongs to the main period.}
 
 \item{agg.fns}{Either \code{NULL} (default) or a character vector containing
 one name of an aggregation function for each predictor variable (i.e., each
@@ -110,15 +113,15 @@ method for the inner optimization. Defaults to \code{"wnnlsOpt"}, which
 all other inner optimizers we are aware of. 
 \code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}}, and 
 \code{LowRankQPOpt}, which uses \code{\link[LowRankQP]{LowRankQP}} as inner
-optimizer have experimental support for benchmark purposes.}
+optimizer, have experimental support for benchmark purposes.}
 
 \item{inner.opar}{A list containing further parameters for the inner 
 optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
 meaningful further parameters.)}
 
 \item{outer.optim}{A character vector containing the name(s) of the 
-optimization method(s) for the outer optimization. Defaults to \code{"DEoptC"}, 
-which (currently) is the recommended global optimizer. 
+optimization method(s) for the outer optimization. Defaults to 
+\code{"DEoptC"}, which (currently) is the recommended global optimizer. 
 The optimizers currently supported can be found in the documentation of
 parameter \code{outer.opar}, where the default control parameters for
 the various optimizers are listed.
@@ -135,7 +138,7 @@ predictor weights,
 \item \code{opt.separate=TRUE}, corresponding
 to an improved outer optimization where each predictor is treated as the 
 (potentially) most important predictor (i.e. with maximal weight) in 
-separate optimizations (one for each predictor).
+separate optimizations (one for each predictor), see [1].
 }}
 
 \item{outer.opar}{A list (or a list of lists, if \code{outer.optim} has
@@ -220,7 +223,8 @@ converted to time series.}
 
 \item{single.v}{A logical scalar. If \code{FALSE} (default), a selection
 of feasible (optimal!) predictor weight vectors is generated. If \code{TRUE}, 
-only one set of optimal predictor weights is generated.}
+the one optimal weight vector which has maximal order statistics is generated 
+to facilitate cross validation studies.}
 
 \item{verbose}{A logical scalar. If \code{TRUE} (default), output is verbose.}
 
@@ -242,6 +246,29 @@ of (the corresponding element of) \code{outer.opar}.}
 obtained by \code{\link[parallel]{makeCluster}} of package \code{parallel}. 
 Repeated estimations (see \code{outer.optim} and \code{seed}) and
 placebo studies will make use of the cluster \code{cl} (if not \code{NULL}).}
+
+\item{times.pred.training}{A matrix with two rows (containing start times in
+the first and end times in the second row) and one column for each predictor
+variable, where the column names must exactly match the names of the
+corresponding predictor variables (or \code{NULL} by default).
+If not \code{NULL}, \code{times.pred.training} defines training periods
+for cross-validation applications. For the format of the start and end times,
+see the documentation of parameter \code{times.pred}.}
+
+\item{times.dep.validation}{A matrix with two rows (containing start times in
+the first and end times in the second row) and one column for each dependent
+variable, where the column names must exactly match the names of the
+corresponding dependent variables (or \code{NULL} by default). 
+If not \code{NULL}, \code{times.dep.validation} defines validation period(s)
+for cross-validation applications. For the format of the start and end times,
+see the documentation of parameter \code{times.dep}.}
+
+\item{v.special}{integer vector containing indices of important predictors
+with special treatment (see below). Defaults to the empty set.}
+
+\item{cv.alpha}{numeric scalar containing the minimal proportion (of the
+maximal feasible weight) for the weights of the predictors selected by 
+\code{v.special}. Defaults to \code{0}.}
 }
 \value{
 An object of class \code{"mscmt"}, which is essentially a list
@@ -259,12 +286,17 @@ various weight vectors in the columns of \code{v},
 \item a list of multivariate time series \code{combined} containing, 
 for each dependent and predictor variable, a multivariate time series 
 with elements \code{treated} for the actual values of the treated unit,
-\code{synth} for the synthesized values and \code{gaps} for the differences.
+\code{synth} for the synthesized values, and \code{gaps} for the differences.
 }
 Placebo studies produce a list containing individual results for each 
 unit (as treated unit), starting with the original treated unit, as well
 as a list element named \code{placebo} with aggregated results for each
 dependent and predictor variable.
+
+If \code{times.pred.training} and \code{times.dep.validation} are not 
+\code{NULL}, a cross-validation is done and a list of elements \code{cv}
+with the results of the cross-validation period and \code{main} with
+the results of the main period is returned.
 }
 \description{
 \code{mscmt} performs the Multivariate Synthetic Control Method Using Time 
@@ -276,6 +308,8 @@ is expected to be in "list" format, possibly after conversion from a
 \code{\link[base]{data.frame}}
 with function \code{\link{listFromLong}}) and the call to the appropriate
 MSCMT optimization procedures (depending on the input parameters).
+For details on the input parameters \code{alpha}, \code{beta}, and 
+\code{gamma}, see [1]. For details on cross-validation, see [2].
 }
 \examples{
 \dontrun{
@@ -283,4 +317,8 @@ MSCMT optimization procedures (depending on the input parameters).
 browseVignettes(package="MSCMT")
 }
 }
+\references{
+[1] \insertRef{FastReliable}{MSCMT} 
 
+[2] \insertRef{CV}{MSCMT}
+}
