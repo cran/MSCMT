@@ -16,6 +16,8 @@
 #' @docType package
 #' @name MSCMT
 #' @useDynLib MSCMT, .registration = TRUE, .fixes = "C_"
+#' @importFrom Rdpack reprompt
+#' @importFrom Rdpack insert_ref
 #' @examples
 #' \dontrun{
 #' ## for examples, see the package vignettes:

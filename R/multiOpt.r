@@ -112,202 +112,208 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     globals$vs          <- matrix(0,ncol=n.v,nrow=2e6)
   }
 
-  #########################
-  # Look for sunny donors #
-  #########################
-  is.sunny <- logical(nW)
-  for (i in seq_len(nW)) is.sunny[i] <- isSunny(e(i,nW),X)
-  nS <- sum(is.sunny)
+  if (n.v==1) {                                                                 # search space is null space?
+    if (verbose) catn("Only one predictor, optimization not required.")
+    res <- list(v=cbind("optimizer"=1),conv=0,single.v=TRUE,ncalls.inner=1)
+  } else {
 
-  if (nS<=1&&(!any(outer.optim == "none"))) {                                   # at most one 'sunny' donor, special cases!
-    if (nS==0) {                                                                # no 'sunny' donors
-      if (verbose) catn("No 'sunny' donors!")
-      solution.type <- "nosunny"
-      res <- solveNoSunny(X,Z,trafo.v,verbose=verbose)			
-    } else {                                                                    # one 'sunny' donor
-      if (verbose) catn("Only one 'sunny' donor!")                              # v does not matter and does not need to be optimized
-      solution.type <- "onesunny"
-      res <- solveOneSunny(X[,is.sunny,drop=FALSE],Z[,is.sunny,drop=FALSE],
-                           trafo.v)			
-    }
-    if ((!do.optimize)&&(!is.null(v))) {                                        # restore custom v if provided 
-      v           <- cbind(v)
-      colnames(v) <- outer.optim
-      res$v       <- v
-    }  
-  } else {                                                                      # at least two 'sunny' donors, standard case
-    if (verbose) catn("Number of 'sunny' donors: ",nS," out of ",nW)
+    #########################
+    # Look for sunny donors #
+    #########################
+    is.sunny <- logical(nW)
+    for (i in seq_len(nW)) is.sunny[i] <- isSunny(e(i,nW),X)
+    nS <- sum(is.sunny)
 
-    # restrict optimization to sunny donors
-    X <- X[,is.sunny,drop=FALSE]; Z <- Z[,is.sunny,drop=FALSE] 
-
-    ############################
-    # Checks for global optima #
-    ############################
-    if (check.global) {
-      res <- checkGlobalOpt(X.orig,Z.orig,trafo.v,outer.args1$lb,               # check for feasibility of 'true' outer optimum
-                            single.v=single.v,verbose=verbose,debug=debug)
-      gRmspe <- res$rmspe
-      if (!is.na(res$conv)) {
-        if (verbose) catn("Unrestricted outer optimum (obtained by ignoring all ",
-                          "predictors) is FEASIBLE even when respecting the ",
-                          "predictors.")
-        if (do.optimize) solution.type <- "global"
-        do.optimize   <- FALSE
-      } else {
-        if (verbose) catn("Unrestricted outer optimum (obtained by ignoring all ",
-                          "predictors) with RMSPE ",gRmspe,
-                          " and MSPE (loss v) ",gRmspe^2," is INFEASIBLE when ",
-                          "respecting the predictors.")
+    if (nS<=1&&(!any(outer.optim == "none"))) {                                   # at most one 'sunny' donor, special cases!
+      if (nS==0) {                                                                # no 'sunny' donors
+        if (verbose) catn("No 'sunny' donors!")
+        solution.type <- "nosunny"
+        res <- solveNoSunny(X,Z,trafo.v,verbose=verbose)			
+      } else {                                                                    # one 'sunny' donor
+        if (verbose) catn("Only one 'sunny' donor!")                              # v does not matter and does not need to be optimized
+        solution.type <- "onesunny"
+        res <- solveOneSunny(X[,is.sunny,drop=FALSE],Z[,is.sunny,drop=FALSE],
+                             trafo.v)			
       }
-      if (do.optimize) {                                                        # check for feasibility of 'sunny' outer optimum 
-        res <- checkGlobalOpt(X,Z,trafo.v,outer.args1$lb,single.v=single.v,
-                              verbose=verbose,debug=debug)
-        if (!is.na(res$conv)) {
-          do.optimize <- FALSE
-          v <- res$v                                                            # check this !!! XXX changed 2017-04-19
-        }
+      if ((!do.optimize)&&(!is.null(v))) {                                        # restore custom v if provided 
+        v           <- cbind(v)
+        colnames(v) <- outer.optim
+        res$v       <- v
       }  
-    } 
+    } else {                                                                      # at least two 'sunny' donors, standard case
+      if (verbose) catn("Number of 'sunny' donors: ",nS," out of ",nW)
 
-    # check availability of packages for inner optimizer
-    if ((inner.optim=="ipopOpt")||(inner.optim=="benchmarkOpt"))
-      checkPkg("kernlab")
-    if ((inner.optim=="LowRankQPOpt")||(inner.optim=="benchmarkOpt"))
-      checkPkg("LowRankQP")
-                 
-    # pre-allocate workspace for inner optimizer wnnlsOpt
-    if ((inner.optim=="wnnlsOpt")||(inner.optim=="benchmarkOpt")) {                                           
-      ME  <- 1L
-      MA  <- sum(trafo.v$len.v)
-      N   <- ncol(X)
-      N   <- as.integer(nS)
-      MDW <- ME+MA
-      globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
-      globals$IWORK <- integer(MDW+N)
-      globals$WORK  <- double(MDW+5*N)
-      globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
-      globals$RNORM <- double(1)
-      globals$MODE  <- integer(1)
-      globals$X     <- double(N)
-    }
-               
-    if (do.optimize&&(is.na(gRmspe)||is.na(res$conv))) {                      # outer optimization needed
-      if (is.null(seed)) seed <- NA
-      comb <- expand.grid(seed=seed,outer.optim=outer.optim,
-                          stringsAsFactors=FALSE)
-      if ((inner.optim=="benchmarkOpt")&&(nrow(comb)>1)) 
-        stop("benchmarkOpt not supported for multiple optimizations")
-      if ((length(outer.opar)>0)&&(!isTRUE(names(outer.opar)%in%outer.optim))) 
-      {
-        if (length(outer.optim)>1) 
-          stop("names of outer.opar do not match outer optimizers")
-        outer.opar=list(outer.opar)
-        names(outer.opar) <- outer.optim
-      }
-      results <- cases <- vector("list",nrow(comb))
-      times <- rep(NA,length(results))
-      for (i in seq_along(cases)) {
-        cases[[i]] <- list(outer.optim=comb$outer.optim[i],seed=comb$seed[i],
-                           outer.opar=outer.opar[[comb$outer.optim[i]]])
-      }
-      #######################################
-      # Do (multiple) outer optimization(s) #
-      #######################################
-      if (is.null(cl)) {                                                      # without cluster
-        if (verbose&&(length(results)>1)) 
-          catn("Starting ",length(results)," optimizations with ",
-               length(outer.optim)," different outer optimizers and ",
-               length(seed)," different seeds.")
-        for (i in seq_along(results)) {
-          if (verbose&&(length(results)>1)) 
-            catn("Optimization ",i," out of ",length(results),":")
-          results[[i]] <- 
-            atomOpt(cases[[i]],X,Z,trafo.v,single.v,inner.optim,
-                    inner.args,outer.args1,starting.values,verbose,
-                    debug)
-        }            
-      } else {                                                                # with cluster
-        if (verbose) 
-          catn("Distributing ",length(results)," optimizations with ",
-               length(outer.optim)," different outer optimizers and ",
-               length(seed)," different seeds to the cluster. ",
-               "Please hold the line!")
-#          clusterEvalQ(cl,library(MSCMT))
-#          clusterExport(cl,c("atomOpt","cases","X","Z","trafo.v","single.v",
-#                             "inner.optim","inner.args","outer.args1",
-#                             "starting.values","verbose","debug"),
-#                        envir=environment())
-        results <- clusterApplyLB(cl,cases,atomOpt,X,Z,trafo.v,single.v,
-                                  inner.optim,inner.args,outer.args1,
-                                  starting.values,verbose,debug)
-        if (verbose) catn("Optimization on cluster finished!")
-      }              
-      times   <- sapply(results,function(x) x$user.self)                      # collect benchmark information
-      rmspes  <- sapply(results,function(x) x$rmspe)
-      loss.v  <- sapply(results,function(x) x$loss.v)
-      n.inner <- sapply(results,function(x) x$ncalls.inner)
-      all.w   <- sapply(results,function(x) x$w)
-      all.v   <- sapply(results,function(x) x$v[,ncol(x$v)])
-      dim(times) <- dim(rmspes) <- dim(loss.v) <- dim(n.inner) <- 
-        c(length(seed),length(outer.optim))
-      rownames(times) <- rownames(rmspes) <- rownames(loss.v) <- 
-        rownames(n.inner) <- seed  
-      colnames(times) <- colnames(rmspes) <- colnames(loss.v) <- 
-        colnames(n.inner) <- outer.optim
-      colnames(all.w) <- colnames(all.v) <- 
-        paste0(rep(outer.optim,each=length(seed)),".",
-               rep(seed,times=length(outer.optim)))
-      tmploss <- loss.v
-      tmploss[tmploss==0] <- Inf
-      bestrun <- which.min(tmploss)
-      if (verbose&&(length(cases)>1)) {
-        catn("Best optimization run(s):")
-        for (i in bestrun) catn("Run ",i," with optimizer ",
-          cases[[i]]$outer.optim," and seed ",cases[[i]]$seed,".")
-        if (isTRUE(any(is.infinite(tmploss)))) {
-        catn("Optimization run(s) with problems:")
-        for (i in which(is.infinite(tmploss))) catn("Run ",i," with optimizer ",
-          cases[[i]]$outer.optim," and seed ",cases[[i]]$seed,".")
-        }
-      }
-      res     <- results[[bestrun[1]]]               
-    } else {                                                                    # outer optimization not needed
-      if (any(outer.optim == "none")) {
-        if (is.null(v)) {
-          w     <- blow(outer.opar$w,colnames(X))
-          rmspe <- sqrt(lossDep(Z,w))
-          if (exists_v(w,X,Z,trafo.v,outer.args1$lb)) {
-            v <- if (single.v) single_v(w,X,Z,trafo.v,outer.args1$lb) else 
-                               all_v(w,X,Z,trafo.v,outer.args1$lb)
-          } else v <- NA
+      # restrict optimization to sunny donors
+      X <- X[,is.sunny,drop=FALSE]; Z <- Z[,is.sunny,drop=FALSE] 
+
+      ############################
+      # Checks for global optima #
+      ############################
+      if (check.global) {
+        res <- checkGlobalOpt(X.orig,Z.orig,trafo.v,outer.args1$lb,               # check for feasibility of 'true' outer optimum
+                              single.v=single.v,verbose=verbose,debug=debug)
+        gRmspe <- res$rmspe
+        if (!is.na(res$conv)) {
+          if (verbose) catn("Unrestricted outer optimum (obtained by ignoring all ",
+                            "predictors) is FEASIBLE even when respecting the ",
+                            "predictors.")
+          if (do.optimize) solution.type <- "global"
+          do.optimize   <- FALSE
         } else {
-          w     <- blow(outer.opar$w,colnames(X.orig))
-          rmspe <- sqrt(lossDep(Z.orig,w))
-          v     <- cbind("fixed"=v)
+          if (verbose) catn("Unrestricted outer optimum (obtained by ignoring all ",
+                            "predictors) with RMSPE ",gRmspe,
+                            " and MSPE (loss v) ",gRmspe^2," is INFEASIBLE when ",
+                            "respecting the predictors.")
         }
-        res <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,conv=0,
-                    single.v=single.v,ncalls.inner=0)
-      } else if (solution.type!="global") {
-        fn.min.par  <- c(list(X=X,Z=Z,trafo=trafo.v$trafo),inner.args)   
-        if (!is.matrix(v)) {                                                    # check this !!! XXX changed 2017-04-19
-          v <- cbind(v)
-          colnames(v) <- outer.optim
+        if (do.optimize) {                                                        # check for feasibility of 'sunny' outer optimum 
+          res <- checkGlobalOpt(X,Z,trafo.v,outer.args1$lb,single.v=single.v,
+                                verbose=verbose,debug=debug)
+          if (!is.na(res$conv)) {
+            do.optimize <- FALSE
+            v <- res$v                                                            # check this !!! XXX changed 2017-04-19
+          }
         }  
-        v <- v[,apply(v,2,function(x) !any(is.na(x))),drop=FALSE]
-        rownames(v) <- names.v
-        mspe <- do.call(inner.optim,args=c(list(v=as.double(drop(v))),
-                                           fn.min.par))
-        w    <- do.call(inner.optim,args=c(list(v=as.double(drop(v))),
-                                           fn.min.par,return.w=TRUE))
-        names(w) <- colnames(X)
-        res  <- list(w=w, v=v, loss.v=mspe, rmspe=sqrt(mspe), conv=0,
-                     single.v=TRUE,ncalls.inner=2)
-      }               
-    } 
+      } 
+
+      # check availability of packages for inner optimizer
+      if ((inner.optim=="ipopOpt")||(inner.optim=="benchmarkOpt"))
+        checkPkg("kernlab")
+      if ((inner.optim=="LowRankQPOpt")||(inner.optim=="benchmarkOpt"))
+        checkPkg("LowRankQP")
+                   
+      # pre-allocate workspace for inner optimizer wnnlsOpt
+      if ((inner.optim=="wnnlsOpt")||(inner.optim=="benchmarkOpt")) {                                           
+        ME  <- 1L
+        MA  <- sum(trafo.v$len.v)
+        N   <- ncol(X)
+        N   <- as.integer(nS)
+        MDW <- ME+MA
+        globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
+        globals$IWORK <- integer(MDW+N)
+        globals$WORK  <- double(MDW+5*N)
+        globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
+        globals$RNORM <- double(1)
+        globals$MODE  <- integer(1)
+        globals$X     <- double(N)
+      }
+                 
+      if (do.optimize&&(is.na(gRmspe)||is.na(res$conv))) {                      # outer optimization needed
+        if (is.null(seed)) seed <- NA
+        comb <- expand.grid(seed=seed,outer.optim=outer.optim,
+                            stringsAsFactors=FALSE)
+        if ((inner.optim=="benchmarkOpt")&&(nrow(comb)>1)) 
+          stop("benchmarkOpt not supported for multiple optimizations")
+        if ((length(outer.opar)>0)&&(!isTRUE(names(outer.opar)%in%outer.optim))) 
+        {
+          if (length(outer.optim)>1) 
+            stop("names of outer.opar do not match outer optimizers")
+          outer.opar=list(outer.opar)
+          names(outer.opar) <- outer.optim
+        }
+        results <- cases <- vector("list",nrow(comb))
+        times <- rep(NA,length(results))
+        for (i in seq_along(cases)) {
+          cases[[i]] <- list(outer.optim=comb$outer.optim[i],seed=comb$seed[i],
+                             outer.opar=outer.opar[[comb$outer.optim[i]]])
+        }
+        #######################################
+        # Do (multiple) outer optimization(s) #
+        #######################################
+        if (is.null(cl)) {                                                      # without cluster
+          if (verbose&&(length(results)>1)) 
+            catn("Starting ",length(results)," optimizations with ",
+                 length(outer.optim)," different outer optimizers and ",
+                 length(seed)," different seeds.")
+          for (i in seq_along(results)) {
+            if (verbose&&(length(results)>1)) 
+              catn("Optimization ",i," out of ",length(results),":")
+            results[[i]] <- 
+              atomOpt(cases[[i]],X,Z,trafo.v,single.v,inner.optim,
+                      inner.args,outer.args1,starting.values,verbose,
+                      debug)
+          }            
+        } else {                                                                # with cluster
+          if (verbose) 
+            catn("Distributing ",length(results)," optimizations with ",
+                 length(outer.optim)," different outer optimizers and ",
+                 length(seed)," different seeds to the cluster. ",
+                 "Please hold the line!")
+  #          clusterEvalQ(cl,library(MSCMT))
+  #          clusterExport(cl,c("atomOpt","cases","X","Z","trafo.v","single.v",
+  #                             "inner.optim","inner.args","outer.args1",
+  #                             "starting.values","verbose","debug"),
+  #                        envir=environment())
+          results <- clusterApplyLB(cl,cases,atomOpt,X,Z,trafo.v,single.v,
+                                    inner.optim,inner.args,outer.args1,
+                                    starting.values,verbose,debug)
+          if (verbose) catn("Optimization on cluster finished!")
+        }              
+        times   <- sapply(results,function(x) x$user.self)                      # collect benchmark information
+        rmspes  <- sapply(results,function(x) x$rmspe)
+        loss.v  <- sapply(results,function(x) x$loss.v)
+        n.inner <- sapply(results,function(x) x$ncalls.inner)
+        all.w   <- sapply(results,function(x) x$w)
+        all.v   <- sapply(results,function(x) x$v[,ncol(x$v)])
+        dim(times) <- dim(rmspes) <- dim(loss.v) <- dim(n.inner) <- 
+          c(length(seed),length(outer.optim))
+        rownames(times) <- rownames(rmspes) <- rownames(loss.v) <- 
+          rownames(n.inner) <- seed  
+        colnames(times) <- colnames(rmspes) <- colnames(loss.v) <- 
+          colnames(n.inner) <- outer.optim
+        colnames(all.w) <- colnames(all.v) <- 
+          paste0(rep(outer.optim,each=length(seed)),".",
+                 rep(seed,times=length(outer.optim)))
+        tmploss <- loss.v
+        tmploss[tmploss==0] <- Inf
+        bestrun <- which.min(tmploss)
+        if (verbose&&(length(cases)>1)) {
+          catn("Best optimization run(s):")
+          for (i in bestrun) catn("Run ",i," with optimizer ",
+            cases[[i]]$outer.optim," and seed ",cases[[i]]$seed,".")
+          if (isTRUE(any(is.infinite(tmploss)))) {
+          catn("Optimization run(s) with problems:")
+          for (i in which(is.infinite(tmploss))) catn("Run ",i," with optimizer ",
+            cases[[i]]$outer.optim," and seed ",cases[[i]]$seed,".")
+          }
+        }
+        res     <- results[[bestrun[1]]]               
+      } else {                                                                    # outer optimization not needed
+        if (any(outer.optim == "none")) {
+          if (is.null(v)) {
+            w     <- blow(outer.opar$w,colnames(X))
+            rmspe <- sqrt(lossDep(Z,w))
+            if (exists_v(w,X,Z,trafo.v,outer.args1$lb)) {
+              v <- if (single.v) single_v(w,X,Z,trafo.v,outer.args1$lb) else 
+                                 all_v(w,X,Z,trafo.v,outer.args1$lb)
+            } else v <- NA
+          } else {
+            w     <- blow(outer.opar$w,colnames(X.orig))
+            rmspe <- sqrt(lossDep(Z.orig,w))
+            v     <- cbind("fixed"=v)
+          }
+          res <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,conv=0,
+                      single.v=single.v,ncalls.inner=0)
+        } else if (solution.type!="global") {
+          fn.min.par  <- c(list(X=X,Z=Z,trafo=trafo.v$trafo),inner.args)   
+          if (!is.matrix(v)) {                                                    # check this !!! XXX changed 2017-04-19
+            v <- cbind(v)
+            colnames(v) <- outer.optim
+          }  
+          v <- v[,apply(v,2,function(x) !any(is.na(x))),drop=FALSE]
+          rownames(v) <- names.v
+          mspe <- do.call(inner.optim,args=c(list(v=as.double(drop(v))),
+                                             fn.min.par))
+          w    <- do.call(inner.optim,args=c(list(v=as.double(drop(v))),
+                                             fn.min.par,return.w=TRUE))
+          names(w) <- colnames(X)
+          res  <- list(w=w, v=v, loss.v=mspe, rmspe=sqrt(mspe), conv=0,
+                       single.v=TRUE,ncalls.inner=2)
+        }               
+      } 
+    }
   }
   
-  res$v           <- apply(res$v,2,function(x) x/do.call(std.v,list(x)))
+  res$v <- apply(res$v,2,function(x) x/do.call(std.v,list(x)))
   if (!is.matrix(res$v)) {                                                      # apply oversimplifies if length(v)==1
     res$v <- t(as.matrix(res$v))
     rownames(res$v) <- trafo.v$names.v

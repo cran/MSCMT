@@ -258,7 +258,7 @@ checkGlobalOpt <- function(X,Z,trafo.v,lb,single.v=FALSE,verbose=FALSE,
   rmspe <- tmp$rmspe
   if (exists_v(w,X,Z,trafo.v,lb)) {
     list(w=w,
-         v=if (single.v) 
+         v=if (isTRUE(single.v))
              cbind("max.order"=single_v(w,X,Z,trafo.v,lb,verbose=verbose,
                                         debug=debug)) else 
              all_v(w,X,Z,trafo.v,lb,verbose=verbose,debug=debug),
@@ -582,12 +582,14 @@ pufas <- function(objective.in,const.mat,const.rhs,const.dir,solution,tol=0,
   
 max_error <- function(a,b,subset=NULL,direction="==",correct="none") {
   if (!is.null(subset)) { a <- a[subset]; b <- b[subset] }
-  abserr <- switch(direction,
-                   "==" = abs(a-b),"<=" = pmax(a-b,0),">=" = pmax(b-a,0))
-  base   <- switch(correct,
-                   "none" = pmax(abs(a),abs(b)),"a"=abs(a),"b"=abs(b))
-  relerr <- ifelse(base==0,Inf,abserr/base)
-  max(pmin(abserr,relerr))
+  if (length(a)>0) {
+    abserr <- switch(direction,
+                     "==" = abs(a-b),"<=" = pmax(a-b,0),">=" = pmax(b-a,0))
+    base   <- switch(correct,
+                     "none" = pmax(abs(a),abs(b)),"a"=abs(a),"b"=abs(b))
+    relerr <- ifelse(base==0,Inf,abserr/base)
+    max(pmin(abserr,relerr))
+  } else 0
 }
 
 lp_diag <- function(objective.in,const.mat,const.rhs,const.dir,lpres) {

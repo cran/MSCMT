@@ -247,13 +247,13 @@ agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="s
 <h3>Example</h3>
 <p>A simple estimation (without a placebo study) produces the following console output (if parameter <code>verbose</code> is <code>TRUE</code>, which is the default):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>)</code></pre></div>
-<pre><code>## 09:23:55: Number of 'sunny' donors: 16 out of 16
-## 09:23:55: Unrestricted outer optimum (obtained by ignoring all predictors) 
-## 09:23:55: with RMSPE 0.064236669716524 and MSPE (loss v) 
-## 09:23:55: 0.0041263497362698 is INFEASIBLE when respecting the predictors.
-## 09:23:55: Starting optimization via DEoptC, random seed 1.
-## 09:24:08: Optimization finished (1122001 calls to inner optimizer), rmspe: 
-## 09:24:08: 0.0654680949292753, mspe: 0.00428607145366861.
+<pre><code>## 09:43:47: Number of 'sunny' donors: 16 out of 16
+## 09:43:47: Unrestricted outer optimum (obtained by ignoring all predictors) 
+## 09:43:47: with RMSPE 0.064236669716524 and MSPE (loss v) 
+## 09:43:47: 0.0041263497362698 is INFEASIBLE when respecting the predictors.
+## 09:43:47: Starting optimization via DEoptC, random seed 1.
+## 09:44:00: Optimization finished (1122001 calls to inner optimizer), rmspe: 
+## 09:44:00: 0.0654680949292753, mspe: 0.00428607145366861.
 ## Final rmspe: 0.06546809, mspe (loss v): 0.004286071
 ## Optimal weights:
 ##      Baleares (Islas)              Cataluna Madrid (Comunidad De) 
@@ -345,9 +345,9 @@ agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="s
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(parallel)
 cl &lt;-<span class="st"> </span><span class="kw">makeCluster</span>(<span class="dv">2</span>)
 resplacebo &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">cl=</span>cl, <span class="dt">placebo=</span><span class="ot">TRUE</span>, <span class="dt">seed=</span><span class="dv">1</span>)</code></pre></div>
-<pre><code>## 09:24:13: Starting placebo study, excluding original treated unit, on the 
-## 09:24:13: cluster. Please hold the line.
-## 09:26:06: Placebo study on cluster finished.</code></pre>
+<pre><code>## 09:44:05: Starting placebo study, excluding original treated unit, on the 
+## 09:44:05: cluster. Please hold the line.
+## 09:45:57: Placebo study on cluster finished.</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">stopCluster</span>(cl)</code></pre></div>
 <p>Object <code>resplacebo</code> now contains single SCM estimations for each unit as well as aggregated information concerning original data, synthesized data, and gaps for all units. The individual SCM estimations can be accessed separately (as list elements with names corresponding to the units’ names). With the following plot, one can inspect whether there is some effect for Catalonia:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(resplacebo[[<span class="st">&quot;Cataluna&quot;</span>]], <span class="dt">type=</span><span class="st">&quot;comparison&quot;</span>)</code></pre></div>

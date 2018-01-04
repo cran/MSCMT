@@ -117,7 +117,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
   int    ip      = 0;
   int    tbd     = nG*li;
   int    perc    = -1;
-  char * buffer  = (char *) R_alloc(width+4,sizeof(char));
+  char * buffer  = (char *) R_alloc(width+13,sizeof(char));
   if (width) {
     buffer[0] = '\r';
     buffer[1] = '[';
@@ -125,7 +125,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
       perc = 100*done/tbd;
       for (ip=2;ip<2+(width-7)*done/tbd;ip++) buffer[ip] = '=';
       for (;ip<width-5;ip++) buffer[ip] = '-';
-      snprintf(buffer+ip,7,"] %3i%s",perc,"%%");
+      snprintf(buffer+ip,16,"] %3i%s",perc,"%%");
       REprintf(buffer);
     }  
   }
@@ -298,7 +298,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
           perc = 100*done/tbd;
           for (ip=2;ip<2+(width-7)*done/tbd;ip++) buffer[ip] = '=';
           for (;ip<width-5;ip++) buffer[ip] = '-';
-          snprintf(buffer+ip,7,"] %3i%s",perc,"%%");
+          snprintf(buffer+ip,16,"] %3i%s",perc,"%%");
           REprintf(buffer);
         }  
       }
@@ -319,7 +319,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
   if (width) {
     perc = 100;
     for (ip=2;ip<width-5;ip++) buffer[ip] = '=';
-    snprintf(buffer+ip,7,"] %3i%s",perc,"%%");
+    snprintf(buffer+ip,16,"] %3i%s",perc,"%%");
     REprintf(buffer);
     REprintf("\n");
     if (checkA) REprintf("Number of observed improvements (ambiguities): %d\n",nimpr);

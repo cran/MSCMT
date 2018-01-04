@@ -545,10 +545,12 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
         } else {
           if (verbose) catn("Determining cross-validation predictor weights",
             if (!is.null(xname)) paste0(" for ",xname),".")
-          cbind(single_v(x$w,x$dataprep.scaled$X0-drop(x$dataprep.scaled$X1),
-                         x$dataprep.scaled$Z0-drop(x$dataprep.scaled$Z1),
-                         x$trafo.v,cv.alpha=cv.alpha,v.special=v.special,
-                         verbose=verbose,debug=debug,lb=lb,backup.v=x$v))
+          tmp_v <- cbind(
+            single_v(x$w,x$dataprep.scaled$X0-drop(x$dataprep.scaled$X1),
+                     x$dataprep.scaled$Z0-drop(x$dataprep.scaled$Z1),
+                     x$trafo.v,cv.alpha=cv.alpha,v.special=v.special,
+                     verbose=verbose,debug=debug,lb=lb,backup.v=x$v))
+          if (any(is.na(tmp_v))) cbind("backup"=x$v[,ncol(x$v)]) else tmp_v
         }  
       } else NULL
     }  

@@ -88,7 +88,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>This vignette illustrates the usage of <code>improveSynth</code>. For a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
-<p>Estimating an SCM model involves searching for an approximate solution of a nested optimization problem. Although the formulation of the optimization problem is quite simple, finding a (good approximate) solution can be hard for several reasons, see <span class="citation">Becker and Klößner (2017a)</span> and <span class="citation">Becker and Klößner (2017b)</span>. While implementing package <code>MSCMT</code> we put a lot of effort into the design of a smart and robust (but still fast) optimization procedure.</p>
+<p>Estimating an SCM model involves searching for an approximate solution of a nested optimization problem. Although the formulation of the optimization problem is quite simple, finding a (good approximate) solution can be hard for several reasons, see <span class="citation">Becker and Klößner (2017)</span> and <span class="citation">Becker and Klößner (2018)</span>. While implementing package <code>MSCMT</code> we put a lot of effort into the design of a smart and robust (but still fast) optimization procedure.</p>
 <p>Apart from function <code>mscmt</code> for the estimation of SCM models based on our model syntax, we also included the convenience function <code>improveSynth</code>, which implements checks for feasibility and optimality of results delivered by package <code>Synth</code>. Below, we illustrate how to use <code>improveSynth</code>.</p>
 </div>
 <div id="first-example" class="section level2">
@@ -239,10 +239,10 @@ synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(sy
 <h2>References</h2>
 <div id="refs" class="references">
 <div id="ref-Mafia">
-<p>Becker, Martin, and Stefan Klößner. 2017a. “Estimating the Economic Costs of Organized Crime by Synthetic Control Methods.” <em>Journal of Applied Econometrics</em>, n/a–n/a. <a href="http://dx.doi.org/10.1002/jae.2572" class="uri">http://dx.doi.org/10.1002/jae.2572</a>.</p>
+<p>Becker, Martin, and Stefan Klößner. 2017. “Estimating the Economic Costs of Organized Crime by Synthetic Control Methods.” <em>Journal of Applied Econometrics</em> 32 (7): 1367–9. <a href="http://dx.doi.org/10.1002/jae.2572" class="uri">http://dx.doi.org/10.1002/jae.2572</a>.</p>
 </div>
 <div id="ref-FastReliable">
-<p>———. 2017b. “Fast and Reliable Computation of Generalized Synthetic Controls.” <em>Econometrics and Statistics</em>, n/a–n/a. <a href="http://www.oekonometrie.uni-saarland.de/papers/FastReliable.pdf" class="uri">http://www.oekonometrie.uni-saarland.de/papers/FastReliable.pdf</a>.</p>
+<p>———. 2018. “Fast and Reliable Computation of Generalized Synthetic Controls.” <em>Econometrics and Statistics</em> 5: 1–19. <a href="https://doi.org/10.1016/j.ecosta.2017.08.002" class="uri">https://doi.org/10.1016/j.ecosta.2017.08.002</a>.</p>
 </div>
 </div>
 </div>

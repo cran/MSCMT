@@ -360,29 +360,31 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
       if(verbose) catn("optimizer's v violates optimality constraints!") else 
                   warning("optimizer's v violates optimality constraints")
     }
-    v_minlossw  <- loss_v(w,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
-                          debug=debug)
-    minlossw_ok <- check_v(v_minlossw,w,X,Z,trafo.v,outer.args1$lb,
-                           verbose=verbose,debug=debug)
-    v_maxorder  <- single_v(w,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
+    if (!is.na(single.v)) {
+      v_minlossw  <- loss_v(w,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
                             debug=debug)
-    maxorder_ok <- check_v(v_maxorder,w,X,Z,trafo.v,outer.args1$lb,
-                           verbose=verbose,debug=debug)
-    if (minlossw_ok) {
-      v_minlossw <- bestifnear(cbind(v_minlossw,v),X,Z,trafo.v)
-      if (maxorder_ok) 
-        v_maxorder <- bestifnear(cbind(v_maxorder,v_minlossw),X,Z,trafo.v) else
-        v_maxorder <- bestifnear(cbind(v,v_minlossw),X,Z,trafo.v)
-    } else {
-      v_minlossw <- v
-      if (maxorder_ok) 
-        v_maxorder <- bestifnear(cbind(v_maxorder,v),X,Z,trafo.v) else
-        v_maxorder <- v
-    }
-    res$v <- if (single.v) cbind("max.order"=v_maxorder) else
-                           cbind(if (debug) "optimizer"=v,
-                                 "min.loss.w"=v_minlossw,
-                                 "max.order"=v_maxorder)
+      minlossw_ok <- check_v(v_minlossw,w,X,Z,trafo.v,outer.args1$lb,
+                             verbose=verbose,debug=debug)
+      v_maxorder  <- single_v(w,X,Z,trafo.v,outer.args1$lb,verbose=verbose,
+                              debug=debug)
+      maxorder_ok <- check_v(v_maxorder,w,X,Z,trafo.v,outer.args1$lb,
+                             verbose=verbose,debug=debug)
+      if (minlossw_ok) {
+        v_minlossw <- bestifnear(cbind(v_minlossw,v),X,Z,trafo.v)
+        if (maxorder_ok) 
+          v_maxorder <- bestifnear(cbind(v_maxorder,v_minlossw),X,Z,trafo.v) else
+          v_maxorder <- bestifnear(cbind(v,v_minlossw),X,Z,trafo.v)
+      } else {
+        v_minlossw <- v
+        if (maxorder_ok) 
+          v_maxorder <- bestifnear(cbind(v_maxorder,v),X,Z,trafo.v) else
+          v_maxorder <- v
+      }
+      res$v <- if (single.v) cbind("max.order"=v_maxorder) else
+                             cbind(if (debug) "optimizer"=v,
+                                   "min.loss.w"=v_minlossw,
+                                   "max.order"=v_maxorder)
+    } else res$v <- cbind("optimizer"=res$v)
     res$single.v <- single.v
     rownames(res$v) <- trafo.v$names.v
   

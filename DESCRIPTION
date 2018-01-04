@@ -1,11 +1,12 @@
 Package: MSCMT
 Type: Package
 Encoding: UTF-8
-Version: 1.3.0
-Date: 2017-08-17
+Version: 1.3.1
+Date: 2018-01-04
 Title: Multivariate Synthetic Control Method Using Time Series
 Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
-    email = "martin.becker@mx.uni-saarland.de"),
+    email = "martin.becker@mx.uni-saarland.de",
+    comment=c(ORCID="0000-0003-2336-9751")),
     person("Stefan","Klößner", role = c("aut"),
     email = "S.Kloessner@mx.uni-saarland.de"),
     person("Karline","Soetaert", role = c("com"),
@@ -17,13 +18,15 @@ Imports: stats, utils, parallel, lpSolve, ggplot2, lpSolveAPI, Rglpk,
 Suggests: Synth, DEoptim, rgenoud, DEoptimR, GenSA, GA, soma, cmaes,
         Rmalschains, NMOF, nloptr, hydroPSO, pso, LowRankQP, kernlab,
         reshape, knitr, rmarkdown
-Description: Multivariate Synthetic Control Method Using Time Series. 
-    Three generalizations of the synthetic control method (which has already an 
-    implementation in package 'Synth') are implemented: first, 'MSCMT' allows 
-    for using multiple outcome variables, second, time series can be supplied as 
-    economic predictors, and third, a well-defined cross-validation approach can be used.
+Description: Three generalizations of the synthetic control method (which has 
+    already an implementation in package 'Synth') are implemented: first, 
+    'MSCMT' allows for using multiple outcome variables, second, time series 
+    can be supplied as economic predictors, and third, a well-defined 
+    cross-validation approach can be used.
     Much effort has been taken to make the implementation as stable as possible 
     (including edge cases) without losing computational efficiency.
+    A detailed description of the main algorithms is given in 
+    Becker and Klößner (2018) <doi:10.1016/j.ecosta.2017.08.002>.
 License: GPL
 Copyright: inst/COPYRIGHTS
 LazyData: yes
@@ -31,11 +34,11 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 BuildVignettes: yes
 NeedsCompilation: yes
-Packaged: 2017-08-17 07:26:08 UTC; mabe003
-Author: Martin Becker [aut, cre],
+Packaged: 2018-01-04 08:46:00 UTC; mabe003
+Author: Martin Becker [aut, cre] (<https://orcid.org/0000-0003-2336-9751>),
   Stefan Klößner [aut],
   Karline Soetaert [com],
   LAPACK authors [cph]
 Maintainer: Martin Becker <martin.becker@mx.uni-saarland.de>
 Repository: CRAN
-Date/Publication: 2017-08-17 08:35:58 UTC
+Date/Publication: 2018-01-04 17:00:07 UTC
