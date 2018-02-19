@@ -283,6 +283,9 @@ columns,
 square root,
 \item a vector \code{loss.w} with the predictor losses corresponding to the
 various weight vectors in the columns of \code{v},
+\item a matrix \code{predictor.table} containing aggregated statistics of
+predictor values (similar to list element \code{tab.pred} of 
+function \code{\link[Synth]{synth.tab}} of package \code{'Synth'}),
 \item a list of multivariate time series \code{combined} containing, 
 for each dependent and predictor variable, a multivariate time series 
 with elements \code{treated} for the actual values of the treated unit,

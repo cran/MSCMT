@@ -1,3 +1,16 @@
+Changes in version 1.3.2 (2018-02-19)
+
+New features
+
+- added list element 'predictor.table' containing aggregated statistics of
+  predictor values to output of 'mscmt' (feature request)
+  
+Changes
+
+- list element 'dataprep.scaled' (in output of 'mscmt') now contains unscaled
+  variants 'X0.unscaled' and 'X1.unscaled' of (aggregated) predictor values
+
+
 Changes in version 1.3.1 (2018-01-04)
 
 Changes

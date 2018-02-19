@@ -248,6 +248,9 @@
 #' square root,
 #' \item a vector \code{loss.w} with the predictor losses corresponding to the
 #' various weight vectors in the columns of \code{v},
+#' \item a matrix \code{predictor.table} containing aggregated statistics of
+#' predictor values (similar to list element \code{tab.pred} of 
+#' function \code{\link[Synth]{synth.tab}} of package \code{'Synth'}),
 #' \item a list of multivariate time series \code{combined} containing, 
 #' for each dependent and predictor variable, a multivariate time series 
 #' with elements \code{treated} for the actual values of the treated unit,
@@ -367,6 +370,14 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       if (any(is.na(colnames(X)))) 
         colnames(X) <- c(colnames(data$X0),colnames(data$X1))
       X  <- X/apply(X, 1, sd)                                                   # scale X0,X1
+      X0u <- data$X0
+      colnames(X0u) <- unit.names[as.character(colnames(data$X0))]
+      if (any(is.na(colnames(X0u)))) 
+        colnames(X0u) <- colnames(data$X0)
+      X1u <- data$X1
+      colnames(X1u) <- unit.names[as.character(colnames(data$X1))]
+      if (any(is.na(colnames(X1u)))) 
+        colnames(X1u) <- colnames(data$X1)
       Z0 <- data$Z0
       colnames(Z0) <- unit.names[as.character(colnames(data$X0))]               # correct potentially wrong column names of Z0
       if (any(is.na(colnames(Z0)))) 
@@ -383,7 +394,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       Z0 <- Z[,controls.identifier,drop=FALSE]
       X1 <- X[,treatment.identifier,drop=FALSE]
       X0 <- X[,controls.identifier,drop=FALSE]
-      dat <- list(X0 = X0, X1 = X1, Z0 = Z0, Z1 = Z1,
+      dat <- list(X0 = X0, X1 = X1, Z0 = Z0, Z1 = Z1, X0.unscaled = X0u, 
+                  X1.unscaled = X1u,
                   trafo.v=genTrafo(n.v=ncol(times.pred),
                                    names.v=colnames(times.pred)),
                   Z.scaled=FALSE)
@@ -406,6 +418,10 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                     seed=seed,cl=if (placebo.on.cluster) NULL else cl)
                     
     w <- blow(res$w,controls.identifier)
+  
+    pred.table <- cbind("Treated"     = drop(dat$X1.unscaled), 
+                        "Synthetic"   = drop(dat$X0.unscaled %*% w), 
+                        "Sample Mean" = apply(dat$X0.unscaled, 1, mean))
   
     if (is.dataprep) {
       ind        <- (w>0)
@@ -448,7 +464,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                gaps=gaps,combined=combined,treated.unit=treatment.identifier,
                control.units=controls.identifier,dependent=dependent,
                predictor=predictor,agg.fns=agg.fns,agg.pred=rownames(dat$X0),
-               times.dep=times.dep,times.pred=times.pred,std.v=std.v))          # insert alpha, beta, gamma, ...?
+               times.dep=times.dep,times.pred=times.pred,std.v=std.v,
+               predictor.table=pred.table))                                     # insert alpha, beta, gamma, ...?
                
     if (dat$Z.scaled) {
       Zu    <- dat$Z0u - drop(dat$Z1u)

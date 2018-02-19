@@ -107,19 +107,23 @@ prepare <- function(dat, predictors, predictors.op = "mean", special.predictors,
 	tmpX <- BuildMatrix(dat,allpredictors,allpredtimes,controls.identifier,
                       treatment.identifier,allpredaggfun,scale=TRUE,
                       betagamma=gamma)
+	tmpXu <- BuildMatrix(dat,allpredictors,allpredtimes,controls.identifier,
+                       treatment.identifier,allpredaggfun,scale=FALSE,
+                       betagamma=gamma)
 	tmpZ <- BuildMatrix(dat,dependent,time.optimize.ssr,controls.identifier,
                       treatment.identifier,scale=scale.Z,alpha=alpha,
                       betagamma=beta)
 	tmpZu <- BuildMatrix(dat,dependent,time.optimize.ssr,controls.identifier,
                        treatment.identifier,scale=FALSE,alpha=alpha,
                        betagamma=beta)
-  storage.mode(tmpX$X0) <- storage.mode(tmpZ$X1) <- storage.mode(tmpZ$Z0) <- 
-    storage.mode(tmpX$Z0) <- "double"
-  res <- list(X0=tmpX$X0,X1=tmpX$X1,Z0=tmpZ$X0,Z1=tmpZ$X1,trafo.v=tmpX$trafo.v,
-              Z.scaled=scale.Z)
+  storage.mode(tmpX$X0) <- storage.mode(tmpX$X1) <- storage.mode(tmpZ$X0) <- 
+    storage.mode(tmpZ$X1) <- storage.mode(tmpXu$X0) <- storage.mode(tmpXu$X1) <- 
+    "double"
+  res <- list(X0=tmpX$X0,X1=tmpX$X1,Z0=tmpZ$X0,Z1=tmpZ$X1,X0.unscaled=tmpXu$X0,
+              X1.unscaled=tmpXu$X1,trafo.v=tmpX$trafo.v,Z.scaled=scale.Z)
   if (scale.Z) {
     storage.mode(tmpZu$X0) <- storage.mode(tmpZu$X1) <- "double"
-    res <- c(res,list(Z0u=tmpZu$X0,Z1u=tmpZu$X1,
+    res <- c(res,list(Z0.unscaled=tmpZu$X0,Z1.unscaled=tmpZu$X1,
                       Z.len=tmpZu$trafo.v$len.v))
   }
   res
