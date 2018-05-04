@@ -468,7 +468,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                predictor.table=pred.table))                                     # insert alpha, beta, gamma, ...?
                
     if (dat$Z.scaled) {
-      Zu    <- dat$Z0u - drop(dat$Z1u)
+      Zu    <- dat$Z0.unscaled - drop(dat$Z1.unscaled)
       mspeu <- lossDep(Zu,w)
       Zl    <- dat$Z.len
       Zw    <- as.numeric(Zu %*% w)^2

@@ -64,7 +64,7 @@ head(Basque$gdpcap)
 ```
 
 The 'list' representation allows for simple, reproducible data preparations.
-To reproduce the analysis of [AER 2003][], the following preparations are sufficient:
+To reproduce the analysis of @Abadie2003, the following preparations are sufficient:
 ```{r}
 # define the sum of all cases
 school.sum <- with(Basque,colSums(school.illit + school.prim + school.med + school.high  + school.post.high))
@@ -102,7 +102,7 @@ Note that `times.dep` and `times.pred` may contain duplicate column names for fu
 
 ### Example
 
-The following model specification reproduces the model in [AER 2003]:
+The following model specification reproduces the model in @Abadie2003:
 ```{r}
 treatment.identifier <- "Basque Country (Pais Vasco)"
 controls.identifier  <- setdiff(colnames(Basque[[1]]),

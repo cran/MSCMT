@@ -1,3 +1,15 @@
+Changes in version 1.3.3 (2018-05-04)
+
+Changes
+
+- minor documentation update (references)
+
+Bug fixes
+
+- Fixed a bug in mscmt for multivariate applications introduced in
+  version 1.3.2
+
+
 Changes in version 1.3.2 (2018-02-19)
 
 New features

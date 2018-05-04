@@ -1,6 +1,6 @@
-78a0537c09bb5cd9bdebc80479f32fa0 *DESCRIPTION
+763a9c3ee9d461ebb33e311321af6972 *DESCRIPTION
 94b7ace81dc0275f3f09aeb7fc85dcda *NAMESPACE
-7b1093db1d16e0421b50b9f3176752e2 *NEWS
+5d0d82309d14cdc7b90444b0131df4b6 *NEWS
 aac28d8cfd995a5a2c43138432f3ee20 *R/DiD.r
 dbb0e8e5cdd93048b77dd70a5cb38506 *R/Helpers.r
 d7b2e82614fbae27cb41eb3776f14bc7 *R/MSCMT-package.r
@@ -12,7 +12,7 @@ f34cb94c839d8ac4fdc17c3d51cef776 *R/determine_v.r
 b21e8f02d6ce9933df329ebe876763cd *R/improveSynth.r
 43fe8b3af8b4e5a9a6150743848ebaf3 *R/listFromLong.r
 197bf66a79947a407d610a5c75cc8df3 *R/lsei.r
-a4a931685ef668afad6f83d6d1ddbaeb *R/mscmt.r
+ca1164ee23f5d3d630712e4e90ade1c0 *R/mscmt.r
 b949313bf65692108f002f98d274c636 *R/multiOpt.r
 b72f928ffc7065b521fb4cd6c8dc5927 *R/plot.r
 d5a6d8cc489b55f166f6b4f2c419aac4 *R/ppratio.r
@@ -21,10 +21,10 @@ d5a6d8cc489b55f166f6b4f2c419aac4 *R/ppratio.r
 5b5efa8253c3be7b98383861c1ff4bd3 *R/pvalue.r
 91e7b06891d2b79472f823aec7e45c3b *R/wnnls.r
 67f24dd85fb8676c331801efe551b19f *R/zzz.r
-e6c9f2844ad511a8d7bd573a11169040 *build/partial.rdb
-08e3d6d4b2a70fbd4c87890e7c68dcc7 *build/vignette.rds
+b935e3cf2731b09d40f72a7ef13273f5 *build/partial.rdb
+0fb83349967a5d0da06880bc4a767e9c *build/vignette.rds
 5989c255a06a79b6583e9300198c5e23 *inst/COPYRIGHTS
-7ec6862f8ecc26d147ceddd25989ba59 *inst/REFERENCES.bib
+efdc5aacbb5fa27d20044b673b640e05 *inst/REFERENCES.bib
 8d778f87cd74e597a8e283e5dfda9dec *inst/doc/CheckingSynth.R
 6da00b235b30e97360a482ceebd7822d *inst/doc/CheckingSynth.Rmd
 3403ea449e5b919a79a2f605f3374032 *inst/doc/CheckingSynth.html
@@ -32,8 +32,8 @@ e6c9f2844ad511a8d7bd573a11169040 *build/partial.rdb
 57a313b1a2ea5c237bfb751e1f92f027 *inst/doc/UsingTimeSeries.Rmd
 b0fc61a55e005165a41ad1adadb9a73d *inst/doc/UsingTimeSeries.html
 610f472e0ce4ec242536bebc8ddec898 *inst/doc/WorkingWithMSCMT.R
-755af9b6d501d8cafccd4bfa3bef1054 *inst/doc/WorkingWithMSCMT.Rmd
-e3d153d2378f9b9d0b206e992dd5aba0 *inst/doc/WorkingWithMSCMT.html
+14feb30042f30da4772515f83c70350a *inst/doc/WorkingWithMSCMT.Rmd
+48a6ca0493c0716dd9bb09462262e0c6 *inst/doc/WorkingWithMSCMT.html
 6f12f5a81d7b2698e00626ff593d4580 *man/MSCMTfunction.Rd
 b84c00d68ef2c7542de61c18da8bc0cf *man/MSCMTpackage.Rd
 fa4abec255e554cdfddc5ac069836a1e *man/compare.Rd
@@ -55,5 +55,5 @@ d1583bc464e1f4e22aad6b81a5b66c7a *src/inverse.f
 a6f9dd1a0974a52c9d21624f2458c0f1 *src/solve.f
 6da00b235b30e97360a482ceebd7822d *vignettes/CheckingSynth.Rmd
 57a313b1a2ea5c237bfb751e1f92f027 *vignettes/UsingTimeSeries.Rmd
-755af9b6d501d8cafccd4bfa3bef1054 *vignettes/WorkingWithMSCMT.Rmd
+14feb30042f30da4772515f83c70350a *vignettes/WorkingWithMSCMT.Rmd
 a35e522b56a40b49e8fe51f73dd859f2 *vignettes/synth3.out.RData
