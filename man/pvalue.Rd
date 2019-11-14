@@ -4,8 +4,9 @@
 \alias{pvalue}
 \title{P-values for placebo studies}
 \usage{
-pvalue(x, what, range.pre, range.post, alternative = c("two.sided", "less",
-  "greater"), exclude.ratio = Inf, ratio.type = c("rmspe", "mspe"))
+pvalue(x, what, range.pre, range.post, alternative = c("two.sided",
+  "less", "greater"), exclude.ratio = Inf, ratio.type = c("rmspe",
+  "mspe"))
 }
 \arguments{
 \item{x}{An object of class \code{"mscmt"}, usually obtained as

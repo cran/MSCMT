@@ -5,15 +5,17 @@
 \title{Multivariate SCM Using Time Series}
 \usage{
 mscmt(data, treatment.identifier = NULL, controls.identifier = NULL,
-  times.dep = NULL, times.pred = NULL, agg.fns = NULL, placebo = FALSE,
-  placebo.with.treated = FALSE, univariate = FALSE,
+  times.dep = NULL, times.pred = NULL, agg.fns = NULL,
+  placebo = FALSE, placebo.with.treated = FALSE, univariate = FALSE,
   univariate.with.dependent = FALSE, check.global = TRUE,
-  inner.optim = "wnnlsOpt", inner.opar = list(), outer.optim = "DEoptC",
-  outer.par = list(), outer.opar = list(), std.v = c("sum", "mean", "min",
-  "max"), alpha = NULL, beta = NULL, gamma = NULL, return.ts = TRUE,
-  single.v = FALSE, verbose = TRUE, debug = FALSE, seed = NULL,
-  cl = NULL, times.pred.training = NULL, times.dep.validation = NULL,
-  v.special = integer(), cv.alpha = 0)
+  inner.optim = "wnnlsOpt", inner.opar = list(),
+  outer.optim = "DEoptC", outer.par = list(), outer.opar = list(),
+  std.v = c("sum", "mean", "min", "max"), alpha = NULL, beta = NULL,
+  gamma = NULL, return.ts = TRUE, single.v = FALSE, verbose = TRUE,
+  debug = FALSE, seed = NULL, cl = NULL,
+  times.pred.training = NULL, times.dep.validation = NULL,
+  v.special = integer(), cv.alpha = 0, spec.search.treated = FALSE,
+  spec.search.placebos = FALSE)
 }
 \arguments{
 \item{data}{Typically, a list of matrices with rows corresponding to times 
@@ -269,6 +271,12 @@ with special treatment (see below). Defaults to the empty set.}
 \item{cv.alpha}{numeric scalar containing the minimal proportion (of the
 maximal feasible weight) for the weights of the predictors selected by 
 \code{v.special}. Defaults to \code{0}.}
+
+\item{spec.search.treated}{A logical scalar. If \code{TRUE}, a specification 
+search (for the optimal set of included predictors) is done for the treated unit. Defaults to \code{FALSE}.}
+
+\item{spec.search.placebos}{A logical scalar. If \code{TRUE}, a specification 
+search (for the optimal set of included predictors) is done for the control unit. Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{"mscmt"}, which is essentially a list

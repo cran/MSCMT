@@ -1,8 +1,8 @@
 Package: MSCMT
 Type: Package
 Encoding: UTF-8
-Version: 1.3.3
-Date: 2018-05-04
+Version: 1.3.4
+Date: 2019-11-14
 Title: Multivariate Synthetic Control Method Using Time Series
 Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     email = "martin.becker@mx.uni-saarland.de",
@@ -11,6 +11,11 @@ Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     email = "S.Kloessner@mx.uni-saarland.de"),
     person("Karline","Soetaert", role = c("com"),
     email = "karline.soetaert@nioz.nl"),
+    person("Jack","Dongarra",role=c("cph"),
+    email = "dongarra@icl.utk.edu"),
+    person("R.J.","Hanson",role=c("cph")),
+    person("K.H.","Haskell",role=c("cph")),
+    person("Cleve","Moler",role=c("cph")),
     person("LAPACK authors", role = "cph"))
 Depends: R (>= 3.2.0)
 Imports: stats, utils, parallel, lpSolve, ggplot2, lpSolveAPI, Rglpk,
@@ -30,15 +35,19 @@ Description: Three generalizations of the synthetic control method (which has
 License: GPL
 Copyright: inst/COPYRIGHTS
 LazyData: yes
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 BuildVignettes: yes
 NeedsCompilation: yes
-Packaged: 2018-05-04 06:54:15 UTC; mabe003
+Packaged: 2019-11-14 08:56:21 UTC; mabe003
 Author: Martin Becker [aut, cre] (<https://orcid.org/0000-0003-2336-9751>),
   Stefan Klößner [aut],
   Karline Soetaert [com],
+  Jack Dongarra [cph],
+  R.J. Hanson [cph],
+  K.H. Haskell [cph],
+  Cleve Moler [cph],
   LAPACK authors [cph]
 Maintainer: Martin Becker <martin.becker@mx.uni-saarland.de>
 Repository: CRAN
-Date/Publication: 2018-05-04 07:53:28 UTC
+Date/Publication: 2019-11-14 11:00:05 UTC

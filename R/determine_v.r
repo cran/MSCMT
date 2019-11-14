@@ -27,7 +27,7 @@ favourite_v <- function(v,w,X,Z,trafo.v,lb=1e-8,...) {
   }
 }
 
-check_v <- function(v,w,X,Z,trafo.v,lb=1e-8,tol.lp=1e-13,tol.loss=1e-8,
+check_v <- function(v,w,X,Z,trafo.v,lb=1e-8,tol.lp=1e-12,tol.loss=1e-8,
                     verbose=FALSE,debug=FALSE) {
   if (any(is.na(v))) {
     if (verbose||debug) catn("checking v: v contains NAs!") 
@@ -158,11 +158,11 @@ single_v <- function(w,X,Z,trafo.v,lb=0,check.exists=FALSE,tol_PUFAS=0.5*lb,
       tmpv <- backup.v[,ncol(backup.v)]
       tmpv <- tmpv/max(tmpv)
       tmp <- sum(tmpv[v.special])
-      if (debug) {
-        catn("maximum of special.v unreliable, using ",tmp,
+#      if (debug) {
+        catn("maximum of special.v unreliable (inf:",max(dtmp[2:3]),"), using ",tmp,
              " determined by backup v.")
         print(dtmp)
-      }
+#      }
     } else tmp <- tmp$objval    
     
     if (tmp*cv.alpha>lb*length(v.special)) {

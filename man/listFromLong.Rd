@@ -4,8 +4,8 @@
 \alias{listFromLong}
 \title{Convert Long Format to List Format}
 \usage{
-listFromLong(foo, unit.variable, time.variable, unit.names.variable = NULL,
-  exclude.columns = NULL)
+listFromLong(foo, unit.variable, time.variable,
+  unit.names.variable = NULL, exclude.columns = NULL)
 }
 \arguments{
 \item{foo}{A \code{data.frame} containing the data in "long" format.}

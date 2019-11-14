@@ -21,15 +21,8 @@ static R_NativePrimitiveArgType DWNNLS_t[] = {
   REALSXP, REALSXP, REALSXP, INTSXP, INTSXP, REALSXP
 };
 
-static R_NativePrimitiveArgType lsei_t[] = {
-  INTSXP, INTSXP, INTSXP, INTSXP, REALSXP, REALSXP, REALSXP, REALSXP, REALSXP, 
-  REALSXP, REALSXP, INTSXP, INTSXP, INTSXP, INTSXP, REALSXP, REALSXP, INTSXP,
-  REALSXP, LGLSXP, LGLSXP
-};
-
 static R_FortranMethodDef fortranMethods[] = {
   {"wnnls", (DL_FUNC) &dwnnls_, 12, DWNNLS_t},
-  {"lsei",  (DL_FUNC) &lsei_, 21, lsei_t},
   {NULL, NULL, 0}
 };
 

@@ -258,7 +258,9 @@ checkGlobalOpt <- function(X,Z,trafo.v,lb,single.v=FALSE,verbose=FALSE,
   rmspe <- tmp$rmspe
   if (exists_v(w,X,Z,trafo.v,lb)) {
     list(w=w,
-         v=if (isTRUE(single.v))
+         v=if (is.na(single.v)) 
+           cbind("backup"=single_v(w,X,Z,trafo.v,lb,check.exists=TRUE)) else
+           if (isTRUE(single.v))
              cbind("max.order"=single_v(w,X,Z,trafo.v,lb,verbose=verbose,
                                         debug=debug)) else 
              all_v(w,X,Z,trafo.v,lb,verbose=verbose,debug=debug),
@@ -282,19 +284,11 @@ improveZw <- function(Z,X,w,tol=.Machine$double.eps) {
 }
 
 ## solve outer optimization when there are no sunny donors
-## @importFrom limSolve lsei
-solveNoSunny <- function(X,Z,trafo.v,method=c("wnnls","lsei"),                  # was: method=c("lsei","wnnls"),
-                         lb.loss=.Machine$double.eps,
+solveNoSunny <- function(X,Z,trafo.v,lb.loss=.Machine$double.eps,
                          lb=sqrt(.Machine$double.eps),verbose=FALSE) {
-  method <- match.arg(method)                           
   n <- ncol(X)
-  w <- switch(method,
-              "lsei"  = lsei(A=Z,B=matrix(0,nrow=nrow(Z)),E=rbind(X,rep(1,n)),
-                             F=matrix(c(rep(0,nrow(X)),1),ncol=1),
-                             G=diag(n),H=matrix(0,nrow=n))$x,
-              "wnnls" = wnnls(A=Z,B=matrix(0,nrow=nrow(Z)),E=rbind(X,rep(1,n)),
-                              F=matrix(c(rep(0,nrow(X)),1),ncol=1))$x
-       )
+  w <- wnnls(A=Z,B=matrix(0,nrow=nrow(Z)),E=rbind(X,rep(1,n)),
+             F=matrix(c(rep(0,nrow(X)),1),ncol=1))$x
   names(w) <- colnames(X)             
   w[w<lb]  <- 0
   w <- w/sum(w)

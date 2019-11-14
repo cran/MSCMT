@@ -4,15 +4,18 @@
 \alias{ggplot.mscmt}
 \title{Plotting Results of mscmt with ggplot2}
 \usage{
-\method{ggplot}{mscmt}(x, what, type = c("gaps", "comparison", "placebo.gaps",
-  "placebo.data", "p.value"), treatment.time, zero.line = TRUE, ylab,
-  xlab = "Date", main, col, lty, lwd, legend = TRUE, bw = FALSE,
-  date.format, unit.name, full.legend = TRUE, include.smooth = FALSE,
-  include.mean = FALSE, include.synth = FALSE, draw.estwindow = TRUE,
-  what.set, limits = NULL, alpha = 1, alpha.min = 0.1,
-  exclude.units = NULL, exclude.ratio = Inf, ratio.type = c("rmspe",
-  "mspe"), alternative = c("two.sided", "less", "greater"),
-  draw.points = TRUE, control.name = "control units", size = 1)
+\method{ggplot}{mscmt}(x, what, type = c("gaps", "comparison",
+  "placebo.gaps", "placebo.data", "p.value"), treatment.time,
+  zero.line = TRUE, ylab, xlab = "Date", main, col, lty, lwd,
+  legend = TRUE, bw = FALSE, date.format, unit.name,
+  full.legend = TRUE, include.smooth = FALSE, include.mean = FALSE,
+  include.synth = FALSE, draw.estwindow = TRUE, what.set,
+  limits = NULL, alpha = 1, alpha.min = 0.1, exclude.units = NULL,
+  exclude.ratio = Inf, ratio.type = c("rmspe", "mspe"),
+  alternative = c("two.sided", "less", "greater"), draw.points = TRUE,
+  control.name = "control units", size = 1,
+  treated.name = "treated unit", labels = c("actual data",
+  "synthsized data"))
 }
 \arguments{
 \item{x}{An object of class \code{"mscmt"}, usually obtained as
@@ -152,6 +155,12 @@ units in placebo plots. Defaults to \code{"control units"}.}
 
 \item{size}{A numerical scalar (default: \code{1}). If \code{draw.points} is
 \code{TRUE} (default), \code{size} specifies the size of the points.}
+
+\item{treated.name}{A character string giving the label for the treated
+unit. Defaults to \code{"treated unit"}.}
+
+\item{labels}{A character vector of length 2 giving the labels for the actual 
+and synthesized data. Defaults to \code{c("actual data","synthsized data")}.}
 }
 \value{
 An object of class \code{\link[ggplot2]{ggplot}}.

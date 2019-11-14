@@ -115,6 +115,10 @@
 #' units in placebo plots. Defaults to \code{"control units"}.
 #' @param size A numerical scalar (default: \code{1}). If \code{draw.points} is
 #' \code{TRUE} (default), \code{size} specifies the size of the points.
+#' @param treated.name A character string giving the label for the treated
+#' unit. Defaults to \code{"treated unit"}.
+#' @param labels A character vector of length 2 giving the labels for the actual 
+#' and synthesized data. Defaults to \code{c("actual data","synthsized data")}.
 #' @return An object of class \code{\link[ggplot2]{ggplot}}.
 #' @importFrom ggplot2 ggplot aes_string geom_line labs scale_x_date geom_hline
 #' @importFrom ggplot2 scale_colour_manual scale_linetype_manual 
@@ -136,7 +140,8 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                          exclude.ratio=Inf,ratio.type=c("rmspe","mspe"),
                          alternative=c("two.sided", "less", "greater"),
                          draw.points=TRUE,control.name="control units",
-                         size=1) {
+                         size=1,treated.name="treated unit",
+                         labels=c("actual data","synthsized data")) {
   ratio.type  <- match.arg(ratio.type)                         
   alternative <- match.arg(alternative) 
   if (!missing(what.set)) 
@@ -316,11 +321,11 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                    alpha=unit.name,group=unit.name),na.rm=TRUE)
       res <- res + 
         scale_colour_manual("",values=col,
-                            labels=c("treated unit",control.name)) +
+                            labels=c(treated.name,control.name)) +
         scale_linetype_manual("",values=lty,
-                              labels=c("treated unit",control.name)) +
+                              labels=c(treated.name,control.name)) +
         scale_size_manual("",values=lwd,
-                          labels=c("treated unit",control.name)) +
+                          labels=c(treated.name,control.name)) +
         scale_alpha_manual("",values=alpha) +                          
         if (legend) {
           if (missing(col))
@@ -482,11 +487,11 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                      colour="ind"),size=size,na.rm=TRUE)
         res <- res + 
           scale_colour_manual("",values=col,
-                              labels=c("actual data","synthesized data")) +
+                              labels=labels) +
           scale_linetype_manual("",values=lty,
-                                labels=c("actual data","synthesized data")) +
+                                labels=labels) +
           scale_size_manual("",values=lwd,
-                            labels=c("actual data","synthesized data")) +
+                            labels=labels) +
           if (legend) guides(colour=guide_legend(override.aes=list(alpha=1))) else
                       guides(colour="none",linetype="none",size="none")
       }

@@ -1,3 +1,32 @@
+Changes in version 1.3.4 (2019-11-14)
+
+New features
+
+- added preliminary support for specification search (for the optimal set of
+  predictors to include in the model specification) as an enhancement for
+  cross validation
+
+Changes
+
+- tolerance of lp solver changed slightly
+
+- added some flexibility (for the labels) to the ggplot method
+
+- removed some unused (and unexported) code
+
+- improveSynth now also checks whether the donor weights of synth()'s solution
+  sum up to 1 (which they often do not!) and now also works when custom.v 
+  is set in the preceding synth()-call. Checks for optimality are now (solely)
+  based on relative suboptimality. This leads to a slight change in the
+  corresponding vignette.
+
+
+Bug fixes
+
+- added missing author information for LINPACK/SLATEC Fortran code (many 
+  thanks to Prof. Brian D. Ripley for the hint)
+
+
 Changes in version 1.3.3 (2018-05-04)
 
 Changes

@@ -120,11 +120,16 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
          "and corresponding dependent loss ('loss V') of ",
          as.numeric(synth.out$loss.v),".\n\n")
   }         
+  
+  w.orig <- as.numeric(synth.out$solution.w)
+  if ((sum(w.orig)<1)&&verbose) 
+    catf("Components of W*(V) do not sum to 1, dependent loss ('loss V') of ",
+         "rescaled W*(V) is ",lossDep(Z,w.orig/sum(w.orig)),".\n\n")
 
   new.loss.w <- lossPred(X,w,tv)
   new.loss.v <- lossDep(Z,w)
-  infeasible.w <- ((synth.out$loss.w-new.loss.w)/new.loss.w > tol) &&
-                    (synth.out$loss.w-new.loss.w > tol)
+  infeasible.w <- ((synth.out$loss.w-new.loss.w)/new.loss.w > tol) #&&
+                    #(synth.out$loss.w-new.loss.w > tol)
   if (verbose) {
     cat0("Feasibility of W*(V)\n",
          "====================\n\n")
@@ -147,8 +152,8 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
   v      <- v/sum(v)
   loss.w <- lossPred(X,tmp$w,v,tmp$trafo.v)
   loss.v <- tmp$rmspe^2
-  suboptimal.v <- ((as.numeric(synth.out$loss.v)-loss.v)/loss.v > tol) &&
-                     (as.numeric(synth.out$loss.v)-loss.v > tol)
+  suboptimal.v <- ((as.numeric(synth.out$loss.v)-loss.v)/loss.v > tol) #&&
+                     #(as.numeric(synth.out$loss.v)-loss.v > tol)
                      
   if (verbose) {
     cat0("Optimality of V\n",
@@ -169,10 +174,15 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
   }    
   
   synth2.out                 <- synth.out
-  synth2.out$solution.v[1,]  <- v
+  if (is.numeric(synth2.out$solution.v)) {
+    names(v) <- names(synth2.out$solution.v)
+    synth2.out$solution.v  <- v 
+  } else synth2.out$solution.v[1,]  <- v
   synth2.out$solution.w[,1]  <- tmp$w
   synth2.out$loss.w[1,1]     <- loss.w
   synth2.out$loss.v[1,1]     <- loss.v
+  synth2.out$new.loss.v      <- new.loss.v
+  synth2.out$new.loss.w      <- new.loss.w
   synth2.out$custom.v        <- NULL
   synth2.out$rgV.optim       <- NULL
        
@@ -220,3 +230,80 @@ checkInner <- function(X0,X1,v,w,Z0=NULL,Z1=NULL,tol=sqrt(.Machine$double.eps),
   c(old.loss.w=old.loss.w, new.loss.w=new.loss.w, old.loss.v=old.loss.v,
     new.loss.v=new.loss.v)
 }
+
+rescaleLoss <- function(synth.out,dataprep.out) {
+  storage.mode(dataprep.out$X0) <- storage.mode(dataprep.out$X1) <- 
+    storage.mode(dataprep.out$Z0) <- storage.mode(dataprep.out$Z1) <- "double"
+  Z   <- dataprep.out$Z0 - drop(dataprep.out$Z1)
+  w.orig <- as.numeric(synth.out$solution.w)
+  lossDep(Z,w.orig/sum(w.orig))
+}
+
+is.inner.wrong <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-8) {
+  storage.mode(dataprep.out$X0) <- storage.mode(dataprep.out$X1) <- 
+    storage.mode(dataprep.out$Z0) <- storage.mode(dataprep.out$Z1) <- "double"
+  v   <- as.numeric(synth.out$solution.v)
+  Xu  <- cbind(dataprep.out$X0, dataprep.out$X1)                                # generate (scaled!) X from dataprep object
+  Xs  <- Xu/apply(Xu, 1, sd)
+  X   <- Xs[, -ncol(Xs)] - drop(Xs[, ncol(Xs)])
+  Z   <- dataprep.out$Z0 - drop(dataprep.out$Z1)
+  ME  <- 1L
+  MA  <- length(v)
+  N   <- ncol(X)
+  MDW <- ME+MA
+  globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
+  globals$IWORK <- integer(MDW+N)
+  globals$WORK  <- double(MDW+5*N)
+  globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
+  globals$RNORM <- double(1)
+  globals$MODE  <- integer(1)
+  globals$X     <- double(N)
+  tv  <- as.numeric(v)
+  sol <-.Fortran(C_wnnls,W=.Call(C_prepareW4,X,tv),
+                 MDW=globals$Ipar[3],ME=globals$Ipar[1],MA=globals$Ipar[2],
+                 N=globals$Ipar[4],L=0L,PRGOPT=1.0,X=globals$X,
+                 RNORM=globals$RNORM,MODE=globals$MODE,IWORK=globals$IWORK,
+                 WORK=globals$WORK)
+  if ((any(is.infinite(sol$X))) || (sol$MODE>0)) 
+    warning("error in inner optimization (wnnls)")                
+  w <- sol$X
+  w.orig <- as.numeric(synth.out$solution.w)
+
+  real.loss.w <- lossPred(X,w.orig/sum(w.orig),tv)
+  new.loss.w <- lossPred(X,w,tv)
+  ((real.loss.w-new.loss.w)/new.loss.w > tol)
+}
+
+updateInner <- function(X0,X1,v,w,Z0=NULL,Z1=NULL,tol=sqrt(.Machine$double.eps),
+                        verbose=TRUE,...) {
+  storage.mode(X0) <- storage.mode(X1) <- 
+    storage.mode(Z0) <- storage.mode(Z1) <- "double"
+  Xu  <- cbind(X0,X1)
+  Xs  <- Xu/apply(Xu, 1, sd)
+  X   <- Xs[, -ncol(Xs)] - drop(Xs[, ncol(Xs)])
+  Z   <- if (!is.null(Z0)&&!is.null(Z1)) Z0 - drop(Z1) else NULL
+  ME  <- 1L
+  MA  <- length(v)
+  N   <- ncol(X)
+  MDW <- ME+MA
+  globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
+  globals$IWORK <- integer(MDW+N)
+  globals$WORK  <- double(MDW+5*N)
+  globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
+  globals$RNORM <- double(1)
+  globals$MODE  <- integer(1)
+  globals$X     <- double(N)
+  tv  <- as.numeric(v)
+  sol <-.Fortran(C_wnnls,W=.Call(C_prepareW4,X,tv),
+                 MDW=globals$Ipar[3],ME=globals$Ipar[1],MA=globals$Ipar[2],
+                 N=globals$Ipar[4],L=0L,PRGOPT=1.0,X=globals$X,
+                 RNORM=globals$RNORM,MODE=globals$MODE,IWORK=globals$IWORK,
+                 WORK=globals$WORK)
+  if ((any(is.infinite(sol$X))) || (sol$MODE>0)) 
+    warning("error in inner optimization (wnnls)")                
+  wnew <- sol$X
+  names(wnew) <- names(w)
+  wnew
+}
+
+

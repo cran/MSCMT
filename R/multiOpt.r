@@ -100,8 +100,9 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     v     <- cbind("fixed"=outer.opar$v)
     w     <- blow(outer.opar$w,cnX)
     rmspe <- sqrt(lossDep(Z,w))
-    res   <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,conv=0,single.v=single.v,
-                  ncalls.inner=0)
+    loss.w <- c("fixed"=lossPred(X,w,outer.opar$v,trafo.v))
+    res   <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,loss.w=loss.w,conv=0,
+                  single.v=single.v,ncalls.inner=0)
   }
 
   # initialize variables for benchmarking if applicable
@@ -290,8 +291,9 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
             w     <- blow(outer.opar$w,colnames(X.orig))
             rmspe <- sqrt(lossDep(Z.orig,w))
             v     <- cbind("fixed"=v)
+            loss.w <- c("fixed"=lossPred(X.orig,w,outer.opar$v,trafo.v))
           }
-          res <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,conv=0,
+          res <- list(w=w,v=v,loss.v=rmspe^2,rmspe=rmspe,loss.w=loss.w,conv=0,
                       single.v=single.v,ncalls.inner=0)
         } else if (solution.type!="global") {
           fn.min.par  <- c(list(X=X,Z=Z,trafo=trafo.v$trafo),inner.args)   
@@ -319,16 +321,19 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
     rownames(res$v) <- trafo.v$names.v
   }  
 
-  ws    <- apply(res$v,2,function(x) wnnlsExt(x,X.orig,NULL,trafo.v,
-                                              return.w=TRUE))
-  ws    <- sanitize_w(ws)
-  loss  <- apply(ws,2,function(w) lossDep(Z.orig,w))
-  idx   <- which.min(loss)[1]
-  res$loss.v   <- loss[idx]
-  res$rmspe    <- sqrt(res$loss.v)
-  rownames(ws) <- cnX
-  res$w        <- ws[,idx]
-  res$loss.w   <- apply(res$v,2,function(v) lossPred(X.orig,res$w,v,trafo.v))
+  if (!any(outer.optim == "none")) {                                            # sanitize/fix w only if applicable! (changed 2018-10-19)
+    ws    <- apply(res$v[,apply(res$v,2,function(x) !any(is.na(x))),drop=FALSE],2,
+                   function(x) wnnlsExt(x,X.orig,NULL,trafo.v,return.w=TRUE))
+    ws    <- sanitize_w(ws)
+    loss  <- apply(ws,2,function(w) lossDep(Z.orig,w))
+    idx   <- which.min(loss)[1]
+    res$loss.v   <- loss[idx]
+    res$rmspe    <- sqrt(res$loss.v)
+    rownames(ws) <- cnX
+    res$w        <- ws[,idx]
+    res$loss.w   <- apply(res$v,2,function(v) lossPred(X.orig,res$w,v,trafo.v))
+  }
+
   res$trafo.v     <- trafo.v
   res$outer.rmspe <- gRmspe
   

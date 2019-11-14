@@ -1109,7 +1109,7 @@ C
 C KARLINE: REMOVED WRITE		 
          CALL rwarn ('An error occurred')
 
-C	  WRITE (TEMP, '(''ERROR NUMBER = '', I8)') NERR
+C   WRITE (TEMP, '(''ERROR NUMBER = '', I8)') NERR
 C         DO 10 I=16,22
 C            IF (TEMP(I:I) .NE. ' ') GO TO 20
 C   10    CONTINUE
@@ -3397,7 +3397,7 @@ C         END IF
 *
       END
 
-	      SUBROUTINE DLAMC1( BETA, T, RND, IEEE1 )
+      SUBROUTINE DLAMC1( BETA, T, RND, IEEE1 )
 *
 *  -- LAPACK auxiliary routine (version 3.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,

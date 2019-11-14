@@ -4090,7 +4090,7 @@ c
          IF (IWORK(1).LT.LW) THEN
 C KARLINE: REMOVED WRITE		 
          CALL rwarn ('LSEI: insufficient storage')
-		 
+    
 C            WRITE (XERN1, '(I8)') LW
 C            CALL xXERMSG ('SLATEC', 'DWNNLS', 'INSUFFICIENT STORAGE ' //            &
 C     &         'ALLOCATED FOR WORK(*), NEED LW = ' // XERN1, 2, 1)
@@ -4104,7 +4104,7 @@ c
          IF (IWORK(2).LT.LIW) THEN
 C KARLINE: REMOVED WRITE		 
          CALL rwarn ('LSEI: insufficient storage')
-		 
+     
 C            WRITE (XERN1, '(I8)') LIW
 C            CALL xXERMSG ('SLATEC', 'DWNNLS', 'INSUFFICIENT STORAGE ' //            &
 C     &         'ALLOCATED FOR IWORK(*), NEED LIW = ' // XERN1, 2, 1)

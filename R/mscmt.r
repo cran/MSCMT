@@ -236,6 +236,10 @@
 #' @param cv.alpha numeric scalar containing the minimal proportion (of the
 #' maximal feasible weight) for the weights of the predictors selected by 
 #' \code{v.special}. Defaults to \code{0}.
+#' @param spec.search.treated A logical scalar. If \code{TRUE}, a specification 
+#' search (for the optimal set of included predictors) is done for the treated unit. Defaults to \code{FALSE}.
+#' @param spec.search.placebos A logical scalar. If \code{TRUE}, a specification 
+#' search (for the optimal set of included predictors) is done for the control unit. Defaults to \code{FALSE}.
 #' @return An object of class \code{"mscmt"}, which is essentially a list
 #' containing the results of the estimation and, if applicable, the placebo
 #' study.
@@ -289,7 +293,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                   alpha=NULL,beta=NULL,gamma=NULL,return.ts=TRUE,single.v=FALSE,
                   verbose=TRUE, debug=FALSE, seed=NULL, cl=NULL,
                   times.pred.training=NULL, times.dep.validation=NULL,
-                  v.special=integer(),cv.alpha=0) {
+                  v.special=integer(),cv.alpha=0,
+                  spec.search.treated=FALSE,spec.search.placebos=FALSE) {
   # check input                  
   std.v <- match.arg(std.v)
 
@@ -301,12 +306,12 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                                   "Y1plot","names.and.numbers","tag")))
   # initialize v
   v <- NULL                                  
-
+  
   if (is.dataprep&&is.cv) {
     warning("cross validation not supported for dataprep input")                # cross validation not supported for dataprep input
-	  is.cv <- FALSE
-  }								  
-								  
+    is.cv <- FALSE
+  }
+  
   if (placebo&&(!is.null(cl))) { 
     n.placebo <- length(controls.identifier)+1
     n.multi   <- length(outer.optim) * (if (is.null(seed)) 1 else length(seed))
@@ -341,9 +346,28 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                    sapply(data$tag$special.predictors,function(x) x[[3]])) 
   }
 
+  # prepare specification search
+  if (is.cv&&(spec.search.treated||spec.search.placebos)) {
+    subsets <- expand.grid(rep(list(c(FALSE,TRUE)), 
+                           ncol(times.pred)-length(v.special)))
+    subsets <- as.matrix(cbind(matrix(TRUE,ncol=length(v.special),
+                                      nrow=nrow(subsets)),subsets))
+    colnames(subsets) <- colnames(times.pred)
+    if (placebo) {
+      tmp <- vector("list",length(controls.identifier)+1)
+      names(tmp) <- c(treatment.identifier,controls.identifier)
+      tmp[[treatment.identifier]] <- if (spec.search.treated) subsets else NULL
+      for (id in controls.identifier) 
+        tmp[[id]] <- if (spec.search.placebos) subsets else NULL
+      subsets <- tmp
+    }
+  } else subsets <- NULL
+
   # main workhorse
   synthSingle <- function(treatment.identifier, controls.identifier, 
-                          times.dep, times.pred, agg.fns, v=NULL) {
+                          times.dep, times.pred, agg.fns, v=NULL,
+                          subsets) {
+
     if (!is.matrix(times.dep)) stop("times.dep must be a matrix")
     dependent <- colnames(times.dep)
     predictor <- colnames(times.pred)
@@ -355,21 +379,13 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
     if (is.null(agg.fns)) agg.fns <- rep("id",ncol(times.pred))
     if ((!is.character(agg.fns))||(length(agg.fns)!=ncol(times.pred)))
       stop("agg.fns is not a character vector with ncol(times.pred) elements")
-    names.v    <- colnames(times.pred)
-    len.v      <- length(names.v)
-    special.predictors <- vector("list",len.v)
-    for (i in 1:len.v) 
-      special.predictors[[i]] <- 
-        list(names.v[i],list(seqAQM(times.pred[1,i],times.pred[2,i])),
-             if (is.null(agg.fns)) "id" else agg.fns[i])
-  
-    # prepare the data
+
     if (is.dataprep) {
       X  <- cbind(data$X0, data$X1)
       colnames(X) <- unit.names[as.character(colnames(X))]
       if (any(is.na(colnames(X)))) 
         colnames(X) <- c(colnames(data$X0),colnames(data$X1))
-      X  <- X/apply(X, 1, sd)                                                   # scale X0,X1
+      X  <- X/apply(X, 1, sd)                                                 # scale X0,X1
       X0u <- data$X0
       colnames(X0u) <- unit.names[as.character(colnames(data$X0))]
       if (any(is.na(colnames(X0u)))) 
@@ -379,7 +395,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       if (any(is.na(colnames(X1u)))) 
         colnames(X1u) <- colnames(data$X1)
       Z0 <- data$Z0
-      colnames(Z0) <- unit.names[as.character(colnames(data$X0))]               # correct potentially wrong column names of Z0
+      colnames(Z0) <- unit.names[as.character(colnames(data$X0))]             # correct potentially wrong column names of Z0
       if (any(is.na(colnames(Z0)))) 
         colnames(Z0) <- colnames(data$X0)
       Z1 <- data$Z1
@@ -394,28 +410,73 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       Z0 <- Z[,controls.identifier,drop=FALSE]
       X1 <- X[,treatment.identifier,drop=FALSE]
       X0 <- X[,controls.identifier,drop=FALSE]
-      dat <- list(X0 = X0, X1 = X1, Z0 = Z0, Z1 = Z1, X0.unscaled = X0u, 
-                  X1.unscaled = X1u,
-                  trafo.v=genTrafo(n.v=ncol(times.pred),
-                                   names.v=colnames(times.pred)),
-                  Z.scaled=FALSE)
+    }    
+        
+    singleSubset <- function(times.pred,agg.fns) {
+      names.v    <- colnames(times.pred)
+      len.v      <- length(names.v)
+      special.predictors <- vector("list",len.v)
+      for (i in 1:len.v) 
+        special.predictors[[i]] <- 
+          list(names.v[i],list(seqAQM(times.pred[1,i],times.pred[2,i])),
+               if (is.null(agg.fns)) "id" else agg.fns[i])
+    
+      # prepare the data
+      if (is.dataprep) {
+        dat <- list(X0 = X0, X1 = X1, Z0 = Z0, Z1 = Z1, X0.unscaled = X0u, 
+                    X1.unscaled = X1u,
+                    trafo.v=genTrafo(n.v=ncol(times.pred),
+                                     names.v=colnames(times.pred)),
+                    Z.scaled=FALSE)
+      } else {
+        dat <- prepare(data,predictors=NULL, predictors.op="mean", 
+                       special.predictors, dependent, treatment.identifier, 
+                       controls.identifier, time.predictors.prior=NULL, 
+                       time.optimize.ssr, alpha=alpha, beta=beta, gamma=gamma, 
+                       scale.Z=(ncol(times.dep)>1))
+      }                 
+    
+      # run the optimization                           
+      res <- multiOpt(X0=dat$X0,X1=dat$X1,Z0=dat$Z0,Z1=dat$Z1,
+                      trafo.v=dat$trafo.v,check.global=check.global,
+                      inner.optim=inner.optim,inner.opar=inner.opar,
+                      starting.values=NULL,outer.par=outer.par,
+                      outer.optim=if (is.null(v)) outer.optim else "fixed",
+                      outer.opar=if (is.null(v)) outer.opar else list(v=v),
+                      std.v=std.v,single.v=single.v,verbose=verbose,debug=debug,
+                      seed=seed,cl=if (placebo.on.cluster) NULL else cl)
+                      
+      list(res=res,dat=dat)
+    }
+    
+    if (is.null(subsets)||!is.matrix(subsets)) {
+      if (is.null(subsets)) subset <- rep(TRUE,ncol(times.pred)) else
+                            subset <- subsets
+      tmp  <- singleSubset(times.pred[,subset,drop=FALSE],agg.fns[subset])
+      dat  <- tmp$dat
+      res  <- tmp$res
     } else {
-      dat <- prepare(data,predictors=NULL, predictors.op="mean", 
-                     special.predictors, dependent, treatment.identifier, 
-                     controls.identifier, time.predictors.prior=NULL, 
-                     time.optimize.ssr, alpha=alpha, beta=beta, gamma=gamma, 
-                     scale.Z=(ncol(times.dep)>1))
-    }                 
-  
-    # run the optimization                           
-    res <- multiOpt(X0=dat$X0,X1=dat$X1,Z0=dat$Z0,Z1=dat$Z1,trafo.v=dat$trafo.v,
-                    check.global=check.global,
-                    inner.optim=inner.optim,inner.opar=inner.opar,
-                    starting.values=NULL,outer.par=outer.par,
-                    outer.optim=if (is.null(v)) outer.optim else "fixed",
-                    outer.opar=if (is.null(v)) outer.opar else list(v=v),
-                    std.v=std.v,single.v=single.v,verbose=verbose,debug=debug,
-                    seed=seed,cl=if (placebo.on.cluster) NULL else cl)
+      CVcrit <- numeric(nrow(subsets))
+      catn("Starting specification search")
+      for (i in seq_len(nrow(subsets))) {
+        catn("Specification ",i," out of ",nrow(subsets))
+        CVcrit[i] <- singleSubset(times.pred[,subsets[i,],drop=FALSE],
+                                  agg.fns[subsets[i,]])$res$rmspe
+      }
+      minCVcrit <- min(CVcrit)
+      npreds    <- rowSums(subsets)
+      predopt   <- CVcrit <= minCVcrit*(1+1e-8)
+      npgood    <- min(ifelse(predopt,npreds,1e8))
+      goodsub   <- predopt&(npreds==npgood)
+      catn(sum(goodsub)," 'best' model(s)")
+      CVcrit[!goodsub] <- Inf
+      subset <- subsets[which.min(CVcrit),]
+      catn("Predictors included in 'best' specification: ",
+           paste0(colnames(times.pred)[subset],collapse=", "))
+      tmp  <- singleSubset(times.pred[,subset,drop=FALSE],agg.fns[subset])
+      dat  <- tmp$dat
+      res  <- tmp$res
+    }
                     
     w <- blow(res$w,controls.identifier)
   
@@ -463,9 +524,11 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                dataprep.scaled=dat,data.synth=data.synth,data.treat=data.treat,
                gaps=gaps,combined=combined,treated.unit=treatment.identifier,
                control.units=controls.identifier,dependent=dependent,
-               predictor=predictor,agg.fns=agg.fns,agg.pred=rownames(dat$X0),
-               times.dep=times.dep,times.pred=times.pred,std.v=std.v,
-               predictor.table=pred.table))                                     # insert alpha, beta, gamma, ...?
+               predictor=predictor[subset],agg.fns=agg.fns[subset],
+               agg.pred=rownames(dat$X0),times.dep=times.dep,
+               times.pred=times.pred[,subset,drop=FALSE],
+               std.v=std.v,predictor.table=pred.table,
+               subset=subset))                                                  # insert alpha, beta, gamma, ...?
                
     if (dat$Z.scaled) {
       Zu    <- dat$Z0.unscaled - drop(dat$Z1.unscaled)
@@ -480,7 +543,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
   }           
 
   synthPlacebo <- function(treatment.identifier, controls.identifier, 
-                           times.dep, times.pred, agg.fns, v=NULL) {
+                           times.dep, times.pred, agg.fns, v=NULL, subsets) {
     all.units <- c(treatment.identifier,controls.identifier)
     mySynth <- function(treated) {
       if (verbose) catn("Using ",treated," as treated unit now.")
@@ -488,7 +551,8 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
         if (placebo.with.treated) setdiff(all.units,treated) else 
                                   setdiff(controls.identifier,treated),
         times.dep, times.pred, agg.fns,
-        v=if (!is.null(v)) v[[treated]] else NULL)
+        v=if (!is.null(v)) v[[treated]] else NULL, 
+        subsets=if (!is.null(subsets)) subsets[[treated]] else NULL)
       class(res) <- "mscmt"
       res
     }  
@@ -498,7 +562,7 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       ".")
     if (placebo.on.cluster) clusterExport(cl,c("mySynth","treatment.identifier",
       "controls.identifier","times.dep","times.pred","agg.fns","all.units","v",
-      setdiff(unique(agg.fns),"id"),"multiOpt","atomOpt"),
+      setdiff(unique(agg.fns),"id"),"subsets","multiOpt","atomOpt"),
       envir=environment())
     res <- if (placebo.on.cluster) clusterApplyLB(cl,all.units,mySynth) else
                                    lapply(all.units,mySynth)
@@ -524,7 +588,9 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
 
   # separate univariate SCM for many dependent variables
   synthUnivariate <- function(treatment.identifier, controls.identifier, 
-                              times.dep, times.pred, agg.fns, v=NULL) {
+                              times.dep, times.pred, agg.fns, v=NULL, subsets) {
+    if (nrow(subsets)>1) 
+      catn("Specification search for univariate SCM not yet supported")
     if (verbose) catn("Starting univariate SCMT for single dependent ",
       "variables, ",if (univariate.with.dependent) "in" else "ex",
       "cluding other dependent variables as predictors.")
@@ -573,20 +639,23 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
     }  
     if (verbose) catn("Starting optimization for cross-validation period.")
     resCV <- synthFun(treatment.identifier, controls.identifier, 
-                      times.dep.validation, times.pred.training, agg.fns, v)  
+                      times.dep.validation, times.pred.training, agg.fns, v,
+                      subsets)  
     if ("v" %in% names(outer.opar)) v <- outer.opar$v
     if (is.null(v)) {
       v <- genV(resCV)
       if (!(univariate||placebo)) if (!is.null(v)) v=v[,1]
     }  
+    CVsubsets <- if (placebo) lapply(resCV,function(x) x$subset) else
+                              resCV$subset
     if (verbose) catn("Starting calculations for main period.")
     resM <- synthFun(treatment.identifier, controls.identifier, 
-                     times.dep, times.pred, agg.fns, v)  
+                     times.dep, times.pred, agg.fns, v, CVsubsets)  
     class(resCV) <- class(resM) <- "mscmt"
     res <- list(cv=resCV, main=resM)
   } else {                                                                      # no cross-validation
     res <- synthFun(treatment.identifier, controls.identifier, times.dep, 
-                    times.pred, agg.fns, v)
+                    times.pred, agg.fns, v, subsets)
     class(res) <- "mscmt"
   }
   if (placebo.on.cluster&&verbose) 
