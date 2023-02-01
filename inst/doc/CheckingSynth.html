@@ -1,44 +1,74 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
 <title>Checking and Improving Results of package Synth</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -47,9 +77,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -106,6 +136,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+
 <style type="text/css">body {
 background-color: #fff;
 margin: 1em auto;
@@ -116,9 +147,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,7 +315,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -306,11 +335,13 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="TOC">
 <ul>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#first-example">First Example</a><ul>
+<li><a href="#first-example">First Example</a>
+<ul>
 <li><a href="#generating-the-result-of-package-synth">Generating the result of package <code>Synth</code></a></li>
 <li><a href="#checking-the-result">Checking the result</a></li>
 </ul></li>
-<li><a href="#second-example">Second Example</a><ul>
+<li><a href="#second-example">Second Example</a>
+<ul>
 <li><a href="#generating-the-result-of-package-synth-1">Generating the result of package <code>Synth</code></a></li>
 <li><a href="#checking-the-result-1">Checking the result</a></li>
 </ul></li>
@@ -331,33 +362,33 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="generating-the-result-of-package-synth" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
 <p>The following code is thus essentially borrowed from the <code>example</code> section of the corresponding help page (all comments have been removed):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Synth)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(Synth)</span></code></pre></div>
 <pre><code>## ##
 ## ## Synth Package: Implements Synthetic Control Methods.</code></pre>
-<pre><code>## ## See http://www.mit.edu/~jhainm/software.htm for additional information.</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">data</span>(synth.data)</a>
-<a class="sourceLine" id="cb4-2" title="2">dataprep.out &lt;-</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="st">  </span><span class="kw">dataprep</span>(</a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">foo =</span> synth.data,</a>
-<a class="sourceLine" id="cb4-5" title="5">    <span class="dt">predictors =</span> <span class="kw">c</span>(<span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;X3&quot;</span>),</a>
-<a class="sourceLine" id="cb4-6" title="6">    <span class="dt">predictors.op =</span> <span class="st">&quot;mean&quot;</span>,</a>
-<a class="sourceLine" id="cb4-7" title="7">    <span class="dt">dependent =</span> <span class="st">&quot;Y&quot;</span>,</a>
-<a class="sourceLine" id="cb4-8" title="8">    <span class="dt">unit.variable =</span> <span class="st">&quot;unit.num&quot;</span>,</a>
-<a class="sourceLine" id="cb4-9" title="9">    <span class="dt">time.variable =</span> <span class="st">&quot;year&quot;</span>,</a>
-<a class="sourceLine" id="cb4-10" title="10">    <span class="dt">special.predictors =</span> <span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb4-11" title="11">      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1991</span>, <span class="st">&quot;mean&quot;</span>),</a>
-<a class="sourceLine" id="cb4-12" title="12">      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1985</span>, <span class="st">&quot;mean&quot;</span>),</a>
-<a class="sourceLine" id="cb4-13" title="13">      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1980</span>, <span class="st">&quot;mean&quot;</span>)</a>
-<a class="sourceLine" id="cb4-14" title="14">    ),</a>
-<a class="sourceLine" id="cb4-15" title="15">    <span class="dt">treatment.identifier =</span> <span class="dv">7</span>,</a>
-<a class="sourceLine" id="cb4-16" title="16">    <span class="dt">controls.identifier =</span> <span class="kw">c</span>(<span class="dv">29</span>, <span class="dv">2</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">32</span>, <span class="dv">38</span>),</a>
-<a class="sourceLine" id="cb4-17" title="17">    <span class="dt">time.predictors.prior =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1989</span>),</a>
-<a class="sourceLine" id="cb4-18" title="18">    <span class="dt">time.optimize.ssr =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1990</span>),</a>
-<a class="sourceLine" id="cb4-19" title="19">    <span class="dt">unit.names.variable =</span> <span class="st">&quot;name&quot;</span>,</a>
-<a class="sourceLine" id="cb4-20" title="20">    <span class="dt">time.plot =</span> <span class="dv">1984</span><span class="op">:</span><span class="dv">1996</span></a>
-<a class="sourceLine" id="cb4-21" title="21">  )</a>
-<a class="sourceLine" id="cb4-22" title="22"></a>
-<a class="sourceLine" id="cb4-23" title="23">synth.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out)</a></code></pre></div>
+<pre><code>## ## See https://web.stanford.edu/~jhain/synthpage.html for additional information.</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">data</span>(synth.data)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>dataprep.out &lt;-</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="st">  </span><span class="kw">dataprep</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    <span class="dt">foo =</span> synth.data,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    <span class="dt">predictors =</span> <span class="kw">c</span>(<span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;X3&quot;</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    <span class="dt">predictors.op =</span> <span class="st">&quot;mean&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    <span class="dt">dependent =</span> <span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>    <span class="dt">unit.variable =</span> <span class="st">&quot;unit.num&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>    <span class="dt">time.variable =</span> <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>    <span class="dt">special.predictors =</span> <span class="kw">list</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1991</span>, <span class="st">&quot;mean&quot;</span>),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1985</span>, <span class="st">&quot;mean&quot;</span>),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1980</span>, <span class="st">&quot;mean&quot;</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>    ),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    <span class="dt">treatment.identifier =</span> <span class="dv">7</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>    <span class="dt">controls.identifier =</span> <span class="kw">c</span>(<span class="dv">29</span>, <span class="dv">2</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">32</span>, <span class="dv">38</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>    <span class="dt">time.predictors.prior =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1989</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>    <span class="dt">time.optimize.ssr =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1990</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>    <span class="dt">unit.names.variable =</span> <span class="st">&quot;name&quot;</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>    <span class="dt">time.plot =</span> <span class="dv">1984</span><span class="op">:</span><span class="dv">1996</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>  )</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>synth.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out)</span></code></pre></div>
 <pre><code>## 
 ## X1, X0, Z1, Z0 all come directly from dataprep object.
 ## 
@@ -370,58 +401,57 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## **************** 
 ## **************** 
 ## 
-## MSPE (LOSS V): 4.714688 
+## MSPE (LOSS V): 4.720551 
 ## 
 ## solution.v:
-##  0.00490263 0.003884407 0.1972011 0.2707289 0.0007091301 0.5225738 
+##  0.003972032 0.00222758 0.1288856 0.3277689 0.008144768 0.5290011 
 ## 
 ## solution.w:
-##  0.0001407318 0.004851527 0.1697786 0.2173031 0.6079231 2.9419e-06</code></pre>
+##  0.001006191 0.005246634 0.1691651 0.2136205 0.6109586 2.9586e-06</code></pre>
 </div>
 <div id="checking-the-result" class="section level3">
 <h3>Checking the result</h3>
 <p>We check the result by applying function <code>improveSynth</code> to <code>synth.out</code> and <code>dataprep.out</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">library</span>(MSCMT)</a>
-<a class="sourceLine" id="cb6-2" title="2">synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth.out,dataprep.out)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">library</span>(MSCMT)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth.out,dataprep.out)</span></code></pre></div>
 <pre><code>## Results reported by package Synth
 ## =================================
 ## 
-## Optimal V    : 0.0049026303620646 0.00388440715187941 0.197201084472783 
-##                0.270728900094351 0.000709130113708991 0.522573847805214
-## Optimal W*(V): 0.000140731762002351 0.00485152709141158 0.169778625515031 
-##                0.217303120466497 0.607923052750901 2.94191546847469e-06
-## with corresponding predictor loss ('loss W') of 0.00588247 
-## and corresponding dependent loss ('loss V') of 4.714688.
+## Optimal V    : 0.00397203172199428 0.0022275802340665 0.128885551930044 
+##                0.327768944797584 0.00814476840194525 0.529001122914366
+## Optimal W*(V): 0.00100619117797987 0.00524663354000337 0.169165120873083 
+##                0.213620460951039 0.610958634379188 2.95858187768921e-06
+## with corresponding predictor loss (&#39;loss W&#39;) of 0.004733129 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.720551.
 ## 
 ## 
-## Components of W*(V) do not sum to 1, dependent loss ('loss V') of 
-## rescaled W*(V) is 4.714688.
+## Components of W*(V) do not sum to 1, dependent loss (&#39;loss V&#39;) of 
+## rescaled W*(V) is 4.720551.
 ## 
 ## 
 ## Feasibility of W*(V)
 ## ====================
 ## 
 ## WARNING: W*(V) is NOT optimal and thus infeasible!
-## 'True' W*(V): 0 0.00292598345675368 0.159048165142877 0.220567324665442 
-##               0.617458526734928 0
-## with corresponding predictor loss ('loss W') of 0.005875089 
-## and corresponding dependent loss ('loss V') of 4.707065.
+## &#39;True&#39; W*(V): 0 0.00338943037392679 0.158483318047272 0.217351422652097 
+##               0.620775828926704 0
+## with corresponding predictor loss (&#39;loss W&#39;) of 0.004715856 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.719351.
 ## 
 ## 
 ## Optimality of V
 ## ===============
 ## 
-## WARNING: 'Optimal' V (as reported by package Synth) is not optimal (W*(V) 
-##          was infeasible), (one of potentially many) 'true' optimal V* 
-##          (with sum(V*)=1):
-## Optimal V*    : 5.60003567372531e-09 0.560003567372531 
-##                 1.77473248751406e-08 5.60003567372531e-09 
-##                 5.60286005841688e-08 0.439996347651472
-## Optimal W*(V*): 0 0 0.0456880744691395 0.250556360555894 0.627179685612279 
-##                 0.0765758793626873
-## with corresponding predictor loss ('loss W') of 7.597302e-09 
-## and corresponding dependent loss ('loss V') of 4.440946.</code></pre>
-<p>Package <code>Synth</code> generated a (slightly) infeasible solution, returning a (slightly) suboptimal weight vector <code>w</code> for the control units. However, the predictor weights <code>v</code> are (considerably) suboptimal anyway, because the original dependent loss of 4.714688 (as well as the dependent loss for the corrected <code>w</code> 4.707065) is considerably larger than the dependent loss 4.440946 for the optimal predictor weights obtained by <code>improveSynth</code>.</p>
+## WARNING: &#39;Optimal&#39; V (as reported by package Synth) is not optimal (W*(V) was 
+##          infeasible), (one of potentially many) &#39;true&#39; optimal V* (with 
+##          sum(V*)=1):
+## Optimal V*    : 5.60003568150536e-09 0.560003568150536 1.77473253948985e-08 
+##                 5.60003568150536e-09 5.60285964068872e-08 0.439996346873471
+## Optimal W*(V*): 0 0 0.045688074469268 0.250556360555955 0.627179685612033 
+##                 0.0765758793627435
+## with corresponding predictor loss (&#39;loss W&#39;) of 7.597302e-09 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.440946.</code></pre>
+<p>Package <code>Synth</code> generated a (slightly) infeasible solution, returning a (slightly) suboptimal weight vector <code>w</code> for the control units. However, the predictor weights <code>v</code> are (considerably) suboptimal anyway, because the original dependent loss of 4.720551 (as well as the dependent loss for the corrected <code>w</code> 4.719351) is considerably larger than the dependent loss 4.440946 for the optimal predictor weights obtained by <code>improveSynth</code>.</p>
 </div>
 </div>
 <div id="second-example" class="section level2">
@@ -430,15 +460,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="generating-the-result-of-package-synth-1" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
 <p><code>genoud</code> is switched on by the corresponding function argument. We capture the output with <code>capture.output</code> because it is <strong>very</strong> verbose. Furthermore, the calculation is quite lengthy, therefore the results have been cached.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="cf">if</span> (<span class="kw">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb8-2" title="2">  <span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
-<a class="sourceLine" id="cb8-3" title="3">  out &lt;-<span class="st"> </span><span class="kw">capture.output</span>(synth3.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out,<span class="dt">genoud=</span><span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb8-4" title="4">}  </a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="cf">if</span> (<span class="kw">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) <span class="cf">else</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  <span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  out &lt;-<span class="st"> </span><span class="kw">capture.output</span>(synth3.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out,<span class="dt">genoud=</span><span class="ot">TRUE</span>))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>}  </span></code></pre></div>
 </div>
 <div id="checking-the-result-1" class="section level3">
 <h3>Checking the result</h3>
 <p>We again check the result by applying function <code>improveSynth</code> to <code>synth3.out</code> and <code>dataprep.out</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">synth4.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth3.out,dataprep.out)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>synth4.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth3.out,dataprep.out)</span></code></pre></div>
 <pre><code>## Results reported by package Synth
 ## =================================
 ## 
@@ -446,11 +476,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##                0.00278189732871801 0.000373699249646763 0.712067811650278
 ## Optimal W*(V): 0.0420138249827668 0.0112849868071455 0.0223432791829297 
 ##                0.218134146153805 0.595395073764248 0.110828688687666
-## with corresponding predictor loss ('loss W') of 0.0001350879 
-## and corresponding dependent loss ('loss V') of 4.328506.
+## with corresponding predictor loss (&#39;loss W&#39;) of 0.0001350879 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.328506.
 ## 
 ## 
-## Components of W*(V) do not sum to 1, dependent loss ('loss V') of 
+## Components of W*(V) do not sum to 1, dependent loss (&#39;loss V&#39;) of 
 ## rescaled W*(V) is 4.328506.
 ## 
 ## 
@@ -458,24 +488,23 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## ====================
 ## 
 ## WARNING: W*(V) is NOT optimal and thus infeasible!
-## 'True' W*(V): 0 0 0 0.229091487590933 0.715755416007496 0.0551530964015713
-## with corresponding predictor loss ('loss W') of 4.4355e-05 
-## and corresponding dependent loss ('loss V') of 6.09574.
+## &#39;True&#39; W*(V): 0 0 0 0.229091487590933 0.715755416007496 0.0551530964015711
+## with corresponding predictor loss (&#39;loss W&#39;) of 4.4355e-05 
+## and corresponding dependent loss (&#39;loss V&#39;) of 6.09574.
 ## 
 ## 
 ## Optimality of V
 ## ===============
 ## 
-## WARNING: 'Optimal' V (as reported by package Synth) is not optimal (W*(V) 
-##          was infeasible), (one of potentially many) 'true' optimal V* 
-##          (with sum(V*)=1):
-## Optimal V*    : 5.60003567372531e-09 0.560003567372531 
-##                 1.77473248751406e-08 5.60003567372531e-09 
-##                 5.60286005841688e-08 0.439996347651472
-## Optimal W*(V*): 0 0 0.0456880744691395 0.250556360555894 0.627179685612279 
-##                 0.0765758793626873
-## with corresponding predictor loss ('loss W') of 7.597302e-09 
-## and corresponding dependent loss ('loss V') of 4.440946.</code></pre>
+## WARNING: &#39;Optimal&#39; V (as reported by package Synth) is not optimal (W*(V) was 
+##          infeasible), (one of potentially many) &#39;true&#39; optimal V* (with 
+##          sum(V*)=1):
+## Optimal V*    : 5.60003568150536e-09 0.560003568150536 1.77473253948985e-08 
+##                 5.60003568150536e-09 5.60285964068872e-08 0.439996346873471
+## Optimal W*(V*): 0 0 0.045688074469268 0.250556360555955 0.627179685612033 
+##                 0.0765758793627435
+## with corresponding predictor loss (&#39;loss W&#39;) of 7.597302e-09 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.440946.</code></pre>
 <p>Now, package <code>Synth</code> generated a solution with a dependent loss of 4.328506 which is even smaller than the dependent loss 4.440946 obtained by <code>improveSynth</code>. However, the solution generated by <code>Synth</code> is severely <strong>infeasible</strong>: the inner optimization failed, returning a suboptimal weight vector <code>w</code> for the control units, which itself lead to a wrong calculation of the dependent loss (which, of course, depends on <code>w</code>). Implanting the true optimal <code>w</code> (depending on <code>v</code>) leads to a large increase of the dependent loss, which uncovers the suboptimality of <code>v</code>.</p>
 <p><code>improveSynth</code> is able to detect this severe problem and calculates an improved <em>and feasible</em> solution (the improved solution matches the solution obtained from the first call to <code>improveSynth</code> above, with a dependent loss of 4.440946).</p>
 </div>
@@ -485,20 +514,20 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Issues with the inner and outer optimizers used in <code>synth</code> from package <code>Synth</code> may lead to infeasible or suboptimal solutions. This vignette illustrated the usage of the convenience function <code>improveSynth</code> from package <code>MSCMT</code> for checking and potentially improving results obtained from <code>synth</code>.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
-<h2>References</h2>
-<div id="refs" class="references">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
 <div id="ref-Mafia">
-<p>Becker, Martin, and Stefan Klößner. 2017. “Estimating the Economic Costs of Organized Crime by Synthetic Control Methods.” <em>Journal of Applied Econometrics</em> 32 (7): 1367–9. <a href="http://dx.doi.org/10.1002/jae.2572" class="uri">http://dx.doi.org/10.1002/jae.2572</a>.</p>
+<p>Becker, Martin, and Stefan Klößner. 2017. “Estimating the Economic Costs of Organized Crime by Synthetic Control Methods.” <em>Journal of Applied Econometrics</em> 32 (7): 1367–9. <a href="http://dx.doi.org/10.1002/jae.2572">http://dx.doi.org/10.1002/jae.2572</a>.</p>
 </div>
 <div id="ref-FastReliable">
-<p>———. 2018. “Fast and Reliable Computation of Generalized Synthetic Controls.” <em>Econometrics and Statistics</em> 5: 1–19. <a href="https://doi.org/10.1016/j.ecosta.2017.08.002" class="uri">https://doi.org/10.1016/j.ecosta.2017.08.002</a>.</p>
+<p>———. 2018. “Fast and Reliable Computation of Generalized Synthetic Controls.” <em>Econometrics and Statistics</em> 5: 1–19. <a href="https://doi.org/10.1016/j.ecosta.2017.08.002">https://doi.org/10.1016/j.ecosta.2017.08.002</a>.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>To reproduce from scratch, please delete <code>&quot;synth3.out.RData&quot;</code> from the <code>vignettes</code> folder.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>To reproduce from scratch, please delete <code>&quot;synth3.out.RData&quot;</code> from the <code>vignettes</code> folder.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

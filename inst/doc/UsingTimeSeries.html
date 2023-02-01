@@ -1,44 +1,74 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
 <title>SCM Using Time Series</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -47,9 +77,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -106,6 +136,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+
 <style type="text/css">body {
 background-color: #fff;
 margin: 1em auto;
@@ -116,9 +147,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,7 +315,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -323,77 +352,74 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="definition-of-the-standard-model" class="section level2">
 <h2>Definition of the Standard Model</h2>
 <p>We use the <code>basque</code> dataset in package <code>Synth</code> as an example and replicate the preparation of the data from the <a href="WorkingWithMSCMT.html">main vignette</a> of this package:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Synth)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">data</span>(basque)</a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(MSCMT)</a>
-<a class="sourceLine" id="cb1-4" title="4">Basque &lt;-<span class="st"> </span><span class="kw">listFromLong</span>(basque, <span class="dt">unit.variable=</span><span class="st">&quot;regionno&quot;</span>, <span class="dt">time.variable=</span><span class="st">&quot;year&quot;</span>, <span class="dt">unit.names.variable=</span><span class="st">&quot;regionname&quot;</span>)</a>
-<a class="sourceLine" id="cb1-5" title="5">school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<span class="kw">colSums</span>(school.illit <span class="op">+</span><span class="st"> </span>school.prim <span class="op">+</span><span class="st"> </span>school.med <span class="op">+</span><span class="st"> </span>school.high  <span class="op">+</span><span class="st"> </span>school.post.high))</a>
-<a class="sourceLine" id="cb1-6" title="6">Basque<span class="op">$</span>school.higher &lt;-<span class="st"> </span>Basque<span class="op">$</span>school.high <span class="op">+</span><span class="st"> </span>Basque<span class="op">$</span>school.post.high</a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="cf">for</span> (item <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      </a>
-<a class="sourceLine" id="cb1-8" title="8">  Basque[[item]] &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">*</span><span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) <span class="op">/</span><span class="st"> </span>school.sum)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(Synth)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">data</span>(basque)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">library</span>(MSCMT)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>Basque &lt;-<span class="st"> </span><span class="kw">listFromLong</span>(basque, <span class="dt">unit.variable=</span><span class="st">&quot;regionno&quot;</span>, <span class="dt">time.variable=</span><span class="st">&quot;year&quot;</span>, <span class="dt">unit.names.variable=</span><span class="st">&quot;regionname&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<span class="kw">colSums</span>(school.illit <span class="op">+</span><span class="st"> </span>school.prim <span class="op">+</span><span class="st"> </span>school.med <span class="op">+</span><span class="st"> </span>school.high  <span class="op">+</span><span class="st"> </span>school.post.high))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>Basque<span class="op">$</span>school.higher &lt;-<span class="st"> </span>Basque<span class="op">$</span>school.high <span class="op">+</span><span class="st"> </span>Basque<span class="op">$</span>school.post.high</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="cf">for</span> (item <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  Basque[[item]] &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">*</span><span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) <span class="op">/</span><span class="st"> </span>school.sum)</span></code></pre></div>
 <p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the model in <span class="citation">Abadie and Gardeazabal (2003)</span>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">treatment.identifier &lt;-<span class="st"> &quot;Basque Country (Pais Vasco)&quot;</span></a>
-<a class="sourceLine" id="cb2-2" title="2">controls.identifier  &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">colnames</span>(Basque[[<span class="dv">1</span>]]),</a>
-<a class="sourceLine" id="cb2-3" title="3">                                <span class="kw">c</span>(treatment.identifier, <span class="st">&quot;Spain (Espana)&quot;</span>))</a>
-<a class="sourceLine" id="cb2-4" title="4">times.dep  &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>))</a>
-<a class="sourceLine" id="cb2-5" title="5">times.pred &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;school.illit&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-6" title="6">                    <span class="st">&quot;school.prim&quot;</span>           =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-7" title="7">                    <span class="st">&quot;school.med&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-8" title="8">                    <span class="st">&quot;school.higher&quot;</span>         =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-9" title="9">                    <span class="st">&quot;invest&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-10" title="10">                    <span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-11" title="11">                    <span class="st">&quot;sec.agriculture&quot;</span>       =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-12" title="12">                    <span class="st">&quot;sec.energy&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-13" title="13">                    <span class="st">&quot;sec.industry&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-14" title="14">                    <span class="st">&quot;sec.construction&quot;</span>      =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-15" title="15">                    <span class="st">&quot;sec.services.venta&quot;</span>    =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-16" title="16">                    <span class="st">&quot;sec.services.nonventa&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</a>
-<a class="sourceLine" id="cb2-17" title="17">                    <span class="st">&quot;popdens&quot;</span>               =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1969</span>,<span class="dv">1969</span>))</a>
-<a class="sourceLine" id="cb2-18" title="18">agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>treatment.identifier &lt;-<span class="st"> &quot;Basque Country (Pais Vasco)&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>controls.identifier  &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">colnames</span>(Basque[[<span class="dv">1</span>]]),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>                                <span class="kw">c</span>(treatment.identifier, <span class="st">&quot;Spain (Espana)&quot;</span>))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>times.dep  &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>times.pred &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;school.illit&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>                    <span class="st">&quot;school.prim&quot;</span>           =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>                    <span class="st">&quot;school.med&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>                    <span class="st">&quot;school.higher&quot;</span>         =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>                    <span class="st">&quot;invest&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>                    <span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>                    <span class="st">&quot;sec.agriculture&quot;</span>       =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>                    <span class="st">&quot;sec.energy&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>                    <span class="st">&quot;sec.industry&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>                    <span class="st">&quot;sec.construction&quot;</span>      =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>                    <span class="st">&quot;sec.services.venta&quot;</span>    =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>                    <span class="st">&quot;sec.services.nonventa&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>                    <span class="st">&quot;popdens&quot;</span>               =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1969</span>,<span class="dv">1969</span>))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </span></code></pre></div>
 <p>Estimation of the model gives:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb3-2" title="2">res</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>res</span></code></pre></div>
 <pre><code>## Specification:
 ## --------------
 ## 
 ## Model type:     SCM
 ## Treated unit:   Basque Country (Pais Vasco)
-## Control units:  Andalucia, Aragon, Principado De Asturias, 
-##                 Baleares (Islas), Canarias, Cantabria, Castilla Y Leon, 
-##                 Castilla-La Mancha, Cataluna, Comunidad Valenciana, 
-##                 Extremadura, Galicia, Madrid (Comunidad De), 
-##                 Murcia (Region de), Navarra (Comunidad Foral De), 
-##                 Rioja (La)
+## Control units:  Andalucia, Aragon, Principado De Asturias, Baleares (Islas), 
+##                 Canarias, Cantabria, Castilla Y Leon, Castilla-La Mancha, 
+##                 Cataluna, Comunidad Valenciana, Extremadura, Galicia, 
+##                 Madrid (Comunidad De), Murcia (Region de), 
+##                 Navarra (Comunidad Foral De), Rioja (La)
 ## Dependent(s):   gdpcap with optimization period from 1960 to 1969
-## Predictors:     
-##                 school.illit          from 1964 to 1969, aggregated via 'mean', 
-##                 school.prim           from 1964 to 1969, aggregated via 'mean', 
-##                 school.med            from 1964 to 1969, aggregated via 'mean', 
-##                 school.higher         from 1964 to 1969, aggregated via 'mean', 
-##                 invest                from 1964 to 1969, aggregated via 'mean', 
-##                 gdpcap                from 1960 to 1969, aggregated via 'mean', 
-##                 sec.agriculture       from 1961 to 1969, aggregated via 'mean', 
-##                 sec.energy            from 1961 to 1969, aggregated via 'mean', 
-##                 sec.industry          from 1961 to 1969, aggregated via 'mean', 
-##                 sec.construction      from 1961 to 1969, aggregated via 'mean', 
-##                 sec.services.venta    from 1961 to 1969, aggregated via 'mean', 
-##                 sec.services.nonventa from 1961 to 1969, aggregated via 'mean', 
-##                 popdens               from 1969 to 1969, aggregated via 'mean'
+## Predictors:     school.illit          from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 school.prim           from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 school.med            from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 school.higher         from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 invest                from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 gdpcap                from 1960 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.agriculture       from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.energy            from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.industry          from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.construction      from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.services.venta    from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.services.nonventa from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 popdens               from 1969 to 1969, aggregated via &#39;mean&#39;
 ## 
 ## 
 ## Results:
 ## --------
 ## 
-## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
-##                 and the predictors impose some restrictions on the outer 
-##                 optimization.
+## Result type:    Ordinary solution, ie. no perfect preditor fit possible and the 
+##                 predictors impose some restrictions on the outer optimization.
 ## Optimal W:      Baleares (Islas)     : 21.92728%, 
 ##                 Cataluna             : 63.27857%, 
 ##                 Madrid (Comunidad De): 14.79414%
-## Dependent loss: MSPE ('loss V'): 0.004286071, 
+## Dependent loss: MSPE (&#39;loss V&#39;): 0.004286071, 
 ##                 RMSPE          : 0.065468095
-## (Optimal) V:    Single predictor weights V requested. The optimal weight 
-##                 vector V is:
+## (Optimal) V:    Single predictor weights V requested. The optimal weight vector 
+##                 V is:
 ##                                                         max.order
 ##                 school.illit.mean.1964.1969          1.578398e-05
 ##                 school.prim.mean.1964.1969           1.578398e-05
@@ -417,53 +443,50 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="removing-the-lagged-dependent-variable" class="section level2">
 <h2>Removing the Lagged Dependent Variable</h2>
 <p>Omitting the lagged dependent variable <code>gdpcap.mean.1960.1969</code> from the model definition, however, leads to a significant increase of the dependent loss:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">times.pred &lt;-<span class="st"> </span>times.pred[,<span class="op">-</span><span class="dv">6</span>]</a>
-<a class="sourceLine" id="cb5-2" title="2">agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </a>
-<a class="sourceLine" id="cb5-3" title="3">res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb5-4" title="4">res2</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>times.pred &lt;-<span class="st"> </span>times.pred[,<span class="op">-</span><span class="dv">6</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>res2</span></code></pre></div>
 <pre><code>## Specification:
 ## --------------
 ## 
 ## Model type:     SCM
 ## Treated unit:   Basque Country (Pais Vasco)
-## Control units:  Andalucia, Aragon, Principado De Asturias, 
-##                 Baleares (Islas), Canarias, Cantabria, Castilla Y Leon, 
-##                 Castilla-La Mancha, Cataluna, Comunidad Valenciana, 
-##                 Extremadura, Galicia, Madrid (Comunidad De), 
-##                 Murcia (Region de), Navarra (Comunidad Foral De), 
-##                 Rioja (La)
+## Control units:  Andalucia, Aragon, Principado De Asturias, Baleares (Islas), 
+##                 Canarias, Cantabria, Castilla Y Leon, Castilla-La Mancha, 
+##                 Cataluna, Comunidad Valenciana, Extremadura, Galicia, 
+##                 Madrid (Comunidad De), Murcia (Region de), 
+##                 Navarra (Comunidad Foral De), Rioja (La)
 ## Dependent(s):   gdpcap with optimization period from 1960 to 1969
-## Predictors:     
-##                 school.illit          from 1964 to 1969, aggregated via 'mean', 
-##                 school.prim           from 1964 to 1969, aggregated via 'mean', 
-##                 school.med            from 1964 to 1969, aggregated via 'mean', 
-##                 school.higher         from 1964 to 1969, aggregated via 'mean', 
-##                 invest                from 1964 to 1969, aggregated via 'mean', 
-##                 sec.agriculture       from 1961 to 1969, aggregated via 'mean', 
-##                 sec.energy            from 1961 to 1969, aggregated via 'mean', 
-##                 sec.industry          from 1961 to 1969, aggregated via 'mean', 
-##                 sec.construction      from 1961 to 1969, aggregated via 'mean', 
-##                 sec.services.venta    from 1961 to 1969, aggregated via 'mean', 
-##                 sec.services.nonventa from 1961 to 1969, aggregated via 'mean', 
-##                 popdens               from 1969 to 1969, aggregated via 'mean'
+## Predictors:     school.illit          from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 school.prim           from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 school.med            from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 school.higher         from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 invest                from 1964 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.agriculture       from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.energy            from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.industry          from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.construction      from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.services.venta    from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 sec.services.nonventa from 1961 to 1969, aggregated via &#39;mean&#39;, 
+##                 popdens               from 1969 to 1969, aggregated via &#39;mean&#39;
 ## 
 ## 
 ## Results:
 ## --------
 ## 
-## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
-##                 and the predictors impose some restrictions on the outer 
-##                 optimization.
+## Result type:    Ordinary solution, ie. no perfect preditor fit possible and the 
+##                 predictors impose some restrictions on the outer optimization.
 ## Optimal W:      Cataluna             : 85.0814%, 
 ##                 Madrid (Comunidad De): 14.9186%
-## Dependent loss: MSPE ('loss V'): 0.008864545, 
+## Dependent loss: MSPE (&#39;loss V&#39;): 0.008864545, 
 ##                 RMSPE          : 0.094151712
-## (Optimal) V:    Single predictor weights V requested. The optimal weight 
-##                 vector V is:
+## (Optimal) V:    Single predictor weights V requested. The optimal weight vector 
+##                 V is:
 ##                                                       max.order
 ##                 school.illit.mean.1964.1969          0.02710923
 ##                 school.prim.mean.1964.1969           0.02710923
-##                 school.med.mean.1964.1969            0.09108599
+##                 school.med.mean.1964.1969            0.09108598
 ##                 school.higher.mean.1964.1969         0.23068005
 ##                 invest.mean.1964.1969                0.02710923
 ##                 sec.agriculture.mean.1961.1969       0.02710923
@@ -482,20 +505,19 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="scmt-without-the-lagged-dependent-variable" class="section level2">
 <h2>SCMT without the Lagged Dependent Variable</h2>
 <p>Leaving the lagged dependent variable <code>gdpcap.mean.1960.1969</code> aside, but considering all other predictor variables as <strong>time series</strong> instead of aggregating their values leads to the following results:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;id&quot;</span>, <span class="kw">ncol</span>(times.pred))   <span class="co"># Omitting agg.fns has the same effect (as &quot;id&quot; is the default)</span></a>
-<a class="sourceLine" id="cb7-2" title="2">res3 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3">res3</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;id&quot;</span>, <span class="kw">ncol</span>(times.pred))   <span class="co"># Omitting agg.fns has the same effect (as &quot;id&quot; is the default)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>res3 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>res3</span></code></pre></div>
 <pre><code>## Specification:
 ## --------------
 ## 
 ## Model type:     SCMT
 ## Treated unit:   Basque Country (Pais Vasco)
-## Control units:  Andalucia, Aragon, Principado De Asturias, 
-##                 Baleares (Islas), Canarias, Cantabria, Castilla Y Leon, 
-##                 Castilla-La Mancha, Cataluna, Comunidad Valenciana, 
-##                 Extremadura, Galicia, Madrid (Comunidad De), 
-##                 Murcia (Region de), Navarra (Comunidad Foral De), 
-##                 Rioja (La)
+## Control units:  Andalucia, Aragon, Principado De Asturias, Baleares (Islas), 
+##                 Canarias, Cantabria, Castilla Y Leon, Castilla-La Mancha, 
+##                 Cataluna, Comunidad Valenciana, Extremadura, Galicia, 
+##                 Madrid (Comunidad De), Murcia (Region de), 
+##                 Navarra (Comunidad Foral De), Rioja (La)
 ## Dependent(s):   gdpcap with optimization period from 1960 to 1969
 ## Predictors:     school.illit          from 1964 to 1969, 
 ##                 school.prim           from 1964 to 1969, 
@@ -514,17 +536,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Results:
 ## --------
 ## 
-## Result type:    Ordinary solution, ie. no perfect preditor fit possible 
-##                 and the predictors impose some restrictions on the outer 
-##                 optimization.
+## Result type:    Ordinary solution, ie. no perfect preditor fit possible and the 
+##                 predictors impose some restrictions on the outer optimization.
 ## Optimal W:      Baleares (Islas)            : 30.61618%, 
 ##                 Cataluna                    : 25.64227%, 
 ##                 Madrid (Comunidad De)       : 31.31920%, 
 ##                 Navarra (Comunidad Foral De): 12.42236%
-## Dependent loss: MSPE ('loss V'): 0.004212379, 
+## Dependent loss: MSPE (&#39;loss V&#39;): 0.004212379, 
 ##                 RMSPE          : 0.064902846
-## (Optimal) V:    Single predictor weights V requested. The optimal weight 
-##                 vector V is:
+## (Optimal) V:    Single predictor weights V requested. The optimal weight vector 
+##                 V is:
 ##                                         max.order
 ##                 school.illit          0.001191182
 ##                 school.prim           0.002720510
@@ -549,20 +570,20 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>This vignette illustrated that considering predictors as <em>true</em> time series (without intermediate aggregation) may have various benefits. In this example, by excluding the mean of the lagged dependent variable from the set of economic predictors and considering all other predictors as time series, more meaningful predictor weights could be obtained and the dependent variable’s fit could be slightly improved, too.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
-<h2>References</h2>
-<div id="refs" class="references">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references hanging-indent">
 <div id="ref-Abadie2003">
-<p>Abadie, Alberto, and Javier Gardeazabal. 2003. “The Economic Costs of Conflict: A Case Study of the Basque Country.” <em>The American Economic Review</em> 93 (1): 113–32. <a href="http://dx.doi.org/10.1257/000282803321455188" class="uri">http://dx.doi.org/10.1257/000282803321455188</a>.</p>
+<p>Abadie, Alberto, and Javier Gardeazabal. 2003. “The Economic Costs of Conflict: A Case Study of the Basque Country.” <em>The American Economic Review</em> 93 (1): 113–32. <a href="http://dx.doi.org/10.1257/000282803321455188">http://dx.doi.org/10.1257/000282803321455188</a>.</p>
 </div>
 <div id="ref-KP16">
-<p>Klößner, Stefan, and Gregor Pfeifer. 2015. “Synthesizing Cash for Clunkers: Stabilizing the Car Market, Hurting the Environment.” Annual Conference 2015 (Münster): Economic Development - Theory and Policy. Verein für Socialpolitik/German Economic Association. <a href="https://ideas.repec.org/p/zbw/vfsc15/113207.html" class="uri">https://ideas.repec.org/p/zbw/vfsc15/113207.html</a>.</p>
+<p>Klößner, Stefan, and Gregor Pfeifer. 2015. “Synthesizing Cash for Clunkers: Stabilizing the Car Market, Hurting the Environment.” Annual Conference 2015 (Münster): Economic Development - Theory and Policy. Verein für Socialpolitik/German Economic Association. <a href="https://ideas.repec.org/p/zbw/vfsc15/113207.html">https://ideas.repec.org/p/zbw/vfsc15/113207.html</a>.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Notice that the weight vector <code>v</code> is obtained by maximizing the order statistics of <code>v</code> (while fixing the sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as large as possible to even the least relevant predictor(s).<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>Notice that the weight vector <code>v</code> is obtained by maximizing the order statistics of <code>v</code> (while fixing the sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as large as possible to even the least relevant predictor(s).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

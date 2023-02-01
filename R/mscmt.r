@@ -45,8 +45,12 @@
 #' \item annual dates, if the format of start/end time is "dddd", e.g. "2016",
 #' \item quarterly dates, if the format of start/end time is "ddddQd", e.g. 
 #' "2016Q1",
-#' \item monthly dates, if the format of start/end time is "dddd?dd", e.g. 
-#' "2016/03" or "2016-10",
+#' \item monthly dates, if the format of start/end time is "dddd?dd" with "?"
+#' different from "W" (see below), e.g. "2016/03" or "2016-10",
+#' \item weekly dates, if the format of start/end time is "ddddWdd", e.g. 
+#' "2016W23",
+#' \item daily dates, if the format of start/end time is "dddd-dd-dd", e.g. 
+#' "2016-08-18",
 #' }
 #' will be constructed; these dates are looked for in the row names of
 #' the respective matrices in \code{data}. In applications with 
@@ -60,8 +64,12 @@
 #' \item annual dates, if the format of start/end time is "dddd", e.g. "2016",
 #' \item quarterly dates, if the format of start/end time is "ddddQd", e.g. 
 #' "2016Q1",
-#' \item monthly dates, if the format of start/end time is "dddd?dd", e.g. 
-#' "2016/03" or "2016-10",
+#' \item monthly dates, if the format of start/end time is "dddd?dd" with "?"
+#' different from "W" (see below), e.g. "2016/03" or "2016-10",
+#' \item weekly dates, if the format of start/end time is "ddddWdd", e.g. 
+#' "2016W23",
+#' \item daily dates, if the format of start/end time is "dddd-dd-dd", e.g. 
+#' "2016-08-18",
 #' }
 #' will be constructed; these dates are looked for in the row names of
 #' the respective matrices in \code{data}. In applications with 

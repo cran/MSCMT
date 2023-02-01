@@ -4,8 +4,15 @@
 \alias{improveSynth}
 \title{Check (and Improve) Results of Package Synth}
 \usage{
-improveSynth(synth.out, dataprep.out, lb = 1e-08, tol = 1e-05,
-  verbose = TRUE, seed = 1, ...)
+improveSynth(
+  synth.out,
+  dataprep.out,
+  lb = 1e-08,
+  tol = 1e-05,
+  verbose = TRUE,
+  seed = 1,
+  ...
+)
 }
 \arguments{
 \item{synth.out}{A result of \code{\link[Synth]{synth}} from package 

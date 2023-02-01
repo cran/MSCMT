@@ -19,26 +19,31 @@
 ## TO DO(?): export?
 ## @export freq
 freq <- function(datum,only.first=FALSE) {
-	res <- ifelse(grepl("Q",datum),"quarterly",
-			ifelse(nchar(datum)<=4,ifelse(nchar(datum)==4,"annually",NA),"monthly"))
-	if (only.first) {
-		if (length(unique(res))>1) 
+  res <- ifelse(grepl("W",datum),"weekly",
+         ifelse(grepl("Q",datum),"quarterly",
+         ifelse(nchar(datum)<4,NA,
+         ifelse(nchar(datum)==4,"annually",
+         ifelse(nchar(datum)>=8,"daily","monthly")))))
+  if (only.first) {
+    if (length(unique(res))>1) 
       warning("frequency ambiguous, only first entry is used")
-		res[1]  
-	} else res	
+    res[1]  
+  } else res
 }
 
 ## sequence-function for data of various granularity (annual, quarterly, 
-## monthly) format for monthly data: YYYY-MM (alternatively, e.g., YYYY/MM) 
-## format for quarterly data: YYYYQX (alternatively, e.g., YYYY-QX)
+## monthly, weekly, daily) format for monthly data: YYYY-MM 
+## (alternatively, e.g., YYYY/MM), format for quarterly data: YYYYQX 
+## (alternatively, e.g., YYYY-QX), format for weekly data: YYYYWXX,
+## format for daily-data: YYYYMMDD or YYYY-MM-DD
 
 ## Constructing names for time series data of various frequencies
 ##
-## \code{seqAQM} constructs sequences of names for annual, qua^rterly and 
-## monthly time series data.
+## \code{seqAQM} constructs sequences of names for annual, quarterly, monthly,
+## weekly and daily time series data.
 ##
-## \code{seqAQM} constructs sequences of names for annual, quarterly and 
-## monthly time series data.
+## \code{seqAQM} constructs sequences of names for annual, quarterly, monthly,
+## weekly and daily time series data.
 ##
 ## @param from XX.
 ## @param to XX
@@ -47,17 +52,23 @@ freq <- function(datum,only.first=FALSE) {
 ## TO DO(?): export?
 ## @export seqAQM
 seqAQM <- function(from,to,by=1) {
-	fr   <- freq(c(from,to),only.first=TRUE)
-	QtoI <- function(x) 4*as.numeric(substr(x,1,4))+as.numeric(substr(x,nchar(x),
-                                                                    nchar(x)))-1
-	ItoQ <- function(x) paste0(x%/%4,"Q",(x%%4)+1)
-	MtoI <- function(x) 12*as.numeric(substr(x,1,4))+as.numeric(substr(x,6,7))-1
-	ItoM <- function(x) paste0(x%/%12,"-",sprintf("%02d",(x%%12)+1))
-	switch(fr,
-		"quarterly" = ItoQ(seq(from=QtoI(from),to=QtoI(to),by=by)),
-		"monthly"   = ItoM(seq(from=MtoI(from),to=MtoI(to),by=by)),
-		as.character(seq(from=as.numeric(from),to=as.numeric(to),by=by))
-	)
+  fr   <- switch(freq(from),"quarterly"=4,"monthly"=12,"weekly"=53,"daily"=366,
+                 1)
+  DtoN <- function(x,fr) {
+            year <- as.numeric(substr(x,1,4))
+            if (fr==1) year else
+            if (fr==366) 366*year + as.numeric(format(as.Date(x),"%j")) - 1 else
+            fr*year + as.numeric(substr(x,6,nchar(x))) - 1
+          }
+  NtoD <- function(x,fr) {
+            if (fr==1)   as.character(x) else
+            if (fr==4)   paste0(x%/%4,"Q",(x%%4)+1) else
+            if (fr==12)  paste0(x%/%12,"-",sprintf("%02d",(x%%12)+1)) else
+            if (fr==53)  paste0(x%/%53,"W",sprintf("%02d",(x%%53)+1)) else
+            format(as.Date(paste0(x%/%366,"-",(x%%366)+1),format="%Y-%j"),
+                   format="%Y-%m-%d")
+          }        
+  NtoD(seq(DtoN(from,fr),DtoN(to,fr),by=by),fr)        
 }
 
 ## convert data with character names (annual, quarterly, monthly data)
@@ -81,23 +92,27 @@ AQM2ts <- function(data) {
   data  <- data[order(names(data))]
   sanitize <- function(nam,fre) 
     switch(as.character(fre),
-           "4"  = paste0(substr(nam,1,4),"Q",substr(nam,nchar(nam),nchar(nam))),
-           "12" = paste0(substr(nam,1,4),"-",substr(nam,6,7)),
+           "4"   = paste0(substr(nam,1,4),"Q",substr(nam,nchar(nam),nchar(nam))),
+           "12"  = paste0(substr(nam,1,4),"-",sprintf("%02d",as.numeric(substr(nam,6,nchar(nam))))),
+           "53"  = paste0(substr(nam,1,4),"W",sprintf("%02d",as.numeric(substr(nam,6,nchar(nam))))),
+           "366" = format(as.Date(nam),"%Y-%m-%d"),
            substr(nam,1,4))
-  fnam  <- head(names(data),1)
-  fr    <- switch(freq(fnam),"quarterly"=4,"monthly"=12,1)
-  syear <- as.numeric(substr(fnam,1,4))
-  smq   <- switch(as.character(fr),
-                    "4"  = as.numeric(substr(fnam,nchar(fnam),nchar(fnam))),
-                    "12" = as.numeric(substr(fnam,6,7)),
-                  NULL)
-  fnam  <- tail(names(data),1)
-  eyear <- as.numeric(substr(fnam,1,4))
-  emq   <- switch(as.character(fr),
-                    "4"  = as.numeric(substr(fnam,nchar(fnam),nchar(fnam))),
-                    "12" = as.numeric(substr(fnam,6,7)),
-                  NULL)
-  AQM   <- seqAQM(head(names(data),1),tail(names(data),1))
+  mq   <- function(nam,fre) 
+    switch(as.character(fre),
+           "4"   = as.numeric(substr(nam,nchar(nam),nchar(nam))),
+           "12"  = as.numeric(substr(nam,6,nchar(nam))),
+           "53"  = as.numeric(substr(nam,6,nchar(nam))),
+           "366" = as.numeric(format(as.Date(nam),format="%j")),
+           NULL)
+  snam  <- head(names(data),1)
+  fr    <- switch(freq(snam),"quarterly"=4,"monthly"=12,"weekly"=53,"daily"=366,
+                  1)
+  syear <- as.numeric(substr(snam,1,4))
+  smq   <- mq(snam,fr)
+  enam  <- tail(names(data),1)
+  eyear <- as.numeric(substr(enam,1,4))
+  emq   <- mq(enam,fr)
+  AQM   <- seqAQM(snam,enam)
   res   <- rep(NA,length(AQM))
   names(res) <- AQM
   res[sanitize(names(data),fr)] <- as.numeric(data)
@@ -113,24 +128,35 @@ AQM2Date <- function(rng,from,to) {
             "monthly"   = as.Date(paste0(from,"-01")),
             "quarterly" = as.Date(paste0(substr(from,1,4),"-",
                                     as.numeric(substr(from,nchar(from),
-                                                      nchar(from)))*3-2,"-01")))
+                                                      nchar(from)))*3-2,"-01")),
+            "weekly"    = as.Date(paste0(substr(from,1,4),"-",
+                                         substr(from,6,nchar(from)),"-0"),
+                                  format="%Y-%W-%w"),
+            "daily"     = as.Date(from))
   to   <- switch(freq(to),
             "annually"  = as.Date(paste0(to,"-12-31")),
             "monthly"   = as.Date(paste0(to,"-28")),
             "quarterly" = as.Date(paste0(substr(to,1,4),"-",
                                     as.numeric(substr(to,nchar(to),
-                                                      nchar(to)))*3,"-28")))
+                                                      nchar(to)))*3,"-28")),
+            "weekly"    = as.Date(paste0(substr(to,1,4),"-",
+                                         substr(to,6,nchar(to)),"-0"),
+                                  format="%Y-%W-%w"),
+            "daily"     = as.Date(to))
   c(from=from,to=to)
 }
 
 #' @importFrom stats window
 ## @export AQMwindow
 AQMwindow <- function(data,range) {
-  fr   <- switch(freq(range,only.first=TRUE),"quarterly"=4,"monthly"=12,1)
+  fr   <- switch(freq(range,only.first=TRUE),"quarterly"=4,"monthly"=12,
+                 "weekly"=53,"daily"=366,1)
   year <- as.numeric(substr(range,1,4))
   mq   <- switch(as.character(fr),
-                   "4"  = as.numeric(substr(range,nchar(range),nchar(range))),
-                   "12" = as.numeric(substr(range,6,7)),
+                   "4"   = as.numeric(substr(range,nchar(range),nchar(range))),
+                   "12"  = as.numeric(substr(range,6,nchar(range))),
+                   "53"  = as.numeric(substr(range,6,nchar(range))),
+                   "366" = as.numeric(format(as.Date(range),format="%j")),
                  NULL)
   window(data,start=c(year[1],mq[1]),end=c(year[2],mq[2]))
 }
@@ -138,15 +164,18 @@ AQMwindow <- function(data,range) {
 #' @importFrom stats window
 ## @export AQMtail
 AQMtail <- function(data,after) {
-  fr   <- switch(freq(after,only.first=TRUE),"quarterly"=4,"monthly"=12,1)
+  fr   <- switch(freq(after,only.first=TRUE),"quarterly"=4,"monthly"=12,
+                 "weekly"=53,"daily"=366,1)
   year <- as.numeric(substr(after,1,4))
   mq   <- switch(as.character(fr),
-                   "4"  = as.numeric(substr(after,nchar(after),nchar(after))),
-                   "12" = as.numeric(substr(after,6,7)),
+                   "4"   = as.numeric(substr(after,nchar(after),nchar(after))),
+                   "12"  = as.numeric(substr(after,6,nchar(after))),
+                   "53"  = as.numeric(substr(after,6,nchar(after))),
+                   "366" = as.numeric(format(as.Date(after),format="%j")),
                  NULL)
   if (fr==1) year <- year + 1 else {
     if (fr==mq) {  
-    mq <- 1; year <- year + 1
+      mq <- 1; year <- year + 1
     } else mq <- mq + 1               
   }
   window(data,start=c(year,mq))
@@ -172,6 +201,16 @@ ts2df <- function(tsl,maxfreq) {
       startts <- as.Date(paste0(start(tsl)[1],"-",start(tsl)[2],"-15"))
       endts   <- as.Date(paste0(end(tsl)[1],"-",end(tsl)[2],"-15"))
       byts <- "month"
+    }
+    if (freq==53) {
+      startts <- as.Date(paste0(start(tsl)[1],"-",start(tsl)[2],"-0"),format="%Y-%W-%w")
+      endts   <- as.Date(paste0(end(tsl)[1],"-",end(tsl)[2],"-0"),format="%Y-%W-%w")
+      byts <- "week"
+    }
+    if (freq==366) {
+      startts <- as.Date(paste0(start(tsl)[1],"-",start(tsl)[2]),format="%Y-%j")
+      endts   <- as.Date(paste0(end(tsl)[1],"-",end(tsl)[2]),format="%Y-%j")
+      byts <- "day"
     }
     res <- cbind(seq.Date(startts,endts,byts),as.data.frame(tsl))
     colnames(res) <- c("date",

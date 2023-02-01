@@ -3,7 +3,6 @@
 \docType{package}
 \name{MSCMT}
 \alias{MSCMT}
-\alias{MSCMT-package}
 \title{Multivariate Synthetic Control Method Using Time Series}
 \description{
 MSCMT implements the Multivariate Synthetic Control Method Using

@@ -4,9 +4,15 @@
 \alias{pvalue}
 \title{P-values for placebo studies}
 \usage{
-pvalue(x, what, range.pre, range.post, alternative = c("two.sided",
-  "less", "greater"), exclude.ratio = Inf, ratio.type = c("rmspe",
-  "mspe"))
+pvalue(
+  x,
+  what,
+  range.pre,
+  range.post,
+  alternative = c("two.sided", "less", "greater"),
+  exclude.ratio = Inf,
+  ratio.type = c("rmspe", "mspe")
+)
 }
 \arguments{
 \item{x}{An object of class \code{"mscmt"}, usually obtained as
@@ -21,8 +27,12 @@ period with start and end time given as
 \item annual dates, if the format of start/end time is "dddd", e.g. "2016",
 \item quarterly dates, if the format of start/end time is "ddddQd", e.g. 
 "2016Q1",
-\item monthly dates, if the format of start/end time is "dddd?dd", e.g. 
-"2016/03" or "2016-10",
+\item monthly dates, if the format of start/end time is "dddd?dd" with "?"
+different from "W" (see below), e.g. "2016/03" or "2016-10",
+\item weekly dates, if the format of start/end time is "ddddWdd", e.g. 
+"2016W23",
+\item daily dates, if the format of start/end time is "dddd-dd-dd", e.g. 
+"2016-08-18",
 }
 corresponding to the format of the respective column of the \code{times.dep}
 argument of \code{\link{mscmt}}.
@@ -34,8 +44,12 @@ post-treatment period with start and end time given as
 \item annual dates, if the format of start/end time is "dddd", e.g. "2016",
 \item quarterly dates, if the format of start/end time is "ddddQd", e.g. 
 "2016Q1",
-\item monthly dates, if the format of start/end time is "dddd?dd", e.g. 
-"2016/03" or "2016-10",
+\item monthly dates, if the format of start/end time is "dddd?dd" with "?"
+different from "W" (see below), e.g. "2016/03" or "2016-10",
+\item weekly dates, if the format of start/end time is "ddddWdd", e.g. 
+"2016W23",
+\item daily dates, if the format of start/end time is "dddd-dd-dd", e.g. 
+"2016-08-18",
 }
 corresponding to the format of the respective column of the \code{times.dep}
 argument of \code{\link{mscmt}}. Will be guessed if missing.}

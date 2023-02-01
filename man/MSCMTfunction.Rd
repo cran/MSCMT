@@ -4,18 +4,40 @@
 \alias{mscmt}
 \title{Multivariate SCM Using Time Series}
 \usage{
-mscmt(data, treatment.identifier = NULL, controls.identifier = NULL,
-  times.dep = NULL, times.pred = NULL, agg.fns = NULL,
-  placebo = FALSE, placebo.with.treated = FALSE, univariate = FALSE,
-  univariate.with.dependent = FALSE, check.global = TRUE,
-  inner.optim = "wnnlsOpt", inner.opar = list(),
-  outer.optim = "DEoptC", outer.par = list(), outer.opar = list(),
-  std.v = c("sum", "mean", "min", "max"), alpha = NULL, beta = NULL,
-  gamma = NULL, return.ts = TRUE, single.v = FALSE, verbose = TRUE,
-  debug = FALSE, seed = NULL, cl = NULL,
-  times.pred.training = NULL, times.dep.validation = NULL,
-  v.special = integer(), cv.alpha = 0, spec.search.treated = FALSE,
-  spec.search.placebos = FALSE)
+mscmt(
+  data,
+  treatment.identifier = NULL,
+  controls.identifier = NULL,
+  times.dep = NULL,
+  times.pred = NULL,
+  agg.fns = NULL,
+  placebo = FALSE,
+  placebo.with.treated = FALSE,
+  univariate = FALSE,
+  univariate.with.dependent = FALSE,
+  check.global = TRUE,
+  inner.optim = "wnnlsOpt",
+  inner.opar = list(),
+  outer.optim = "DEoptC",
+  outer.par = list(),
+  outer.opar = list(),
+  std.v = c("sum", "mean", "min", "max"),
+  alpha = NULL,
+  beta = NULL,
+  gamma = NULL,
+  return.ts = TRUE,
+  single.v = FALSE,
+  verbose = TRUE,
+  debug = FALSE,
+  seed = NULL,
+  cl = NULL,
+  times.pred.training = NULL,
+  times.dep.validation = NULL,
+  v.special = integer(),
+  cv.alpha = 0,
+  spec.search.treated = FALSE,
+  spec.search.placebos = FALSE
+)
 }
 \arguments{
 \item{data}{Typically, a list of matrices with rows corresponding to times 
@@ -54,8 +76,12 @@ A sequence of dates with the given start and end times of
 \item annual dates, if the format of start/end time is "dddd", e.g. "2016",
 \item quarterly dates, if the format of start/end time is "ddddQd", e.g. 
 "2016Q1",
-\item monthly dates, if the format of start/end time is "dddd?dd", e.g. 
-"2016/03" or "2016-10",
+\item monthly dates, if the format of start/end time is "dddd?dd" with "?"
+different from "W" (see below), e.g. "2016/03" or "2016-10",
+\item weekly dates, if the format of start/end time is "ddddWdd", e.g. 
+"2016W23",
+\item daily dates, if the format of start/end time is "dddd-dd-dd", e.g. 
+"2016-08-18",
 }
 will be constructed; these dates are looked for in the row names of
 the respective matrices in \code{data}. In applications with 
@@ -70,8 +96,12 @@ A sequence of dates with the given start and end times of
 \item annual dates, if the format of start/end time is "dddd", e.g. "2016",
 \item quarterly dates, if the format of start/end time is "ddddQd", e.g. 
 "2016Q1",
-\item monthly dates, if the format of start/end time is "dddd?dd", e.g. 
-"2016/03" or "2016-10",
+\item monthly dates, if the format of start/end time is "dddd?dd" with "?"
+different from "W" (see below), e.g. "2016/03" or "2016-10",
+\item weekly dates, if the format of start/end time is "ddddWdd", e.g. 
+"2016W23",
+\item daily dates, if the format of start/end time is "dddd-dd-dd", e.g. 
+"2016-08-18",
 }
 will be constructed; these dates are looked for in the row names of
 the respective matrices in \code{data}. In applications with 

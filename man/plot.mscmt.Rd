@@ -4,10 +4,23 @@
 \alias{plot.mscmt}
 \title{Plotting Results of MSCMT}
 \usage{
-\method{plot}{mscmt}(x, what, type = c("gaps", "comparison",
-  "placebo.gaps", "placebo.data"), treatment.time, zero.line = TRUE,
-  ylab, xlab = "Date", main, sub, col, lty, lwd, legend = TRUE,
-  bw = FALSE, ...)
+\method{plot}{mscmt}(
+  x,
+  what,
+  type = c("gaps", "comparison", "placebo.gaps", "placebo.data"),
+  treatment.time,
+  zero.line = TRUE,
+  ylab,
+  xlab = "Date",
+  main,
+  sub,
+  col,
+  lty,
+  lwd,
+  legend = TRUE,
+  bw = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{"mscmt"}, usually obtained as
