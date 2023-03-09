@@ -5,7 +5,8 @@
 \title{Plotting Results of mscmt with ggplot2}
 \usage{
 \method{ggplot}{mscmt}(
-  x,
+  data,
+  mapping = aes(),
   what,
   type = c("gaps", "comparison", "placebo.gaps", "placebo.data", "p.value"),
   treatment.time,
@@ -37,12 +38,18 @@
   control.name = "control units",
   size = 1,
   treated.name = "treated unit",
-  labels = c("actual data", "synthsized data")
+  labels = c("actual data", "synthsized data"),
+  ...,
+  environment = parent.frame()
 )
 }
 \arguments{
-\item{x}{An object of class \code{"mscmt"}, usually obtained as
+\item{data}{An object of class \code{"mscmt"}, usually obtained as
 the result of a call to function \code{\link{mscmt}}.}
+
+\item{mapping}{An object necessary to match the definition of the
+\code{ggplot} generic (passed to \code{ggplot} as is). Defaults to 
+\code{aes()}.}
 
 \item{what}{A character vector. Name(s) of the variables to be plotted. If 
 missing, the (first) dependent variable will be used.}
@@ -184,6 +191,13 @@ unit. Defaults to \code{"treated unit"}.}
 
 \item{labels}{A character vector of length 2 giving the labels for the actual 
 and synthesized data. Defaults to \code{c("actual data","synthsized data")}.}
+
+\item{...}{Necessary to match the definition of the
+\code{"ggplot"} generic (passed to \code{ggplot} as is).}
+
+\item{environment}{An object necessary to match the definition of the
+\code{"ggplot"} generic (passed to \code{ggplot} as is). Defaults to 
+\code{parent.frame()}.}
 }
 \value{
 An object of class \code{\link[ggplot2]{ggplot}}.

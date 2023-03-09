@@ -8,8 +8,11 @@
 #' \code{\link[ggplot2]{ggplot}}. \code{\link{ggplot.mscmt}} is the preferred
 #' plot method and has more functionality than \code{\link{plot.mscmt}}.
 #'
-#' @param x An object of class \code{"mscmt"}, usually obtained as
+#' @param data An object of class \code{"mscmt"}, usually obtained as
 #' the result of a call to function \code{\link{mscmt}}.
+#' @param mapping An object necessary to match the definition of the
+#' \code{ggplot} generic (passed to \code{ggplot} as is). Defaults to 
+#' \code{aes()}.
 #' @param what A character vector. Name(s) of the variables to be plotted. If 
 #' missing, the (first) dependent variable will be used.
 #' @param type A character scalar denoting the type of the plot containing 
@@ -119,6 +122,11 @@
 #' unit. Defaults to \code{"treated unit"}.
 #' @param labels A character vector of length 2 giving the labels for the actual 
 #' and synthesized data. Defaults to \code{c("actual data","synthsized data")}.
+#' @param ... Necessary to match the definition of the
+#' \code{"ggplot"} generic (passed to \code{ggplot} as is).
+#' @param environment An object necessary to match the definition of the
+#' \code{"ggplot"} generic (passed to \code{ggplot} as is). Defaults to 
+#' \code{parent.frame()}.
 #' @return An object of class \code{\link[ggplot2]{ggplot}}.
 #' @importFrom ggplot2 ggplot aes_string geom_line labs scale_x_date geom_hline
 #' @importFrom ggplot2 scale_colour_manual scale_linetype_manual 
@@ -129,8 +137,9 @@
 #' @importFrom utils stack
 #' @method ggplot mscmt
 #' @export 
-ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
-                                       "placebo.data","p.value"),
+ggplot.mscmt <- function(data,mapping=aes(),what,
+                         type=c("gaps","comparison","placebo.gaps",
+                                "placebo.data","p.value"),
                          treatment.time,zero.line=TRUE,ylab,xlab="Date",main,
                          col,lty,lwd,legend=TRUE,bw=FALSE,date.format,
                          unit.name,full.legend=TRUE,include.smooth=FALSE,
@@ -141,9 +150,11 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
                          alternative=c("two.sided", "less", "greater"),
                          draw.points=TRUE,control.name="control units",
                          size=1,treated.name="treated unit",
-                         labels=c("actual data","synthsized data")) {
+                         labels=c("actual data","synthsized data"),
+                         ...,environment=parent.frame()) {
   ratio.type  <- match.arg(ratio.type)                         
   alternative <- match.arg(alternative) 
+  x           <- data
   if (!missing(what.set)) 
     what.set <- match.arg(what.set,c("dependents","predictors","all")) 
   if (missing(type)&&(!is.null(x$placebo))) type <- "placebo.gaps"
@@ -192,7 +203,7 @@ ggplot.mscmt <- function(x,what,type=c("gaps","comparison","placebo.gaps",
             AQM2Date))
   estwindow <- lapply(estwindow,function(x) 
                         range(as.Date(as.vector(x),origin="1970-01-01")))
-  res <- ggplot()                                                               # initialize the ggplot object
+  res <- ggplot(mapping=mapping,...,environment=environment)                    # initialize the ggplot object
   if (!missing(treatment.time))                                                 # add line for treatment time
     res <- res + geom_vline(xintercept=as.numeric(treatment.time),
                             color="grey50")

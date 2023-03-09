@@ -1,6 +1,6 @@
-c341ce257f198f1cefa172924b6a3b87 *DESCRIPTION
+0568c3005afbe937c4a5fd8913ade6b5 *DESCRIPTION
 94b7ace81dc0275f3f09aeb7fc85dcda *NAMESPACE
-a9bd771da1fe71acf94d7b828e0ededb *NEWS
+187287bd9f3d15c831ba530ee7a51aff *NEWS
 71dfa442eb1a78f71307e294c987c34c *R/DiD.r
 60cad9ae8121051adf45a9d09d9d1f77 *R/Helpers.r
 d7b2e82614fbae27cb41eb3776f14bc7 *R/MSCMT-package.r
@@ -8,7 +8,7 @@ d7b2e82614fbae27cb41eb3776f14bc7 *R/MSCMT-package.r
 dd619357162eb1610d318e3e1293f2b8 *R/atomOpt.r
 da0a0a1d33a27f862e8127341274fcef *R/compare.r
 f8ee98523288f6212398ab358d2bea81 *R/determine_v.r
-18a984a0d1b9c315ce5023f8f0e271e0 *R/ggplot.r
+6dc299c556c593405fd5b88245600aab *R/ggplot.r
 631a88915e2e6a950902eba7c940eb8f *R/improveSynth.r
 43fe8b3af8b4e5a9a6150743848ebaf3 *R/listFromLong.r
 f2479a32a9cae605c5cd2da403eabe3b *R/mscmt.r
@@ -20,7 +20,7 @@ b72f928ffc7065b521fb4cd6c8dc5927 *R/plot.r
 a26023d0226a1021d439d81049f64ad0 *R/pvalue.r
 91e7b06891d2b79472f823aec7e45c3b *R/wnnls.r
 67f24dd85fb8676c331801efe551b19f *R/zzz.r
-ba88e20ec99ec4c72826a4f45b1f07bf *build/partial.rdb
+8ad2c4a0ffd6f062a446bb0ae91c7c3e *build/partial.rdb
 31424d3df11b8af4fb0b1b96d3e9805b *build/vignette.rds
 bc62cbb5d9418c1df4b39d3e222843aa *inst/COPYRIGHTS
 efdc5aacbb5fa27d20044b673b640e05 *inst/REFERENCES.bib
@@ -32,12 +32,12 @@ a54ac5b0aebdd3c78bc5394f2d042980 *inst/doc/CheckingSynth.html
 b9d519907ae182cd0f835ee56fcba40f *inst/doc/UsingTimeSeries.html
 e5900613d2fe56576242f86a191f5821 *inst/doc/WorkingWithMSCMT.R
 14feb30042f30da4772515f83c70350a *inst/doc/WorkingWithMSCMT.Rmd
-d4f58533042cb58965ce9b26c960eb7e *inst/doc/WorkingWithMSCMT.html
+7ac08f57b763b3469a0d2289a3957447 *inst/doc/WorkingWithMSCMT.html
 a5099f57945a1751036263cb3d845f9d *man/MSCMTfunction.Rd
 9979c6757b9b4b806a5ba8b92add2be6 *man/MSCMTpackage.Rd
 fa4abec255e554cdfddc5ac069836a1e *man/compare.Rd
 db3b01b1129deb53d8bbd5dfe55b6694 *man/did.Rd
-beeb1184149eaef0861c18bc3a552193 *man/ggplot.mscmt.Rd
+b5c18a2d61e8bb848f4c6a4d818afafb *man/ggplot.mscmt.Rd
 3f78011ef52ccf1bcaf16dcde4cbd831 *man/improveSynth.Rd
 726fbce4d65e73f0426ab6d4f310ce16 *man/listFromLong.Rd
 92c223f9f60d700e4a6dabb60e6065eb *man/macros/Macros.Rd
