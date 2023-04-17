@@ -27,12 +27,13 @@ timingBench <- function(vs,X,Z,max.iter=1000L,debug=FALSE,sigf=5,margin=5e-04,
                            l=rep(0,n),u=rep(1,n),r=0,sigf=sigf,margin=margin,
                            maxiter=max.iter,bound=bound,verb=debug,...)$primal),
                            silent=TRUE))
-  LRQP.time <- system.time(
-    for (i in 1:nrow(vs)) w <- LowRankQP::LowRankQP(Vmat=t(sqrt(vs[i,])*X), 
-                           dvec=rep(0,n), Amat=matrix(rep(1,n),nrow=1), bvec=1, 
-                           uvec=rep(1,n),niter=max.iter,verbose=debug,
-                           ...)$alpha)
-  list(wnnls=wnnls.time,ipop=ipop.time,LRQP=LRQP.time)
+# Removed on 2023-04-17: LowRankQP has been archived on 2023-04-15
+#  LRQP.time <- system.time(
+#    for (i in 1:nrow(vs)) w <- LowRankQP::LowRankQP(Vmat=t(sqrt(vs[i,])*X), 
+#                           dvec=rep(0,n), Amat=matrix(rep(1,n),nrow=1), bvec=1, 
+#                           uvec=rep(1,n),niter=max.iter,verbose=debug,
+#                           ...)$alpha)
+  list(wnnls=wnnls.time,ipop=ipop.time)#,LRQP=LRQP.time)
 }
 
 ## inner optimization methods
@@ -69,15 +70,15 @@ wnnlsExt <- function(v,X,Z,trafo.v,debug=FALSE,return.w=FALSE,
   if (return.w) w else lossDep(Z,w)
 }
 
-LowRankQPOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,max.iter=1000L,
-                         ...) {
-  if (any(is.na(v))) return(Inf) else tv  <- trafo(v)                           # needed for nlminb to work. Better drop nlminb-support for speed reasons?
-  n <- ncol(X)
-  w <- LowRankQP::LowRankQP(Vmat=t(sqrt(tv)*X), dvec=rep(0,n), 
-                            Amat=matrix(rep(1,n),nrow=1), bvec=1, uvec=rep(1,n),
-                            niter=max.iter,verbose=debug,...)$alpha
-  if (return.w) w else lossDep(Z,w)
-}
+# LowRankQPOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,max.iter=1000L,
+#                         ...) {
+#   if (any(is.na(v))) return(Inf) else tv  <- trafo(v)                           # needed for nlminb to work. Better drop nlminb-support for speed reasons?
+#   n <- ncol(X)
+#   w <- LowRankQP::LowRankQP(Vmat=t(sqrt(tv)*X), dvec=rep(0,n), 
+#                             Amat=matrix(rep(1,n),nrow=1), bvec=1, uvec=rep(1,n),
+#                             niter=max.iter,verbose=debug,...)$alpha
+#   if (return.w) w else lossDep(Z,w)
+# }
 
 ipopOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,max.iter=1000L,
                     sigf=5,margin=5e-04,bound=10,...) {
@@ -112,9 +113,9 @@ benchmarkOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,max.iter=1000L,
 
   # LowRankQP
   n <- ncol(X)
-  w.LRQP <- LowRankQP::LowRankQP(Vmat=t(sqrt(tv)*X), dvec=rep(0,n), 
-                            Amat=matrix(rep(1,n),nrow=1), bvec=1, uvec=rep(1,n),
-                            niter=max.iter,verbose=debug,...)$alpha
+#  w.LRQP <- LowRankQP::LowRankQP(Vmat=t(sqrt(tv)*X), dvec=rep(0,n), 
+#                            Amat=matrix(rep(1,n),nrow=1), bvec=1, uvec=rep(1,n),
+#                            niter=max.iter,verbose=debug,...)$alpha
 
   # ipop                      
   w.ipop  <- try(as.numeric(kernlab::ipop(c=rep(0,n),H=fastMpdVM(X,tv),
@@ -127,16 +128,17 @@ benchmarkOpt <- function(v,X,Z,trafo,debug=FALSE,return.w=FALSE,max.iter=1000L,
   } else trouble <- FALSE
   
   w.wnnls <- abs(w.wnnls)/sum(abs(w.wnnls))
-  w.LRQP  <- abs(w.LRQP)/sum(abs(w.LRQP))
+#  w.LRQP  <- abs(w.LRQP)/sum(abs(w.LRQP))
   w.ipop  <- abs(w.ipop)/sum(abs(w.ipop))
   
-  Ws  <- cbind("wnnls"=w.wnnls,"LRQP"=w.LRQP,"ipop"=w.ipop)
+#  Ws  <- cbind("wnnls"=w.wnnls,"LRQP"=w.LRQP,"ipop"=w.ipop)
+  Ws  <- cbind("wnnls"=w.wnnls,"ipop"=w.ipop)
   TFs <- sqrt(diag(t(Ws)%*%t(Z)%*%Z%*%Ws)/nrow(Z))
   LWs <- diag(t(Ws)%*%t(X)%*%diag(tv)%*%X%*%Ws)
   mLW <- min(LWs)
   
   globals$raise_wnnls[globals$NRUNS] <- (LWs[1]-mLW)/mLW
-  globals$raise_LRQP[globals$NRUNS]  <- (LWs[2]-mLW)/mLW
+#  globals$raise_LRQP[globals$NRUNS]  <- (LWs[2]-mLW)/mLW
   globals$raise_ipop[globals$NRUNS]  <- if (trouble) NA else (LWs[3]-mLW)/mLW
   
   if (return.w) w.wnnls else lossDep(Z,w.wnnls)

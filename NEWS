@@ -1,3 +1,18 @@
+Changes in version 1.3.7 (2023-04-17)
+
+Changes
+
+- packages 'Synth', 'LowRankQP' and 'Rmalschains' have been archived recently. 
+  All references to these packages' documentation, the support for 'malschains' 
+  as outer optimizer and the support of 'LowRankQPOpt' as inner optimizer have
+  been removed.
+
+- the vignettes now use cached copies of the results obtained with package
+  'Synth' (version: 1.1-6) because 'Synth' is currently not available on CRAN.
+
+  some examples using package 'Synth' have been changed or removed.
+
+
 Changes in version 1.3.6 (2023-03-09)
 
 Bug fixes

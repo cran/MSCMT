@@ -119,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -362,58 +369,40 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="generating-the-result-of-package-synth" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
 <p>The following code is thus essentially borrowed from the <code>example</code> section of the corresponding help page (all comments have been removed):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(Synth)</span></code></pre></div>
-<pre><code>## ##
-## ## Synth Package: Implements Synthetic Control Methods.</code></pre>
-<pre><code>## ## See https://web.stanford.edu/~jhain/synthpage.html for additional information.</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">data</span>(synth.data)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>dataprep.out &lt;-</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="st">  </span><span class="kw">dataprep</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    <span class="dt">foo =</span> synth.data,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    <span class="dt">predictors =</span> <span class="kw">c</span>(<span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;X3&quot;</span>),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    <span class="dt">predictors.op =</span> <span class="st">&quot;mean&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    <span class="dt">dependent =</span> <span class="st">&quot;Y&quot;</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>    <span class="dt">unit.variable =</span> <span class="st">&quot;unit.num&quot;</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>    <span class="dt">time.variable =</span> <span class="st">&quot;year&quot;</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>    <span class="dt">special.predictors =</span> <span class="kw">list</span>(</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1991</span>, <span class="st">&quot;mean&quot;</span>),</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1985</span>, <span class="st">&quot;mean&quot;</span>),</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1980</span>, <span class="st">&quot;mean&quot;</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>    ),</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    <span class="dt">treatment.identifier =</span> <span class="dv">7</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>    <span class="dt">controls.identifier =</span> <span class="kw">c</span>(<span class="dv">29</span>, <span class="dv">2</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">32</span>, <span class="dv">38</span>),</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>    <span class="dt">time.predictors.prior =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1989</span>),</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>    <span class="dt">time.optimize.ssr =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1990</span>),</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>    <span class="dt">unit.names.variable =</span> <span class="st">&quot;name&quot;</span>,</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>    <span class="dt">time.plot =</span> <span class="dv">1984</span><span class="op">:</span><span class="dv">1996</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>  )</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>synth.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out)</span></code></pre></div>
-<pre><code>## 
-## X1, X0, Z1, Z0 all come directly from dataprep object.
-## 
-## 
-## **************** 
-##  searching for synthetic control unit  
-##  
-## 
-## **************** 
-## **************** 
-## **************** 
-## 
-## MSPE (LOSS V): 4.720551 
-## 
-## solution.v:
-##  0.003972032 0.00222758 0.1288856 0.3277689 0.008144768 0.5290011 
-## 
-## solution.w:
-##  0.001006191 0.005246634 0.1691651 0.2136205 0.6109586 2.9586e-06</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">load</span>(<span class="st">&quot;synth.out.RData&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="co"># using cached copy because package Synth has been archived</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="co"># &#39;synth.out&#39; and &#39;dataprep.out&#39; have been generated with the following code:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co">#  library(Synth) {</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="co">#  data(synth.data)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="co">#  dataprep.out &lt;-</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="co">#    dataprep(</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="co">#      foo = synth.data,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="co">#      predictors = c(&quot;X1&quot;, &quot;X2&quot;, &quot;X3&quot;),</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="co">#      predictors.op = &quot;mean&quot;,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="co">#      dependent = &quot;Y&quot;,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="co">#      unit.variable = &quot;unit.num&quot;,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="co">#      time.variable = &quot;year&quot;,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="co">#      special.predictors = list(</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="co">#        list(&quot;Y&quot;, 1991, &quot;mean&quot;),</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="co">#        list(&quot;Y&quot;, 1985, &quot;mean&quot;),</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="co">#        list(&quot;Y&quot;, 1980, &quot;mean&quot;)</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="co">#      ),</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="co">#      treatment.identifier = 7,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="co">#      controls.identifier = c(29, 2, 13, 17, 32, 38),</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="co">#      time.predictors.prior = c(1984:1989),</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="co">#      time.optimize.ssr = c(1984:1990),</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a><span class="co">#      unit.names.variable = &quot;name&quot;,</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="co">#      time.plot = 1984:1996</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a><span class="co">#    )</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a><span class="co">#  synth.out &lt;- synth(dataprep.out)</span></span></code></pre></div>
 </div>
 <div id="checking-the-result" class="section level3">
 <h3>Checking the result</h3>
 <p>We check the result by applying function <code>improveSynth</code> to <code>synth.out</code> and <code>dataprep.out</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">library</span>(MSCMT)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth.out,dataprep.out)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">library</span>(MSCMT)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth.out,dataprep.out)</span></code></pre></div>
 <pre><code>## Results reported by package Synth
 ## =================================
 ## 
@@ -460,15 +449,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="generating-the-result-of-package-synth-1" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
 <p><code>genoud</code> is switched on by the corresponding function argument. We capture the output with <code>capture.output</code> because it is <strong>very</strong> verbose. Furthermore, the calculation is quite lengthy, therefore the results have been cached.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="cf">if</span> (<span class="kw">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) <span class="cf">else</span> {</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  <span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  out &lt;-<span class="st"> </span><span class="kw">capture.output</span>(synth3.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out,<span class="dt">genoud=</span><span class="ot">TRUE</span>))</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>}  </span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="co"># using cached copy because package Synth has been archived</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="co"># &#39;synth3.out&#39; has been generated with the following code:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="co">#</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="co">#  set.seed(42)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="co">#  out &lt;- capture.output(synth3.out &lt;- Synth::synth(dataprep.out,genoud=TRUE))</span></span></code></pre></div>
 </div>
 <div id="checking-the-result-1" class="section level3">
 <h3>Checking the result</h3>
 <p>We again check the result by applying function <code>improveSynth</code> to <code>synth3.out</code> and <code>dataprep.out</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>synth4.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth3.out,dataprep.out)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>synth4.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth3.out,dataprep.out)</span></code></pre></div>
 <pre><code>## Results reported by package Synth
 ## =================================
 ## 

@@ -8,8 +8,12 @@ knitr::opts_chunk$set(
 )
 
 ## -----------------------------------------------------------------------------
-library(Synth)
-data(basque)
+# package 'Synth' has been archived, dataset 'basque' is thus extracted from archive
+setwd(tempdir())
+download.file("https://cran.r-project.org/src/contrib/Archive/Synth/Synth_1.1-6.tar.gz",
+              destfile="Synth.tar.gz")
+untar("Synth.tar.gz",files="Synth/data/basque.RData")
+load("Synth/data/basque.RData")
 colnames(basque)
 basque[703,]
 

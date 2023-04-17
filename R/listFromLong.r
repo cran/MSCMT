@@ -7,7 +7,7 @@
 #' format, where data is stored as a list of matrices.
 #'
 #' Most parameter names are named after their equivalents in the 
-#' \code{\link[Synth]{dataprep}} function of package 'Synth'.
+#' \code{dataprep} function of package 'Synth'.
 #'
 #' @param foo A \code{data.frame} containing the data in "long" format.
 #' @param unit.variable Either a numeric scalar with the column number (in 
@@ -29,13 +29,19 @@
 #' @importFrom stats na.omit
 #' @export listFromLong
 #' @examples
-#' if (require("Synth")) {
-#'   data(basque)
-#'   Basque <- listFromLong(basque, unit.variable="regionno", 
-#'                          time.variable="year", 
-#'                          unit.names.variable="regionname")
-#'   names(Basque)
-#'   head(Basque$gdpcap)
+#' \dontrun{
+#' ## example has been modified because package 'Synth' has been archived
+#' ## dataset 'basque' is now retrieved from archive
+#' setwd(tempdir())
+#' download.file("https://cran.r-project.org/src/contrib/Archive/Synth/Synth_1.1-6.tar.gz",
+#'               destfile="Synth.tar.gz")
+#' untar("Synth.tar.gz",files="Synth/data/basque.RData")
+#' load("Synth/data/basque.RData")
+#' Basque <- listFromLong(basque, unit.variable="regionno", 
+#'                        time.variable="year", 
+#'                        unit.names.variable="regionname")
+#' names(Basque)
+#' head(Basque$gdpcap)
 #' }
 listFromLong <- function(foo, unit.variable, time.variable, 
                          unit.names.variable=NULL,exclude.columns=NULL) {

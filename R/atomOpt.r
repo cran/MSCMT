@@ -129,20 +129,21 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
                          lower=rep(lb,true.n.v),upper=rep(0,true.n.v),
                          control=control)  
     }
-    if (outer.optim=="malschains"){
-      optfn <- getFun("Rmalschains","malschains")
-      control <- list(popsize=20*true.n.v)
-      if (!is.null(outer.opar$maxEvals)) {
-        maxEvals <- outer.opar$maxEvals
-        outer.opar$maxEvals <- NULL
-      } else maxEvals <- 25000
-      control[names(outer.opar)] <- outer.opar
-      outer.args <- list(maxEvals=maxEvals, 
-                         lower=rep(lb,true.n.v),upper=rep(0,true.n.v),
-                         control=do.call(getFun("Rmalschains",
-                                                "malschains.control"),control),
-                         verbosity=0)  
-    }
+# removed on 2023-04-17: Rmalschains has been archived on 2023-04-15
+#    if (outer.optim=="malschains"){
+#      optfn <- getFun("Rmalschains","malschains")
+#      control <- list(popsize=20*true.n.v)
+#      if (!is.null(outer.opar$maxEvals)) {
+#        maxEvals <- outer.opar$maxEvals
+#        outer.opar$maxEvals <- NULL
+#      } else maxEvals <- 25000
+#      control[names(outer.opar)] <- outer.opar
+#      outer.args <- list(maxEvals=maxEvals, 
+#                         lower=rep(lb,true.n.v),upper=rep(0,true.n.v),
+#                         control=do.call(getFun("Rmalschains",
+#                                                "malschains.control"),control),
+#                         verbosity=0)  
+#    }
     if ((outer.optim=="nloptr")||(outer.optim=="crs")){
       optfn <- getFun("nloptr","nloptr")
       opts <- list(maxeval=2.5e4,xtol_rel=1e-14,population=20*true.n.v,
@@ -182,8 +183,8 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
     # check availability of packages for inner optimizer
     if ((inner.optim=="ipopOpt")||(inner.optim=="benchmarkOpt"))
       checkPkg("kernlab")
-    if ((inner.optim=="LowRankQPOpt")||(inner.optim=="benchmarkOpt"))
-      checkPkg("LowRankQP")
+#    if ((inner.optim=="LowRankQPOpt")||(inner.optim=="benchmarkOpt"))
+#      checkPkg("LowRankQP")
                  
     # pre-allocate workspace for inner optimizer wnnlsOpt
     if ((inner.optim=="wnnlsOpt")||(inner.optim=="benchmarkOpt")) {                                           
