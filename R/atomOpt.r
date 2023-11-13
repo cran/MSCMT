@@ -66,14 +66,6 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
       outer.args <- list(lower=rep(lb,true.n.v),upper=rep(0,true.n.v))  
       outer.args[names(outer.opar)] <- outer.opar
     } 
-    if (outer.optim=="hydroPSO") {
-      optfn <- getFun("hydroPSO","hydroPSO")
-      control <- list(maxit=300,write2disk=debug,verbose=verbose,reltol=1e-14,
-	                  npart=3*true.n.v)
-      control[names(outer.opar)] <- outer.opar
-      outer.args <- list(lower=rep(lb,true.n.v),upper=rep(0,true.n.v),
-                         control=control)  
-    } 
     if (outer.optim=="DEopt") {
       optfn <- getFun("NMOF","DEopt")
       algo <- list(min=rep(lb,true.n.v), max=rep(0,true.n.v), nG=100, 
@@ -258,8 +250,7 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
                         else if (outer.optim=="ga")     "fitness"
                         else if (outer.optim=="soma")   "costFunction"
                         else "fn"                      
-        obj.fun.list <- if (outer.optim=="hydroPSO") list("obj.fun") else 
-                                                     list(obj.fun)
+        obj.fun.list <- list(obj.fun)
         names(obj.fun.list) <- obj.fun.name                
   
         # this is the actual call of the outer optimizer
@@ -294,11 +285,6 @@ atomOpt <- function(arglist,X,Z,trafo.v,single.v,inner.optim,inner.args,
           rmspe <- sqrt(rgV.optim$objective)
           opt.v <- as.numeric(rgV.optim$solution)
           conv  <- rgV.optim$iterations
-        }
-        if (outer.optim=="hydroPSO") {
-          rmspe <- sqrt(rgV.optim$value)
-          opt.v <- as.numeric(rgV.optim$par)
-          conv  <- rgV.optim$counts[2]
         }
         if (outer.optim=="ga") {
           rmspe <- sqrt((-1)*rgV.optim@fitnessValue)

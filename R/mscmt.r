@@ -153,7 +153,6 @@
 #'                   \tab                    \tab \code{gradient.check=FALSE}, \code{MemoryMatrix=FALSE} \cr
 #' \code{GenSA}      \tab \code{GenSA}       \tab \code{max.call=1e7}, \code{max.time=25/dim},  \cr
 #'                   \tab                    \tab \code{trace.mat=FALSE} \cr
-#' \code{hydroPSO}   \tab \code{hydroPSO}    \tab \code{maxit=300}, \code{reltol=1e-14}, \code{npart=3*dim} \cr
 #' \code{isres}      \tab \code{nloptr}      \tab \code{maxeval=2e4}, \code{xtol_rel=1e-14}, \cr
 #'                   \tab                    \tab \code{population=20*dim}, \code{algorithm="NLOPT_GN_ISRES"} \cr
 #' \code{nlminbOpt}  \tab \code{MSCMT/stats} \tab \code{nrandom=30} \cr

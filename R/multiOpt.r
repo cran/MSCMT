@@ -11,7 +11,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
   outer.optim   <- match.arg(outer.optim,c("DEoptC","DEoptim","GenSA","genoud",
                                            "nlminbOpt","JDEoptim","optimOpt",
                                            "DEopt","PSopt","nloptr",
-                                           "hydroPSO","cma_es",
+                                           "cma_es",
                                            "soma","psoptim","ga","crs","isres",
                                            "fixed","regression","none"),
                                            several.ok=TRUE)

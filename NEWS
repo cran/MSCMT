@@ -1,3 +1,15 @@
+Changes in version 1.3.8 (2023-11-13)
+
+Changes
+
+- removed support for package 'hydroPSO' (which has been archived).
+
+Bug fixes
+
+- fixed missing alias for package documentation (many thanks to Kurt Hornik 
+  for the hint).
+
+
 Changes in version 1.3.7 (2023-04-17)
 
 Changes

@@ -13,6 +13,7 @@
 #' (including edge cases) without losing computational efficiency.
 #'
 #' @rdname MSCMTpackage
+#' @aliases MSCMT-package
 #' @docType package
 #' @name MSCMT
 #' @useDynLib MSCMT, .registration = TRUE, .fixes = "C_"
