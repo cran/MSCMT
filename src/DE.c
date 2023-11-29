@@ -126,7 +126,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
       for (ip=2;ip<2+(width-7)*done/tbd;ip++) buffer[ip] = '=';
       for (;ip<width-5;ip++) buffer[ip] = '-';
       snprintf(buffer+ip,16,"] %3i%s",perc,"%%");
-      REprintf(buffer);
+      REprintf("%s",buffer);
     }  
   }
   
@@ -299,7 +299,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
           for (ip=2;ip<2+(width-7)*done/tbd;ip++) buffer[ip] = '=';
           for (;ip<width-5;ip++) buffer[ip] = '-';
           snprintf(buffer+ip,16,"] %3i%s",perc,"%%");
-          REprintf(buffer);
+          REprintf("%s",buffer);
         }  
       }
       if (i>=waitgen) if (bV[i-waitgen]<(1.0+minimpr)*bV[i]) {                   // can we stop early because we did not improve?
@@ -320,7 +320,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
     perc = 100;
     for (ip=2;ip<width-5;ip++) buffer[ip] = '=';
     snprintf(buffer+ip,16,"] %3i%s",perc,"%%");
-    REprintf(buffer);
+    REprintf("%s",buffer);
     REprintf("\n");
     if (checkA) REprintf("Number of observed improvements (ambiguities): %d\n",nimpr);
   }

@@ -1,6 +1,6 @@
-2fd9fa412dbeb0f52043b7eea06d0ffe *DESCRIPTION
+1a48fad4143acd8bbb8c50bc08480bd8 *DESCRIPTION
 94b7ace81dc0275f3f09aeb7fc85dcda *NAMESPACE
-e88c3ed95c1ac2415921b0169cbacb87 *NEWS
+71ec41959b28cca4ddc888219983ab31 *NEWS
 71dfa442eb1a78f71307e294c987c34c *R/DiD.r
 60cad9ae8121051adf45a9d09d9d1f77 *R/Helpers.r
 32c028800681b07d7803c2781c74f015 *R/MSCMT-package.r
@@ -20,7 +20,7 @@ b72f928ffc7065b521fb4cd6c8dc5927 *R/plot.r
 a26023d0226a1021d439d81049f64ad0 *R/pvalue.r
 91e7b06891d2b79472f823aec7e45c3b *R/wnnls.r
 67f24dd85fb8676c331801efe551b19f *R/zzz.r
-e20772a376d9625e7637ea14beb2b4ca *build/partial.rdb
+3103a7f6546b6c7cb6e7875bd0f49edc *build/partial.rdb
 0d9c4462443dac22a7e3e46b1de0da42 *build/vignette.rds
 bc62cbb5d9418c1df4b39d3e222843aa *inst/COPYRIGHTS
 efdc5aacbb5fa27d20044b673b640e05 *inst/REFERENCES.bib
@@ -32,7 +32,7 @@ a39923204b8b1cf6623926a4a6d38692 *inst/doc/UsingTimeSeries.Rmd
 57bea2231bd6cd27ef1887012f582d3f *inst/doc/UsingTimeSeries.html
 e5a7681be89abccc0719e9fbc2df2a41 *inst/doc/WorkingWithMSCMT.R
 91c9f172a7f774ea82fc225e9a2c0af4 *inst/doc/WorkingWithMSCMT.Rmd
-df7a3a563af39be876d6319fd131d33a *inst/doc/WorkingWithMSCMT.html
+aff307a08f707957fe825df95b77b90a *inst/doc/WorkingWithMSCMT.html
 c2f2c8a6c9e64b0529ff55619f4cbb14 *man/MSCMTfunction.Rd
 b84c00d68ef2c7542de61c18da8bc0cf *man/MSCMTpackage.Rd
 fa4abec255e554cdfddc5ac069836a1e *man/compare.Rd
@@ -44,7 +44,7 @@ f9ccee72fb57f048448a73753cbd5997 *man/listFromLong.Rd
 ec5226a666032567bf550e442438b0d2 *man/ppratio.Rd
 d0188703293d77c763dba65551d2571f *man/print.mscmt.Rd
 d99fcf6b26e73d1b2046a5b1d482f64b *man/pvalue.Rd
-b63ca603e7b6d72e660c54634780a70a *src/DE.c
+08126583bfbd3f24e272953bd04056e7 *src/DE.c
 9064dc55b0168615e361f2efd3597269 *src/Helpers.c
 b13bedbe73f188bb08844adcaf8cbd42 *src/MSCMT.c
 5f2b662f3fc6172be2cd91576b99c036 *src/MSCMT.h
