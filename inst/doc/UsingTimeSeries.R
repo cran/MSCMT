@@ -8,12 +8,8 @@ knitr::opts_chunk$set(
 )
 
 ## -----------------------------------------------------------------------------
-# package 'Synth' has been archived, dataset 'basque' is thus extracted from archive
-setwd(tempdir())
-download.file("https://cran.r-project.org/src/contrib/Archive/Synth/Synth_1.1-6.tar.gz",
-              destfile="Synth.tar.gz")
-untar("Synth.tar.gz",files="Synth/data/basque.RData")
-load("Synth/data/basque.RData")
+library(Synth)
+data(basque)
 library(MSCMT)
 Basque <- listFromLong(basque, unit.variable="regionno", time.variable="year", unit.names.variable="regionname")
 school.sum <- with(Basque,colSums(school.illit + school.prim + school.med + school.high  + school.post.high))

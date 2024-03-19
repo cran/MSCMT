@@ -380,20 +380,16 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><code>dddd</code> for annual dates, e.g. <code>2016</code>,</li>
 <li><code>ddddQd</code> for quarterly dates, e.g. <code>2016Q1</code> for the first quarter of 2016,</li>
 <li><code>dddd-dd</code> for monthly dates, e.g. <code>2016-03</code> for March 2016.</li>
-<li><code>ddddWdd</code> for monthly dates, e.g. <code>2016W03</code> for the third week of 2016.</li>
-<li><code>dddd-dd-dd</code> for monthly dates, e.g. <code>2016-03-17</code>.</li>
+<li><code>ddddWdd</code> for weekly dates, e.g. <code>2016W03</code> for the third week of 2016.</li>
+<li><code>dddd-dd-dd</code> for daily dates, e.g. <code>2016-03-17</code>.</li>
 </ol>
 <p>A list of matrices is a very useful, but quite unusual data format. Therefore, a helper function called <code>listFromLong</code>, which generates a list of matrices from a more common data representation, the so-called ‘long’ format, has been included in package <code>MSCMT</code>. With <code>listFromLong</code>, migrating from the <code>Synth</code> package to <code>MSCMT</code> is simple, because package <code>Synth</code> (more precisely, its <code>dataprep</code> function) expects its input data to be in ‘long’ format.</p>
 <div id="example" class="section level3">
 <h3>Example</h3>
 <p>The <code>basque</code> dataset in package <code>Synth</code> in ‘long’ format has the following structure:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># package &#39;Synth&#39; has been archived, dataset &#39;basque&#39; is thus extracted from archive</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">setwd</span>(<span class="kw">tempdir</span>())</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">download.file</span>(<span class="st">&quot;https://cran.r-project.org/src/contrib/Archive/Synth/Synth_1.1-6.tar.gz&quot;</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>              <span class="dt">destfile=</span><span class="st">&quot;Synth.tar.gz&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">untar</span>(<span class="st">&quot;Synth.tar.gz&quot;</span>,<span class="dt">files=</span><span class="st">&quot;Synth/data/basque.RData&quot;</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="kw">load</span>(<span class="st">&quot;Synth/data/basque.RData&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="kw">colnames</span>(basque)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(Synth)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">data</span>(basque)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">colnames</span>(basque)</span></code></pre></div>
 <pre><code>##  [1] &quot;regionno&quot;              &quot;regionname&quot;            &quot;year&quot;                 
 ##  [4] &quot;gdpcap&quot;                &quot;sec.agriculture&quot;       &quot;sec.energy&quot;           
 ##  [7] &quot;sec.industry&quot;          &quot;sec.construction&quot;      &quot;sec.services.venta&quot;   
@@ -523,13 +519,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3>Example</h3>
 <p>A simple estimation (without a placebo study) produces the following console output (if parameter <code>verbose</code> is <code>TRUE</code>, which is the default):</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>)</span></code></pre></div>
-<pre><code>## 07:41:05: Number of &#39;sunny&#39; donors: 16 out of 16
-## 07:41:05: Unrestricted outer optimum (obtained by ignoring all predictors) with 
-## 07:41:05: RMSPE 0.0642366697165241 and MSPE (loss v) 0.0041263497362698 is 
-## 07:41:05: INFEASIBLE when respecting the predictors.
-## 07:41:05: Starting optimization via DEoptC, random seed 1.
-## 07:41:07: Optimization finished (1132321 calls to inner optimizer), rmspe: 
-## 07:41:07: 0.0654680949292753, mspe: 0.00428607145366861.
+<pre><code>## 10:46:11: Number of &#39;sunny&#39; donors: 16 out of 16
+## 10:46:11: Unrestricted outer optimum (obtained by ignoring all predictors) with 
+## 10:46:11: RMSPE 0.0642366697165241 and MSPE (loss v) 0.0041263497362698 is 
+## 10:46:11: INFEASIBLE when respecting the predictors.
+## 10:46:11: Starting optimization via DEoptC, random seed 1.
+## 10:46:13: Optimization finished (1132321 calls to inner optimizer), rmspe: 
+## 10:46:13: 0.0654680949292753, mspe: 0.00428607145366861.
 ## Final rmspe: 0.06546809, mspe (loss v): 0.004286071
 ## Optimal weights:
 ##      Baleares (Islas)              Cataluna Madrid (Comunidad De) 
@@ -618,9 +614,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">library</span>(parallel)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>cl &lt;-<span class="st"> </span><span class="kw">makeCluster</span>(<span class="dv">2</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a>resplacebo &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">cl=</span>cl, <span class="dt">placebo=</span><span class="ot">TRUE</span>, <span class="dt">seed=</span><span class="dv">1</span>)</span></code></pre></div>
-<pre><code>## 07:41:08: Starting placebo study, excluding original treated unit, on the 
-## 07:41:08: cluster. Please hold the line.
-## 07:41:33: Placebo study on cluster finished.</code></pre>
+<pre><code>## 10:46:14: Starting placebo study, excluding original treated unit, on the 
+## 10:46:14: cluster. Please hold the line.
+## 10:46:39: Placebo study on cluster finished.</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="kw">stopCluster</span>(cl)</span></code></pre></div>
 <p>Object <code>resplacebo</code> now contains single SCM estimations for each unit as well as aggregated information concerning original data, synthesized data, and gaps for all units. The individual SCM estimations can be accessed separately (as list elements with names corresponding to the units’ names). With the following plot, one can inspect whether there is some effect for Catalonia:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">ggplot</span>(resplacebo[[<span class="st">&quot;Cataluna&quot;</span>]], <span class="dt">type=</span><span class="st">&quot;comparison&quot;</span>)</span></code></pre></div>

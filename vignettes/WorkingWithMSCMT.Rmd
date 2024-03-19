@@ -37,8 +37,8 @@ The row names must therefore match one of the following patterns (where `d` corr
 1.  `dddd` for annual dates, e.g. `2016`,
 2.  `ddddQd` for quarterly dates, e.g. `2016Q1` for the first quarter of 2016,
 3.  `dddd-dd` for monthly dates, e.g. `2016-03` for March 2016.
-4.  `ddddWdd` for monthly dates, e.g. `2016W03` for the third week of 2016.
-5.  `dddd-dd-dd` for monthly dates, e.g. `2016-03-17`.
+4.  `ddddWdd` for weekly dates, e.g. `2016W03` for the third week of 2016.
+5.  `dddd-dd-dd` for daily dates, e.g. `2016-03-17`.
 
 A list of matrices is a very useful, but quite unusual data format.
 Therefore, a helper function called `listFromLong`, which generates a list of matrices from 
@@ -50,12 +50,8 @@ With `listFromLong`, migrating from the `Synth` package to `MSCMT` is simple, be
 
 The `basque` dataset in package `Synth` in 'long' format has the following structure:
 ```{r}
-# package 'Synth' has been archived, dataset 'basque' is thus extracted from archive
-setwd(tempdir())
-download.file("https://cran.r-project.org/src/contrib/Archive/Synth/Synth_1.1-6.tar.gz",
-              destfile="Synth.tar.gz")
-untar("Synth.tar.gz",files="Synth/data/basque.RData")
-load("Synth/data/basque.RData")
+library(Synth)
+data(basque)
 colnames(basque)
 basque[703,]
 ```

@@ -14,7 +14,7 @@
 #'
 #' @rdname MSCMTpackage
 #' @aliases MSCMT-package
-#' @docType package
+#' @keywords internal 
 #' @name MSCMT
 #' @useDynLib MSCMT, .registration = TRUE, .fixes = "C_"
 #' @importFrom Rdpack reprompt
@@ -35,4 +35,4 @@
 #'
 #' \insertRef{KP16}{MSCMT}
 #'
-NULL
+"_PACKAGE"

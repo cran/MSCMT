@@ -115,7 +115,8 @@ AQM2ts <- function(data) {
   AQM   <- seqAQM(snam,enam)
   res   <- rep(NA,length(AQM))
   names(res) <- AQM
-  res[sanitize(names(data),fr)] <- as.numeric(data)
+  res[sanitize(names(data),fr)] <- if (mode(data)=="numeric") data else 
+                                     rep(NA,length(data))
   ts(as.numeric(res),start=c(syear,smq),end=c(eyear,emq),frequency=fr)
 }
 

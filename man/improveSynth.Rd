@@ -15,10 +15,10 @@ improveSynth(
 )
 }
 \arguments{
-\item{synth.out}{A result of \code{synth} from package 
+\item{synth.out}{A result of \code{\link[Synth]{synth}} from package 
 \code{'Synth'}.}
 
-\item{dataprep.out}{The input of function \code{synth} which
+\item{dataprep.out}{The input of function \code{\link[Synth]{synth}} which
 led to \code{synth.out}.}
 
 \item{lb}{A numerical scalar (default: \code{1e-8}), corresponding to the
@@ -48,7 +48,7 @@ optimum obtained by package \code{'MSCMT'} and all other components
 of \code{synth.out} are removed.
 }
 \description{
-\code{improveSynth} checks the results of \code{synth}
+\code{improveSynth} checks the results of \code{\link[Synth]{synth}}
 for feasibility and optimality and tries to find a better solution.
 }
 \details{
@@ -71,8 +71,38 @@ future release).
 }
 \examples{
 \dontrun{
-## example has been removed because package 'Synth' has been archived
-## See vignette 'Checking and Improving Results of package Synth'
-## for an example working with a cached copy
+## check whether package 'Synth' is available
+if (require("Synth")) {
+
+## process first example of function "synth" in package 'Synth' 
+## (comments are removed):
+
+  data(synth.data)
+  dataprep.out<-
+    dataprep(
+     foo = synth.data,
+     predictors = c("X1", "X2", "X3"),
+     predictors.op = "mean",
+     dependent = "Y",
+     unit.variable = "unit.num",
+     time.variable = "year",
+     special.predictors = list(
+        list("Y", 1991, "mean"),
+        list("Y", 1985, "mean"),
+        list("Y", 1980, "mean")
+                              ),
+     treatment.identifier = 7,
+     controls.identifier = c(29, 2, 13, 17, 32, 38),
+     time.predictors.prior = c(1984:1989),
+     time.optimize.ssr = c(1984:1990),
+     unit.names.variable = "name",
+     time.plot = 1984:1996
+     )
+
+  synth.out <- synth(dataprep.out)
+
+## check and (try to) improve these results:
+  synth2.out <- improveSynth(synth.out,dataprep.out)
+}
 }
 }

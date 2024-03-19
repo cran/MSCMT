@@ -11,12 +11,12 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
   outer.optim   <- match.arg(outer.optim,c("DEoptC","DEoptim","GenSA","genoud",
                                            "nlminbOpt","JDEoptim","optimOpt",
                                            "DEopt","PSopt","nloptr",
-                                           "cma_es",
+                                           "cma_es","malschains",
                                            "soma","psoptim","ga","crs","isres",
                                            "fixed","regression","none"),
                                            several.ok=TRUE)
   inner.optim   <- match.arg(inner.optim,c("wnnlsOpt","ipopOpt",
-                                           "benchmarkOpt"))                                           
+                                           "LowRankQPOpt","benchmarkOpt"))                                           
   do.optimize   <- !(all(outer.optim %in% c("fixed","regression","none")))
   checkPkg <- function(pkg) if(!requireNamespace(pkg,quietly=TRUE))
     stop("package ",pkg," not installed") else TRUE
@@ -179,8 +179,8 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
       # check availability of packages for inner optimizer
       if ((inner.optim=="ipopOpt")||(inner.optim=="benchmarkOpt"))
         checkPkg("kernlab")
-#      if ((inner.optim=="LowRankQPOpt")||(inner.optim=="benchmarkOpt"))
-#        checkPkg("LowRankQP")
+      if ((inner.optim=="LowRankQPOpt")||(inner.optim=="benchmarkOpt"))
+        checkPkg("LowRankQP")
                    
       # pre-allocate workspace for inner optimizer wnnlsOpt
       if ((inner.optim=="wnnlsOpt")||(inner.optim=="benchmarkOpt")) {                                           

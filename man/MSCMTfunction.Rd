@@ -48,16 +48,16 @@ This might be the result of converting from a
 by using function \code{\link{listFromLong}}. 
 
 For convenience, \code{data} may alternatively be the 
-result of function \code{dataprep} of package 
+result of function \code{\link[Synth]{dataprep}} of package 
 \code{'Synth'}. In this case, the parameters \code{treatment.identifier},
 \code{controls.identifier}, \code{times.dep}, \code{times.pred}, 
 and \code{agg.fns} are ignored, as these input parameters are generated
 automatically from \code{data}. The parameters \code{univariate}, 
 \code{alpha}, \code{beta}, and \code{gamma} are ignored by fixing them to 
 their defaults.
-Using results of \code{dataprep} is experimental, because
+Using results of \code{\link[Synth]{dataprep}} is experimental, because
 the automatic generation of input parameters may fail due to lack of 
-information contained in results of \code{dataprep}.}
+information contained in results of \code{\link[Synth]{dataprep}}.}
 
 \item{treatment.identifier}{A character scalar containing the name of the 
 treated unit. 
@@ -143,8 +143,9 @@ starting the actual optimization procedure.}
 method for the inner optimization. Defaults to \code{"wnnlsOpt"}, which
 (currently) is the only supported implementation, because it outperforms
 all other inner optimizers we are aware of. 
-\code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}} has 
-experimental support for benchmark purposes.}
+\code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}}, and 
+\code{LowRankQPOpt}, which uses \code{\link[LowRankQP]{LowRankQP}} as inner
+optimizer, have experimental support for benchmark purposes.}
 
 \item{inner.opar}{A list containing further parameters for the inner 
 optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
@@ -198,6 +199,7 @@ typically the number of predictors minus one.
                   \tab                    \tab \code{trace.mat=FALSE} \cr
 \code{isres}      \tab \code{nloptr}      \tab \code{maxeval=2e4}, \code{xtol_rel=1e-14}, \cr
                   \tab                    \tab \code{population=20*dim}, \code{algorithm="NLOPT_GN_ISRES"} \cr
+\code{malschains} \tab \code{Rmalschains} \tab \code{popsize=20*dim}, \code{maxEvals=25000} \cr
 \code{nlminbOpt}  \tab \code{MSCMT/stats} \tab \code{nrandom=30} \cr
 \code{optimOpt}   \tab \code{MSCMT/stats} \tab \code{nrandom=25} \cr
 \code{PSopt}      \tab \code{NMOF}        \tab \code{nG=100}, \code{nP=20*dim} \cr
@@ -320,7 +322,7 @@ square root,
 various weight vectors in the columns of \code{v},
 \item a matrix \code{predictor.table} containing aggregated statistics of
 predictor values (similar to list element \code{tab.pred} of 
-function \code{synth.tab} of package \code{'Synth'}),
+function \code{\link[Synth]{synth.tab}} of package \code{'Synth'}),
 \item a list of multivariate time series \code{combined} containing, 
 for each dependent and predictor variable, a multivariate time series 
 with elements \code{treated} for the actual values of the treated unit,

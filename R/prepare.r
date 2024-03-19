@@ -14,16 +14,21 @@ prepare <- function(dat, predictors, predictors.op = "mean", special.predictors,
 	BuildMatrix <- function(dat,vars,times,donors,treated,aggfuns,alpha=NULL,
                           betagamma=NULL,scale=FALSE) {
 		Select <- function(lst,nam,tim,cols,agg=NULL) {
-			tmp <- lst[[nam]][intersect(tim,rownames(lst[[nam]])),cols,drop=FALSE]
+      if (!(nam %in% names(lst))) stop (paste0("variable '",nam,"' is missing ",
+                                               "in the supplied data"))
+      if (any(!(cols %in% colnames(lst[[nam]])))) 
+        stop (paste0("variable '",nam,"' is missing for units ",
+                  paste(cols[!(cols %in% colnames(lst[[nam]]))],collapse=", ")))
+      tmp <- lst[[nam]][intersect(tim,rownames(lst[[nam]])),cols,drop=FALSE]
             if (is.null(agg)||agg=="id") {                                      # w/o aggregation
                 sapply(1:ncol(tmp),function(i) if (any(is.na(tmp[,i]))) 
-                  stop(paste0(cols[i]," has some NAs in variable ",nam)))
+                  stop(paste0(cols[i]," has some NAs for variable '",nam,"'")))
                 rownames(tmp) <- paste(nam,rownames(tmp),sep=".")
             } else {                                                            # with aggregation
                 sapply(1:ncol(tmp),function(i) if (all(is.na(tmp[,i]))) 
-                  stop(paste0(cols[i]," has only NAs in variable ",nam)))
+                  stop(paste0(cols[i]," has only NAs for variable '",nam,"'")))
                 sapply(1:ncol(tmp),function(i) if (any(is.na(tmp[,i]))) 
-                  warning(paste0(cols[i]," has some NAs in variable ",nam)))
+                  warning(paste0(cols[i]," has some NAs for variable '",nam,"'")))
                 tmp <- apply(tmp,2,agg,na.rm=TRUE)
                 if (!is.matrix(tmp)) tmp <- matrix(tmp,nrow=1)
                 rownames(tmp) <- paste(nam,agg,tim[1],tim[length(tim)],sep=".")

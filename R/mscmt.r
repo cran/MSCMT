@@ -19,16 +19,16 @@
 #' by using function \code{\link{listFromLong}}. 
 #' 
 #' For convenience, \code{data} may alternatively be the 
-#' result of function \code{dataprep} of package 
+#' result of function \code{\link[Synth]{dataprep}} of package 
 #' \code{'Synth'}. In this case, the parameters \code{treatment.identifier},
 #' \code{controls.identifier}, \code{times.dep}, \code{times.pred}, 
 #' and \code{agg.fns} are ignored, as these input parameters are generated
 #' automatically from \code{data}. The parameters \code{univariate}, 
 #' \code{alpha}, \code{beta}, and \code{gamma} are ignored by fixing them to 
 #' their defaults.
-#' Using results of \code{dataprep} is experimental, because
+#' Using results of \code{\link[Synth]{dataprep}} is experimental, because
 #' the automatic generation of input parameters may fail due to lack of 
-#' information contained in results of \code{dataprep}.
+#' information contained in results of \code{\link[Synth]{dataprep}}.
 #' 
 #' @param treatment.identifier A character scalar containing the name of the 
 #' treated unit. 
@@ -104,8 +104,9 @@
 #' method for the inner optimization. Defaults to \code{"wnnlsOpt"}, which
 #' (currently) is the only supported implementation, because it outperforms
 #' all other inner optimizers we are aware of. 
-#' \code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}} has 
-#' experimental support for benchmark purposes.
+#' \code{"ipopOpt"}, which uses \code{\link[kernlab]{ipop}}, and 
+#' \code{LowRankQPOpt}, which uses \code{\link[LowRankQP]{LowRankQP}} as inner
+#' optimizer, have experimental support for benchmark purposes.
 #' @param inner.opar A list containing further parameters for the inner 
 #' optimizer. Defaults to the empty list. (For \code{"wnnlsOpt"}, there are no
 #' meaningful further parameters.)
@@ -155,6 +156,7 @@
 #'                   \tab                    \tab \code{trace.mat=FALSE} \cr
 #' \code{isres}      \tab \code{nloptr}      \tab \code{maxeval=2e4}, \code{xtol_rel=1e-14}, \cr
 #'                   \tab                    \tab \code{population=20*dim}, \code{algorithm="NLOPT_GN_ISRES"} \cr
+#' \code{malschains} \tab \code{Rmalschains} \tab \code{popsize=20*dim}, \code{maxEvals=25000} \cr
 #' \code{nlminbOpt}  \tab \code{MSCMT/stats} \tab \code{nrandom=30} \cr
 #' \code{optimOpt}   \tab \code{MSCMT/stats} \tab \code{nrandom=25} \cr
 #' \code{PSopt}      \tab \code{NMOF}        \tab \code{nG=100}, \code{nP=20*dim} \cr
@@ -259,7 +261,7 @@
 #' various weight vectors in the columns of \code{v},
 #' \item a matrix \code{predictor.table} containing aggregated statistics of
 #' predictor values (similar to list element \code{tab.pred} of 
-#' function \code{synth.tab} of package \code{'Synth'}),
+#' function \code{\link[Synth]{synth.tab}} of package \code{'Synth'}),
 #' \item a list of multivariate time series \code{combined} containing, 
 #' for each dependent and predictor variable, a multivariate time series 
 #' with elements \code{treated} for the actual values of the treated unit,
@@ -377,8 +379,13 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
     dependent <- colnames(times.dep)
     predictor <- colnames(times.pred)
     time.optimize.ssr <- vector("list",length(dependent))
-    for (i in seq_along(dependent))
-      time.optimize.ssr[[i]] <- seqAQM(times.dep[1,i],times.dep[2,i])
+    for (i in seq_along(dependent)) {
+      tmp <- try(seqAQM(times.dep[1,i],times.dep[2,i]),silent=TRUE)
+      if (inherits(tmp,"try-error")) 
+        stop(paste0("unsupported date format for dependent variable '",
+                    dependent[i],"'")) else
+        time.optimize.ssr[[i]] <- tmp
+    }
   
     if (!is.matrix(times.pred)) stop("times.pred must be a matrix")
     if (is.null(agg.fns)) agg.fns <- rep("id",ncol(times.pred))
@@ -421,11 +428,15 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       names.v    <- colnames(times.pred)
       len.v      <- length(names.v)
       special.predictors <- vector("list",len.v)
-      for (i in 1:len.v) 
-        special.predictors[[i]] <- 
-          list(names.v[i],list(seqAQM(times.pred[1,i],times.pred[2,i])),
-               if (is.null(agg.fns)) "id" else agg.fns[i])
-    
+      for (i in 1:len.v) {
+        tmp <- try(seqAQM(times.pred[1,i],times.pred[2,i]),silent=TRUE)
+        if (inherits(tmp,"try-error")) 
+          stop(paste0("unsupported date format for predictor variable '",
+                      names.v[i],"'")) else
+          special.predictors[[i]] <- 
+            list(names.v[i],list(tmp),
+                 if (is.null(agg.fns)) "id" else agg.fns[i])
+      }
       # prepare the data
       if (is.dataprep) {
         dat <- list(X0 = X0, X1 = X1, Z0 = Z0, Z1 = Z1, X0.unscaled = X0u, 
@@ -497,8 +508,13 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
       data.treat <- list(Y=drop(data.treat))
     } else {
       ind        <- (w>0)
-      data.synth <- lapply(data,function(x) 
-                                  (x[,names(w[ind]),drop=FALSE] %*% w[ind])[,1])
+      data.synth <- lapply(data,function(x) if (mode(x)=="numeric")
+                            (x[,names(w[ind]),drop=FALSE] %*% w[ind])[,1] else {
+                             tmp <- rep(NA,nrow(x))
+                             names(tmp) <- rownames(x)
+                             tmp
+                          })
+                                
       data.treat <- lapply(data,function(x) {
                              if (treatment.identifier %in% colnames(x))
                                tmp <- x[,treatment.identifier,drop=FALSE] else {
@@ -510,7 +526,9 @@ mscmt <- function(data,treatment.identifier=NULL, controls.identifier=NULL,
                            })
     }                       
     gaps <- data.treat
-    for (i in seq_along(gaps)) gaps[[i]] <- gaps[[i]] - data.synth[[i]]
+    for (i in seq_along(gaps)) 
+      if (mode(gaps[[i]])!="numeric") gaps[[i]][] <- NA else 
+        gaps[[i]] <- gaps[[i]] - data.synth[[i]]
     
     if (return.ts) {
       data.synth <- lapply(data.synth,AQM2ts)

@@ -42,34 +42,30 @@ We exemplify the usage of `improveSynth` based on the first example of function 
 The following code is thus essentially borrowed from the `example` section of the corresponding help page (all comments have been removed):
 
 ```{r}
-load("synth.out.RData")
-# using cached copy because package Synth has been archived
-# 'synth.out' and 'dataprep.out' have been generated with the following code:
-#
-#  library(Synth) {
-#  data(synth.data)
-#  dataprep.out <-
-#    dataprep(
-#      foo = synth.data,
-#      predictors = c("X1", "X2", "X3"),
-#      predictors.op = "mean",
-#      dependent = "Y",
-#      unit.variable = "unit.num",
-#      time.variable = "year",
-#      special.predictors = list(
-#        list("Y", 1991, "mean"),
-#        list("Y", 1985, "mean"),
-#        list("Y", 1980, "mean")
-#      ),
-#      treatment.identifier = 7,
-#      controls.identifier = c(29, 2, 13, 17, 32, 38),
-#      time.predictors.prior = c(1984:1989),
-#      time.optimize.ssr = c(1984:1990),
-#      unit.names.variable = "name",
-#      time.plot = 1984:1996
-#    )
-#
-#  synth.out <- synth(dataprep.out)
+library(Synth)
+data(synth.data)
+dataprep.out <-
+  dataprep(
+    foo = synth.data,
+    predictors = c("X1", "X2", "X3"),
+    predictors.op = "mean",
+    dependent = "Y",
+    unit.variable = "unit.num",
+    time.variable = "year",
+    special.predictors = list(
+      list("Y", 1991, "mean"),
+      list("Y", 1985, "mean"),
+      list("Y", 1980, "mean")
+    ),
+    treatment.identifier = 7,
+    controls.identifier = c(29, 2, 13, 17, 32, 38),
+    time.predictors.prior = c(1984:1989),
+    time.optimize.ssr = c(1984:1990),
+    unit.names.variable = "name",
+    time.plot = 1984:1996
+  )
+
+synth.out <- synth(dataprep.out)
 ```
 
 ### Checking the result
@@ -98,12 +94,10 @@ In the second example, we modify the first example by allowing package `Synth` t
 `genoud` is switched on by the corresponding function argument. We capture the output with `capture.output` because it is **very** verbose. Furthermore, the calculation is quite lengthy, therefore the results have been cached.^[To reproduce from scratch, please delete `"synth3.out.RData"` from the `vignettes` folder.]
 
 ```{r}
-load ("synth3.out.RData") 
-# using cached copy because package Synth has been archived
-# 'synth3.out' has been generated with the following code:
-#
-#  set.seed(42)
-#  out <- capture.output(synth3.out <- Synth::synth(dataprep.out,genoud=TRUE))
+if (file.exists("synth3.out.RData")) load ("synth3.out.RData") else {
+  set.seed(42)
+  out <- capture.output(synth3.out <- synth(dataprep.out,genoud=TRUE))
+}  
 ```
 
 ### Checking the result

@@ -36,3 +36,23 @@ browseVignettes(package="MSCMT")
 
 \insertRef{KP16}{MSCMT}
 }
+\author{
+\strong{Maintainer}: Martin Becker \email{martin.becker@mx.uni-saarland.de} (\href{https://orcid.org/0000-0003-2336-9751}{ORCID})
+
+Authors:
+\itemize{
+  \item Stefan Klößner \email{S.Kloessner@mx.uni-saarland.de}
+}
+
+Other contributors:
+\itemize{
+  \item Karline Soetaert \email{karline.soetaert@nioz.nl} [compiler]
+  \item Jack Dongarra \email{dongarra@icl.utk.edu} [copyright holder]
+  \item R.J. Hanson [copyright holder]
+  \item K.H. Haskell [copyright holder]
+  \item Cleve Moler [copyright holder]
+  \item LAPACK authors [copyright holder]
+}
+
+}
+\keyword{internal}
