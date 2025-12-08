@@ -1,6 +1,6 @@
 #include <R_ext/Rdynload.h>
 #include <R_ext/Applic.h>
-#include <R_ext/Callbacks.h>
+#include <Rinternals.h>
 
 #include "MSCMT.h"
 

@@ -1,8 +1,8 @@
 Package: MSCMT
 Type: Package
 Encoding: UTF-8
-Version: 1.4.0
-Date: 2024-03-19
+Version: 1.4.1
+Date: 2025-12-08
 Title: Multivariate Synthetic Control Method Using Time Series
 Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     email = "martin.becker@mx.uni-saarland.de",
@@ -39,8 +39,9 @@ VignetteBuilder: knitr
 RdMacros: Rdpack
 BuildVignettes: yes
 NeedsCompilation: yes
-Packaged: 2024-03-19 09:46:40 UTC; mabe003
-Author: Martin Becker [aut, cre] (<https://orcid.org/0000-0003-2336-9751>),
+Packaged: 2025-12-08 10:39:20 UTC; mabe003
+Author: Martin Becker [aut, cre] (ORCID:
+    <https://orcid.org/0000-0003-2336-9751>),
   Stefan Klößner [aut],
   Karline Soetaert [com],
   Jack Dongarra [cph],
@@ -50,4 +51,4 @@ Author: Martin Becker [aut, cre] (<https://orcid.org/0000-0003-2336-9751>),
   LAPACK authors [cph]
 Maintainer: Martin Becker <martin.becker@mx.uni-saarland.de>
 Repository: CRAN
-Date/Publication: 2024-03-19 10:20:02 UTC
+Date/Publication: 2025-12-08 14:30:02 UTC
