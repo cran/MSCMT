@@ -1991,7 +1991,7 @@ c KARLINE:
      &   MAPKE1, MDEQC, MEND, MEP1, N1, N2, NEXT, NLINK, NOPT, NP1,                &
      &   NTIMES
       LOGICAL COV, FIRST
-      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
+c      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
       SAVE FIRST, DRELPR
 c
       DATA FIRST /.TRUE./
@@ -2090,7 +2090,7 @@ c     Define bound for positive values of LINK.
 c
       NLINK = 100000
       LAST = 1
-      LINK = PRGOPT(1)
+      LINK = INT(PRGOPT(1),4)
       IF (LINK.EQ.0 .OR. LINK.GT.NLINK) THEN
          CALL xXERMSG('SLATEC','xDLSEI','THE OPTION VECTOR IS UNDEFINED'            &
      &   ,2,1)
@@ -2105,7 +2105,7 @@ c
             RETURN
          ENDIF
 c
-         KEY = PRGOPT(LAST+1)
+         KEY = INT(PRGOPT(LAST+1),4)
          IF (KEY.EQ.1) THEN
             COV = PRGOPT(LAST+2) .NE. 0.D0
          ELSEIF (KEY.EQ.2 .AND. PRGOPT(LAST+2).NE.0.D0) THEN
@@ -2120,7 +2120,7 @@ c
             TAU = MAX(DRELPR,PRGOPT(LAST+2))
          ENDIF
 c
-         NEXT = PRGOPT(LINK)
+         NEXT = INT(PRGOPT(LINK),4)
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
          CALL xXERMSG ('SLATEC', 'xDLSEI',                                           &
      &      'THE OPTION VECTOR IS UNDEFINED', 2, 1)
@@ -2430,14 +2430,14 @@ c
       COV = .FALSE.
       SCLCOV = .TRUE.
       LAST = 1
-      LINK = PRGOPT(1)
+      LINK = INT(PRGOPT(1),4)
 c
   100 IF (LINK.GT.1) THEN
-         KEY = PRGOPT(LAST+1)
+         KEY = INT(PRGOPT(LAST+1),4)
          IF (KEY.EQ.1) COV = PRGOPT(LAST+2) .NE. 0.D0
          IF (KEY.EQ.10) SCLCOV = PRGOPT(LAST+2) .EQ. 0.D0
          IF (KEY.EQ.5) TOL = MAX(DRELPR,PRGOPT(LAST+2))
-         NEXT = PRGOPT(LINK)
+         NEXT = INT(PRGOPT(LINK),4)
          LAST = LINK
          LINK = NEXT
          GO TO 100
@@ -3105,7 +3105,7 @@ c
       NLINK = 100000
       NTIMES = 0
       LAST = 1
-      LINK = PRGOPT(1)
+      LINK = INT(PRGOPT(1),4)
       IF (LINK.LE.0 .OR. LINK.GT.NLINK) THEN
          CALL xXERMSG ('SLATEC', 'DWNLSM',                                          &
      &      'IN DWNNLS, THE OPTION VECTOR IS UNDEFINED', 3, 1)
@@ -3121,7 +3121,7 @@ c
             RETURN
          ENDIF
 c
-         KEY = PRGOPT(LAST+1)
+         KEY = INT(PRGOPT(LAST+1),4)
          IF (KEY.EQ.6 .AND. PRGOPT(LAST+2).NE.0.D0) THEN
             DO 110 J = 1,N
                T = xDNRM2(M,W(1,J),1)
@@ -3134,7 +3134,7 @@ c
          IF (KEY.EQ.8) TAU = MAX(DRELPR,PRGOPT(LAST+2))
          IF (KEY.EQ.9) BLOWUP = MAX(DRELPR,PRGOPT(LAST+2))
 c
-         NEXT = PRGOPT(LINK)
+         NEXT = INT(PRGOPT(LINK),4)
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
             CALL xXERMSG ('SLATEC', 'DWNLSM',                                       &
      &         'IN DWNNLS, THE OPTION VECTOR IS UNDEFINED', 3, 1)
@@ -4080,7 +4080,7 @@ c***END PROLOGUE  DWNNLS
       INTEGER IWORK(*), L, L1, L2, L3, L4, L5, LIW, LW, MA, MDW, ME,                &
      &     MODE, N
       DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,*), WORK(*), X(*)
-      CHARACTER(LEN=8) XERN1
+c      CHARACTER(LEN=8) XERN1
 c***FIRST EXECUTABLE STATEMENT  DWNNLS
       MODE = 0
       IF (MA+ME.LE.0 .OR. N.LE.0) RETURN
