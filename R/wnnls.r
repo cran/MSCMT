@@ -42,7 +42,7 @@ wnnls <- function(A=NULL, B=NULL, E=NULL, F=NULL, tol=sqrt(.Machine$double.eps),
   
   # Initialize workspace and big matrix input for Fortran code
   IWORK      <- integer(ME+MA+N)
-  WORK       <- numeric(ME+MA+5*N)
+  WORK       <- numeric(ME+MA+6*N)
   IWORK[1:2] <- c(length(WORK),length(IWORK))
   W          <- rbind(cbind(E,F),cbind(A,B))
 
@@ -75,7 +75,7 @@ wnnls <- function(A=NULL, B=NULL, E=NULL, F=NULL, tol=sqrt(.Machine$double.eps),
 wnnlsInt <- function(W, ME, MA, N, tol=sqrt(.Machine$double.eps))  {
   MDW        <- ME + MA
   IWORK      <- integer(MDW+N)
-  WORK       <- double(MDW+5*N)
+  WORK       <- double(MDW+6*N)
   IWORK[1:2] <- c(length(WORK),length(IWORK))
   sol <- .Fortran(C_wnnls,W=W,MDW=as.integer(MDW),ME=as.integer(ME),
                   MA=as.integer(MA),N=as.integer(N),L=0L,PRGOPT=as.double(1.0),

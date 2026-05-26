@@ -29,28 +29,30 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -62,55 +64,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -143,6 +144,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
 
 <style type="text/css">body {
 background-color: #fff;
@@ -336,114 +359,115 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Checking and Improving Results of package Synth</h1>
+<h1 class="title toc-ignore">Checking and Improving Results of package
+Synth</h1>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#first-example">First Example</a>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#first-example" id="toc-first-example">First Example</a>
 <ul>
-<li><a href="#generating-the-result-of-package-synth">Generating the result of package <code>Synth</code></a></li>
-<li><a href="#checking-the-result">Checking the result</a></li>
+<li><a href="#generating-the-result-of-package-synth" id="toc-generating-the-result-of-package-synth">Generating the result of
+package <code>Synth</code></a></li>
+<li><a href="#checking-the-result" id="toc-checking-the-result">Checking
+the result</a></li>
 </ul></li>
-<li><a href="#second-example">Second Example</a>
+<li><a href="#second-example" id="toc-second-example">Second Example</a>
 <ul>
-<li><a href="#generating-the-result-of-package-synth-1">Generating the result of package <code>Synth</code></a></li>
-<li><a href="#checking-the-result-1">Checking the result</a></li>
+<li><a href="#generating-the-result-of-package-synth-1" id="toc-generating-the-result-of-package-synth-1">Generating the result
+of package <code>Synth</code></a></li>
+<li><a href="#checking-the-result-1" id="toc-checking-the-result-1">Checking the result</a></li>
 </ul></li>
-<li><a href="#summary">Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This vignette illustrates the usage of <code>improveSynth</code>. For a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
-<p>Estimating an SCM model involves searching for an approximate solution of a nested optimization problem. Although the formulation of the optimization problem is quite simple, finding a (good approximate) solution can be hard for several reasons, see <span class="citation">Becker and Klößner (2017)</span> and <span class="citation">Becker and Klößner (2018)</span>. While implementing package <code>MSCMT</code> we put a lot of effort into the design of a smart and robust (but still fast) optimization procedure.</p>
-<p>Apart from function <code>mscmt</code> for the estimation of SCM models based on our model syntax, we also included the convenience function <code>improveSynth</code>, which implements checks for feasibility and optimality of results delivered by package <code>Synth</code>. Below, we illustrate how to use <code>improveSynth</code>.</p>
+<p>This vignette illustrates the usage of <code>improveSynth</code>. For
+a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
+<p>Estimating an SCM model involves searching for an approximate
+solution of a nested optimization problem. Although the formulation of
+the optimization problem is quite simple, finding a (good approximate)
+solution can be hard for several reasons, see <span class="citation">Becker and Klößner (2017)</span> and <span class="citation">Becker and Klößner (2018)</span>. While implementing
+package <code>MSCMT</code> we put a lot of effort into the design of a
+smart and robust (but still fast) optimization procedure.</p>
+<p>Apart from function <code>mscmt</code> for the estimation of SCM
+models based on our model syntax, we also included the convenience
+function <code>improveSynth</code>, which implements checks for
+feasibility and optimality of results delivered by package
+<code>Synth</code>. Below, we illustrate how to use
+<code>improveSynth</code>.</p>
 </div>
 <div id="first-example" class="section level2">
 <h2>First Example</h2>
-<p>We exemplify the usage of <code>improveSynth</code> based on the first example of function <code>synth</code> in package <code>Synth</code>.</p>
+<p>We exemplify the usage of <code>improveSynth</code> based on the
+first example of function <code>synth</code> in package
+<code>Synth</code>.</p>
 <div id="generating-the-result-of-package-synth" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
-<p>The following code is thus essentially borrowed from the <code>example</code> section of the corresponding help page (all comments have been removed):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(Synth)</span></code></pre></div>
+<p>The following code is thus essentially borrowed from the
+<code>example</code> section of the corresponding help page (all
+comments have been removed):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(Synth)</span></code></pre></div>
 <pre><code>## ##
 ## ## Synth Package: Implements Synthetic Control Methods.</code></pre>
 <pre><code>## ## See https://web.stanford.edu/~jhain/synthpage.html for additional information.</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">data</span>(synth.data)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>dataprep.out &lt;-</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="st">  </span><span class="kw">dataprep</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    <span class="dt">foo =</span> synth.data,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    <span class="dt">predictors =</span> <span class="kw">c</span>(<span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;X3&quot;</span>),</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    <span class="dt">predictors.op =</span> <span class="st">&quot;mean&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    <span class="dt">dependent =</span> <span class="st">&quot;Y&quot;</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>    <span class="dt">unit.variable =</span> <span class="st">&quot;unit.num&quot;</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>    <span class="dt">time.variable =</span> <span class="st">&quot;year&quot;</span>,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>    <span class="dt">special.predictors =</span> <span class="kw">list</span>(</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1991</span>, <span class="st">&quot;mean&quot;</span>),</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1985</span>, <span class="st">&quot;mean&quot;</span>),</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>      <span class="kw">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1980</span>, <span class="st">&quot;mean&quot;</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>    ),</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>    <span class="dt">treatment.identifier =</span> <span class="dv">7</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>    <span class="dt">controls.identifier =</span> <span class="kw">c</span>(<span class="dv">29</span>, <span class="dv">2</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">32</span>, <span class="dv">38</span>),</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>    <span class="dt">time.predictors.prior =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1989</span>),</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>    <span class="dt">time.optimize.ssr =</span> <span class="kw">c</span>(<span class="dv">1984</span><span class="op">:</span><span class="dv">1990</span>),</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>    <span class="dt">unit.names.variable =</span> <span class="st">&quot;name&quot;</span>,</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>    <span class="dt">time.plot =</span> <span class="dv">1984</span><span class="op">:</span><span class="dv">1996</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>  )</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>synth.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out)</span></code></pre></div>
-<pre><code>## 
-## X1, X0, Z1, Z0 all come directly from dataprep object.
-## 
-## 
-## **************** 
-##  searching for synthetic control unit  
-##  
-## 
-## **************** 
-## **************** 
-## **************** 
-## 
-## MSPE (LOSS V): 4.720551 
-## 
-## solution.v:
-##  0.003972032 0.00222758 0.1288856 0.3277689 0.008144768 0.5290011 
-## 
-## solution.w:
-##  0.001006191 0.005246634 0.1691651 0.2136205 0.6109586 2.9586e-06</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">data</span>(synth.data)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>dataprep.out <span class="ot">&lt;-</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">dataprep</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">foo =</span> synth.data,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">predictors =</span> <span class="fu">c</span>(<span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;X3&quot;</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">predictors.op =</span> <span class="st">&quot;mean&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">dependent =</span> <span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">unit.variable =</span> <span class="st">&quot;unit.num&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">time.variable =</span> <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">special.predictors =</span> <span class="fu">list</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>      <span class="fu">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1991</span>, <span class="st">&quot;mean&quot;</span>),</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>      <span class="fu">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1985</span>, <span class="st">&quot;mean&quot;</span>),</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>      <span class="fu">list</span>(<span class="st">&quot;Y&quot;</span>, <span class="dv">1980</span>, <span class="st">&quot;mean&quot;</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    ),</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>    <span class="at">treatment.identifier =</span> <span class="dv">7</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    <span class="at">controls.identifier =</span> <span class="fu">c</span>(<span class="dv">29</span>, <span class="dv">2</span>, <span class="dv">13</span>, <span class="dv">17</span>, <span class="dv">32</span>, <span class="dv">38</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>    <span class="at">time.predictors.prior =</span> <span class="fu">c</span>(<span class="dv">1984</span><span class="sc">:</span><span class="dv">1989</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="at">time.optimize.ssr =</span> <span class="fu">c</span>(<span class="dv">1984</span><span class="sc">:</span><span class="dv">1990</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>    <span class="at">unit.names.variable =</span> <span class="st">&quot;name&quot;</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    <span class="at">time.plot =</span> <span class="dv">1984</span><span class="sc">:</span><span class="dv">1996</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  )</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>synth.out <span class="ot">&lt;-</span> <span class="fu">synth</span>(dataprep.out)</span></code></pre></div>
 </div>
 <div id="checking-the-result" class="section level3">
 <h3>Checking the result</h3>
-<p>We check the result by applying function <code>improveSynth</code> to <code>synth.out</code> and <code>dataprep.out</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">library</span>(MSCMT)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>synth2.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth.out,dataprep.out)</span></code></pre></div>
+<p>We check the result by applying function <code>improveSynth</code> to
+<code>synth.out</code> and <code>dataprep.out</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(MSCMT)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>synth2.out <span class="ot">&lt;-</span> <span class="fu">improveSynth</span>(synth.out,dataprep.out)</span></code></pre></div>
 <pre><code>## Results reported by package Synth
 ## =================================
 ## 
-## Optimal V    : 0.00397203172199428 0.0022275802340665 0.128885551930044 
-##                0.327768944797584 0.00814476840194525 0.529001122914366
-## Optimal W*(V): 0.00100619117797987 0.00524663354000337 0.169165120873083 
-##                0.213620460951039 0.610958634379188 2.95858187768921e-06
-## with corresponding predictor loss (&#39;loss W&#39;) of 0.004733129 
-## and corresponding dependent loss (&#39;loss V&#39;) of 4.720551.
+## Optimal V    : 0.00505551267760859 0.00409288890585646 0.19235843488426 
+##                0.261630304340057 2.34057592104407e-05 0.536839453433007
+## Optimal W*(V): 0.000293389419727993 0.00339261939249764 0.162550271513035 
+##                0.220443622139723 0.613319164980641 9.32539782132895e-07
+## with corresponding predictor loss (&#39;loss W&#39;) of 0.006061391 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.705198.
 ## 
 ## 
 ## Components of W*(V) do not sum to 1, dependent loss (&#39;loss V&#39;) of 
-## rescaled W*(V) is 4.720551.
+## rescaled W*(V) is 4.705198.
 ## 
 ## 
 ## Feasibility of W*(V)
 ## ====================
 ## 
 ## WARNING: W*(V) is NOT optimal and thus infeasible!
-## &#39;True&#39; W*(V): 0 0.00338943037392679 0.158483318047272 0.217351422652097 
-##               0.620775828926704 0
-## with corresponding predictor loss (&#39;loss W&#39;) of 0.004715856 
-## and corresponding dependent loss (&#39;loss V&#39;) of 4.719351.
+## &#39;True&#39; W*(V): 0 0.00262165114362921 0.158307709593535 0.221730231636334 
+##               0.617340407626502 0
+## with corresponding predictor loss (&#39;loss W&#39;) of 0.006055947 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.703986.
 ## 
 ## 
 ## Optimality of V
@@ -452,30 +476,43 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## WARNING: &#39;Optimal&#39; V (as reported by package Synth) is not optimal (W*(V) was 
 ##          infeasible), (one of potentially many) &#39;true&#39; optimal V* (with 
 ##          sum(V*)=1):
-## Optimal V*    : 5.60003567935161e-09 0.560003567935161 1.77473255420737e-08 
-##                 5.60003567935161e-09 5.60285950618955e-08 0.439996347088847
-## Optimal W*(V*): 0 0 0.045688074469268 0.250556360555955 0.627179685612033 
-##                 0.0765758793627436
-## with corresponding predictor loss (&#39;loss W&#39;) of 7.597302e-09 
-## and corresponding dependent loss (&#39;loss V&#39;) of 4.440946.</code></pre>
-<p>Package <code>Synth</code> generated a (slightly) infeasible solution, returning a (slightly) suboptimal weight vector <code>w</code> for the control units. However, the predictor weights <code>v</code> are (considerably) suboptimal anyway, because the original dependent loss of 4.720551 (as well as the dependent loss for the corrected <code>w</code> 4.719351) is considerably larger than the dependent loss 4.440946 for the optimal predictor weights obtained by <code>improveSynth</code>.</p>
+## Optimal V*    : 4.99999934830043e-09 0.499999934830043 8.08430877022113e-09 
+##                 1.15032358575281e-08 1.0575236923504e-07 0.499999934830043
+## Optimal W*(V*): 0 0 0.0456889853433346 0.250556787966037 0.627177938912 
+##                 0.0765762877786278
+## with corresponding predictor loss (&#39;loss W&#39;) of 6.563844e-09 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.440945.</code></pre>
+<p>Package <code>Synth</code> generated a (slightly) infeasible
+solution, returning a (slightly) suboptimal weight vector <code>w</code>
+for the control units. However, the predictor weights <code>v</code> are
+(considerably) suboptimal anyway, because the original dependent loss of
+4.705198 (as well as the dependent loss for the corrected <code>w</code>
+4.703986) is considerably larger than the dependent loss 4.440945 for
+the optimal predictor weights obtained by <code>improveSynth</code>.</p>
 </div>
 </div>
 <div id="second-example" class="section level2">
 <h2>Second Example</h2>
-<p>In the second example, we modify the first example by allowing package <code>Synth</code> to use <code>genoud</code> as (outer) optimization algorithm.</p>
+<p>In the second example, we modify the first example by allowing
+package <code>Synth</code> to use <code>genoud</code> as (outer)
+optimization algorithm.</p>
 <div id="generating-the-result-of-package-synth-1" class="section level3">
 <h3>Generating the result of package <code>Synth</code></h3>
-<p><code>genoud</code> is switched on by the corresponding function argument. We capture the output with <code>capture.output</code> because it is <strong>very</strong> verbose. Furthermore, the calculation is quite lengthy, therefore the results have been cached.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="cf">if</span> (<span class="kw">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="kw">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) <span class="cf">else</span> {</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  <span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  out &lt;-<span class="st"> </span><span class="kw">capture.output</span>(synth3.out &lt;-<span class="st"> </span><span class="kw">synth</span>(dataprep.out,<span class="dt">genoud=</span><span class="ot">TRUE</span>))</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>}  </span></code></pre></div>
+<p><code>genoud</code> is switched on by the corresponding function
+argument. We capture the output with <code>capture.output</code> because
+it is <strong>very</strong> verbose. Furthermore, the calculation is
+quite lengthy, therefore the results have been cached.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(<span class="st">&quot;synth3.out.RData&quot;</span>)) <span class="fu">load</span> (<span class="st">&quot;synth3.out.RData&quot;</span>) <span class="cf">else</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(synth3.out <span class="ot">&lt;-</span> <span class="fu">synth</span>(dataprep.out,<span class="at">genoud=</span><span class="cn">TRUE</span>))</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>}  </span></code></pre></div>
 </div>
 <div id="checking-the-result-1" class="section level3">
 <h3>Checking the result</h3>
-<p>We again check the result by applying function <code>improveSynth</code> to <code>synth3.out</code> and <code>dataprep.out</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>synth4.out &lt;-<span class="st"> </span><span class="kw">improveSynth</span>(synth3.out,dataprep.out)</span></code></pre></div>
+<p>We again check the result by applying function
+<code>improveSynth</code> to <code>synth3.out</code> and
+<code>dataprep.out</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>synth4.out <span class="ot">&lt;-</span> <span class="fu">improveSynth</span>(synth3.out,dataprep.out)</span></code></pre></div>
 <pre><code>## Results reported by package Synth
 ## =================================
 ## 
@@ -495,7 +532,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## ====================
 ## 
 ## WARNING: W*(V) is NOT optimal and thus infeasible!
-## &#39;True&#39; W*(V): 0 0 0 0.229091487590933 0.715755416007496 0.0551530964015711
+## &#39;True&#39; W*(V): 0 0 0 0.229091487590933 0.715755416007496 0.0551530964015712
 ## with corresponding predictor loss (&#39;loss W&#39;) of 4.4355e-05 
 ## and corresponding dependent loss (&#39;loss V&#39;) of 6.09574.
 ## 
@@ -506,35 +543,58 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## WARNING: &#39;Optimal&#39; V (as reported by package Synth) is not optimal (W*(V) was 
 ##          infeasible), (one of potentially many) &#39;true&#39; optimal V* (with 
 ##          sum(V*)=1):
-## Optimal V*    : 5.60003567935161e-09 0.560003567935161 1.77473255420737e-08 
-##                 5.60003567935161e-09 5.60285950618955e-08 0.439996347088847
-## Optimal W*(V*): 0 0 0.045688074469268 0.250556360555955 0.627179685612033 
-##                 0.0765758793627436
-## with corresponding predictor loss (&#39;loss W&#39;) of 7.597302e-09 
-## and corresponding dependent loss (&#39;loss V&#39;) of 4.440946.</code></pre>
-<p>Now, package <code>Synth</code> generated a solution with a dependent loss of 4.328506 which is even smaller than the dependent loss 4.440946 obtained by <code>improveSynth</code>. However, the solution generated by <code>Synth</code> is severely <strong>infeasible</strong>: the inner optimization failed, returning a suboptimal weight vector <code>w</code> for the control units, which itself lead to a wrong calculation of the dependent loss (which, of course, depends on <code>w</code>). Implanting the true optimal <code>w</code> (depending on <code>v</code>) leads to a large increase of the dependent loss, which uncovers the suboptimality of <code>v</code>.</p>
-<p><code>improveSynth</code> is able to detect this severe problem and calculates an improved <em>and feasible</em> solution (the improved solution matches the solution obtained from the first call to <code>improveSynth</code> above, with a dependent loss of 4.440946).</p>
+## Optimal V*    : 4.99999934830043e-09 0.499999934830043 8.08430877022113e-09 
+##                 1.15032358575281e-08 1.0575236923504e-07 0.499999934830043
+## Optimal W*(V*): 0 0 0.0456889853433346 0.250556787966037 0.627177938912 
+##                 0.0765762877786278
+## with corresponding predictor loss (&#39;loss W&#39;) of 6.563844e-09 
+## and corresponding dependent loss (&#39;loss V&#39;) of 4.440945.</code></pre>
+<p>Now, package <code>Synth</code> generated a solution with a dependent
+loss of 4.328506 which is even smaller than the dependent loss 4.440945
+obtained by <code>improveSynth</code>. However, the solution generated
+by <code>Synth</code> is severely <strong>infeasible</strong>: the inner
+optimization failed, returning a suboptimal weight vector <code>w</code>
+for the control units, which itself lead to a wrong calculation of the
+dependent loss (which, of course, depends on <code>w</code>). Implanting
+the true optimal <code>w</code> (depending on <code>v</code>) leads to a
+large increase of the dependent loss, which uncovers the suboptimality
+of <code>v</code>.</p>
+<p><code>improveSynth</code> is able to detect this severe problem and
+calculates an improved <em>and feasible</em> solution (the improved
+solution matches the solution obtained from the first call to
+<code>improveSynth</code> above, with a dependent loss of 4.440945).</p>
 </div>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
-<p>Issues with the inner and outer optimizers used in <code>synth</code> from package <code>Synth</code> may lead to infeasible or suboptimal solutions. This vignette illustrated the usage of the convenience function <code>improveSynth</code> from package <code>MSCMT</code> for checking and potentially improving results obtained from <code>synth</code>.</p>
+<p>Issues with the inner and outer optimizers used in <code>synth</code>
+from package <code>Synth</code> may lead to infeasible or suboptimal
+solutions. This vignette illustrated the usage of the convenience
+function <code>improveSynth</code> from package <code>MSCMT</code> for
+checking and potentially improving results obtained from
+<code>synth</code>.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-Mafia">
-<p>Becker, Martin, and Stefan Klößner. 2017. “Estimating the Economic Costs of Organized Crime by Synthetic Control Methods.” <em>Journal of Applied Econometrics</em> 32 (7): 1367–9. <a href="http://dx.doi.org/10.1002/jae.2572">http://dx.doi.org/10.1002/jae.2572</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Mafia" class="csl-entry">
+Becker, Martin, and Stefan Klößner. 2017. <span>“Estimating the Economic
+Costs of Organized Crime by Synthetic Control Methods.”</span>
+<em>Journal of Applied Econometrics</em> 32 (7): 1367–69. <a href="http://dx.doi.org/10.1002/jae.2572">http://dx.doi.org/10.1002/jae.2572</a>.
 </div>
-<div id="ref-FastReliable">
-<p>———. 2018. “Fast and Reliable Computation of Generalized Synthetic Controls.” <em>Econometrics and Statistics</em> 5: 1–19. <a href="https://doi.org/10.1016/j.ecosta.2017.08.002">https://doi.org/10.1016/j.ecosta.2017.08.002</a>.</p>
+<div id="ref-FastReliable" class="csl-entry">
+Becker, Martin, and Stefan Klößner. 2018. <span>“<span class="nocase">Fast and Reliable Computation of Generalized Synthetic
+Controls</span>.”</span> <em>Econometrics and Statistics</em> 5: 1–19.
+<a href="https://doi.org/10.1016/j.ecosta.2017.08.002">https://doi.org/10.1016/j.ecosta.2017.08.002</a>.
 </div>
 </div>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
-<li id="fn1"><p>To reproduce from scratch, please delete <code>&quot;synth3.out.RData&quot;</code> from the <code>vignettes</code> folder.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>To reproduce from scratch, please delete
+<code>&quot;synth3.out.RData&quot;</code> from the <code>vignettes</code>
+folder.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

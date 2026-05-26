@@ -96,7 +96,7 @@ improveSynth <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-5,
   MDW <- ME+MA
   globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
   globals$IWORK <- integer(MDW+N)
-  globals$WORK  <- double(MDW+5*N)
+  globals$WORK  <- double(MDW+6*N)
   globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
   globals$RNORM <- double(1)
   globals$MODE  <- integer(1)
@@ -203,7 +203,7 @@ checkInner <- function(X0,X1,v,w,Z0=NULL,Z1=NULL,tol=sqrt(.Machine$double.eps),
   MDW <- ME+MA
   globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
   globals$IWORK <- integer(MDW+N)
-  globals$WORK  <- double(MDW+5*N)
+  globals$WORK  <- double(MDW+6*N)
   globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
   globals$RNORM <- double(1)
   globals$MODE  <- integer(1)
@@ -253,7 +253,7 @@ is.inner.wrong <- function(synth.out,dataprep.out,lb=1e-8,tol=1e-8) {
   MDW <- ME+MA
   globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
   globals$IWORK <- integer(MDW+N)
-  globals$WORK  <- double(MDW+5*N)
+  globals$WORK  <- double(MDW+6*N)
   globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
   globals$RNORM <- double(1)
   globals$MODE  <- integer(1)
@@ -288,7 +288,7 @@ updateInner <- function(X0,X1,v,w,Z0=NULL,Z1=NULL,tol=sqrt(.Machine$double.eps),
   MDW <- ME+MA
   globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
   globals$IWORK <- integer(MDW+N)
-  globals$WORK  <- double(MDW+5*N)
+  globals$WORK  <- double(MDW+6*N)
   globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
   globals$RNORM <- double(1)
   globals$MODE  <- integer(1)

@@ -38,7 +38,7 @@
   control.name = "control units",
   size = 1,
   treated.name = "treated unit",
-  labels = c("actual data", "synthsized data"),
+  labels = c("actual data", "synthesized data"),
   ...,
   environment = parent.frame()
 )

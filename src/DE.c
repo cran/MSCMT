@@ -86,7 +86,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
   int    MDW     = ME + MA;
   int    N       = ndonors;
   double * Wmat  = (double *) R_alloc((ndonors+1)*(nv+1),sizeof(double));
-  double * Work  = (double *) R_alloc(MDW+5*N, sizeof(double));
+  double * Work  = (double *) R_alloc(MDW+6*N, sizeof(double));
   double * W     = (double *) R_alloc(N, sizeof(double));
   int *    Iwork = (int *)    R_alloc(MDW+N ,sizeof(int));  
   
@@ -95,7 +95,7 @@ SEXP DE(SEXP X, SEXP Z, SEXP LenV, SEXP NP, SEXP NG, SEXP F, SEXP CR, SEXP Min,
   int    MA2      = ndepend;
   int    MDW2     = ME2 + MA2;
   double * Wmat2  = (double *) R_alloc((ndonors+1)*(ndepend+nv+1),sizeof(double));
-  double * Work2  = (double *) R_alloc(MDW2+5*N, sizeof(double));
+  double * Work2  = (double *) R_alloc(MDW2+6*N, sizeof(double));
   double * W2     = (double *) R_alloc(N, sizeof(double));
   int *    Iwork2 = (int *)    R_alloc(MDW2+N ,sizeof(int));  
   

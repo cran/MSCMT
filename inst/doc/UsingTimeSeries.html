@@ -29,28 +29,30 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -62,55 +64,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -143,6 +144,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
 
 <style type="text/css">body {
 background-color: #fff;
@@ -341,54 +364,72 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="TOC">
 <ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#definition-of-the-standard-model">Definition of the Standard Model</a></li>
-<li><a href="#removing-the-lagged-dependent-variable">Removing the Lagged Dependent Variable</a></li>
-<li><a href="#scmt-without-the-lagged-dependent-variable">SCMT without the Lagged Dependent Variable</a></li>
-<li><a href="#summary">Summary</a></li>
-<li><a href="#references">References</a></li>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#definition-of-the-standard-model" id="toc-definition-of-the-standard-model">Definition of the Standard
+Model</a></li>
+<li><a href="#removing-the-lagged-dependent-variable" id="toc-removing-the-lagged-dependent-variable">Removing the Lagged
+Dependent Variable</a></li>
+<li><a href="#scmt-without-the-lagged-dependent-variable" id="toc-scmt-without-the-lagged-dependent-variable">SCMT without the
+Lagged Dependent Variable</a></li>
+<li><a href="#summary" id="toc-summary">Summary</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This vignette illustrates the syntax of SCM<strong>T</strong> models. For a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
-<p>Although SCM models are usually based on time series data of predictor variables, standard SCM estimation does not exploit this particular characteristic. Instead, time series data of predictors are either aggregated, mostly by calculating (a bunch of) means, or every instant of time is considered as a separate input variable with individual predictor weight. With package <code>MSCMT</code>, a time series of a predictor variable can be considered as single input variable without the need of aggregation, an extension of SCM called SCM<strong>T</strong>, see <span class="citation">Klößner and Pfeifer (2015)</span>.</p>
-<p>This vignette illustrates the syntax of SCM<strong>T</strong> models and how SCM<strong>T</strong> models may lead to more meaningful predictor weights without drawbacks concerning the model fit.</p>
+<p>This vignette illustrates the syntax of SCM<strong>T</strong> models.
+For a more general introduction to package <code>MSCMT</code> see its <a href="WorkingWithMSCMT.html">main vignette</a>.</p>
+<p>Although SCM models are usually based on time series data of
+predictor variables, standard SCM estimation does not exploit this
+particular characteristic. Instead, time series data of predictors are
+either aggregated, mostly by calculating (a bunch of) means, or every
+instant of time is considered as a separate input variable with
+individual predictor weight. With package <code>MSCMT</code>, a time
+series of a predictor variable can be considered as single input
+variable without the need of aggregation, an extension of SCM called
+SCM<strong>T</strong>, see <span class="citation">Klößner and Pfeifer
+(2015)</span>.</p>
+<p>This vignette illustrates the syntax of SCM<strong>T</strong> models
+and how SCM<strong>T</strong> models may lead to more meaningful
+predictor weights without drawbacks concerning the model fit.</p>
 </div>
 <div id="definition-of-the-standard-model" class="section level2">
 <h2>Definition of the Standard Model</h2>
-<p>We use the <code>basque</code> dataset in package <code>Synth</code> as an example and replicate the preparation of the data from the <a href="WorkingWithMSCMT.html">main vignette</a> of this package:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(Synth)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">data</span>(basque)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">library</span>(MSCMT)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>Basque &lt;-<span class="st"> </span><span class="kw">listFromLong</span>(basque, <span class="dt">unit.variable=</span><span class="st">&quot;regionno&quot;</span>, <span class="dt">time.variable=</span><span class="st">&quot;year&quot;</span>, <span class="dt">unit.names.variable=</span><span class="st">&quot;regionname&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>school.sum &lt;-<span class="st"> </span><span class="kw">with</span>(Basque,<span class="kw">colSums</span>(school.illit <span class="op">+</span><span class="st"> </span>school.prim <span class="op">+</span><span class="st"> </span>school.med <span class="op">+</span><span class="st"> </span>school.high  <span class="op">+</span><span class="st"> </span>school.post.high))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>Basque<span class="op">$</span>school.higher &lt;-<span class="st"> </span>Basque<span class="op">$</span>school.high <span class="op">+</span><span class="st"> </span>Basque<span class="op">$</span>school.post.high</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="cf">for</span> (item <span class="cf">in</span> <span class="kw">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      </span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  Basque[[item]] &lt;-<span class="st"> </span><span class="dv">6</span> <span class="op">*</span><span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(<span class="kw">t</span>(Basque[[item]]) <span class="op">/</span><span class="st"> </span>school.sum)</span></code></pre></div>
-<p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the model in <span class="citation">Abadie and Gardeazabal (2003)</span>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>treatment.identifier &lt;-<span class="st"> &quot;Basque Country (Pais Vasco)&quot;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>controls.identifier  &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">colnames</span>(Basque[[<span class="dv">1</span>]]),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>                                <span class="kw">c</span>(treatment.identifier, <span class="st">&quot;Spain (Espana)&quot;</span>))</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>times.dep  &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>times.pred &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;school.illit&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>                    <span class="st">&quot;school.prim&quot;</span>           =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>                    <span class="st">&quot;school.med&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>                    <span class="st">&quot;school.higher&quot;</span>         =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>                    <span class="st">&quot;invest&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>                    <span class="st">&quot;gdpcap&quot;</span>                =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>                    <span class="st">&quot;sec.agriculture&quot;</span>       =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>                    <span class="st">&quot;sec.energy&quot;</span>            =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>                    <span class="st">&quot;sec.industry&quot;</span>          =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>                    <span class="st">&quot;sec.construction&quot;</span>      =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>                    <span class="st">&quot;sec.services.venta&quot;</span>    =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>                    <span class="st">&quot;sec.services.nonventa&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>                    <span class="st">&quot;popdens&quot;</span>               =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1969</span>,<span class="dv">1969</span>))</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </span></code></pre></div>
+<p>We use the <code>basque</code> dataset in package <code>Synth</code>
+as an example and replicate the preparation of the data from the <a href="WorkingWithMSCMT.html">main vignette</a> of this package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(Synth)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">data</span>(basque)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(MSCMT)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>Basque <span class="ot">&lt;-</span> <span class="fu">listFromLong</span>(basque, <span class="at">unit.variable=</span><span class="st">&quot;regionno&quot;</span>, <span class="at">time.variable=</span><span class="st">&quot;year&quot;</span>, <span class="at">unit.names.variable=</span><span class="st">&quot;regionname&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>school.sum <span class="ot">&lt;-</span> <span class="fu">with</span>(Basque,<span class="fu">colSums</span>(school.illit <span class="sc">+</span> school.prim <span class="sc">+</span> school.med <span class="sc">+</span> school.high  <span class="sc">+</span> school.post.high))</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>Basque<span class="sc">$</span>school.higher <span class="ot">&lt;-</span> Basque<span class="sc">$</span>school.high <span class="sc">+</span> Basque<span class="sc">$</span>school.post.high</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="cf">for</span> (item <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&quot;school.illit&quot;</span>, <span class="st">&quot;school.prim&quot;</span>, <span class="st">&quot;school.med&quot;</span>, <span class="st">&quot;school.higher&quot;</span>))      </span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  Basque[[item]] <span class="ot">&lt;-</span> <span class="dv">6</span> <span class="sc">*</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">t</span>(<span class="fu">t</span>(Basque[[item]]) <span class="sc">/</span> school.sum)</span></code></pre></div>
+<p>We also replicate model specification of the <a href="WorkingWithMSCMT.html">main vignette</a> which reproduces the
+model in <span class="citation">Abadie and Gardeazabal
+(2003)</span>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>treatment.identifier <span class="ot">&lt;-</span> <span class="st">&quot;Basque Country (Pais Vasco)&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>controls.identifier  <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">colnames</span>(Basque[[<span class="dv">1</span>]]),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>                                <span class="fu">c</span>(treatment.identifier, <span class="st">&quot;Spain (Espana)&quot;</span>))</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>times.dep  <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="st">&quot;gdpcap&quot;</span>                <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>times.pred <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="st">&quot;school.illit&quot;</span>          <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                    <span class="st">&quot;school.prim&quot;</span>           <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                    <span class="st">&quot;school.med&quot;</span>            <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>                    <span class="st">&quot;school.higher&quot;</span>         <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>                    <span class="st">&quot;invest&quot;</span>                <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1964</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>                    <span class="st">&quot;gdpcap&quot;</span>                <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1960</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>                    <span class="st">&quot;sec.agriculture&quot;</span>       <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>                    <span class="st">&quot;sec.energy&quot;</span>            <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>                    <span class="st">&quot;sec.industry&quot;</span>          <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>                    <span class="st">&quot;sec.construction&quot;</span>      <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                    <span class="st">&quot;sec.services.venta&quot;</span>    <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>                    <span class="st">&quot;sec.services.nonventa&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1969</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                    <span class="st">&quot;popdens&quot;</span>               <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1969</span>,<span class="dv">1969</span>))</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>agg.fns <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="fu">ncol</span>(times.pred))                       </span></code></pre></div>
 <p>Estimation of the model gives:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>res &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>res</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="at">seed=</span><span class="dv">1</span>, <span class="at">single.v=</span><span class="cn">TRUE</span>, <span class="at">verbose=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>res</span></code></pre></div>
 <pre><code>## Specification:
 ## --------------
 ## 
@@ -445,15 +486,20 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##                 pred. loss                           3.374961e-04
 ##                 (Predictor weights V are standardized by sum(V)=1)
 ## </code></pre>
-<p>It is remarkable that the mean of the lagged dependent variable <code>gdpcap.mean.1960.1969</code> is by far the most important predictor with a weight of 0.9992528, all other predictors are only marginally relevant due to their tiny (at most 0.0002990163) weights.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>It is remarkable that the mean of the lagged dependent variable
+<code>gdpcap.mean.1960.1969</code> is by far the most important
+predictor with a weight of 0.9992528, all other predictors are only
+marginally relevant due to their tiny (at most 0.0002990163) weights.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 </div>
 <div id="removing-the-lagged-dependent-variable" class="section level2">
 <h2>Removing the Lagged Dependent Variable</h2>
-<p>Omitting the lagged dependent variable <code>gdpcap.mean.1960.1969</code> from the model definition, however, leads to a significant increase of the dependent loss:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>times.pred &lt;-<span class="st"> </span>times.pred[,<span class="op">-</span><span class="dv">6</span>]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="kw">ncol</span>(times.pred))                       </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>res2 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>res2</span></code></pre></div>
+<p>Omitting the lagged dependent variable
+<code>gdpcap.mean.1960.1969</code> from the model definition, however,
+leads to a significant increase of the dependent loss:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>times.pred <span class="ot">&lt;-</span> times.pred[,<span class="sc">-</span><span class="dv">6</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>agg.fns <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;mean&quot;</span>, <span class="fu">ncol</span>(times.pred))                       </span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>res2 <span class="ot">&lt;-</span> <span class="fu">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="at">seed=</span><span class="dv">1</span>, <span class="at">single.v=</span><span class="cn">TRUE</span>, <span class="at">verbose=</span><span class="cn">FALSE</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>res2</span></code></pre></div>
 <pre><code>## Specification:
 ## --------------
 ## 
@@ -507,14 +553,20 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##                 pred. loss                           0.31473799
 ##                 (Predictor weights V are standardized by sum(V)=1)
 ## </code></pre>
-<p>The dependent loss (MSPE) increased considerably from 0.0042861 to 0.0088645. Trying to give more meaning to the economic predictors in this way obviously has the drawback of worsening the fit of the dependent variable.</p>
+<p>The dependent loss (MSPE) increased considerably from 0.0042861 to
+0.0088645. Trying to give more meaning to the economic predictors in
+this way obviously has the drawback of worsening the fit of the
+dependent variable.</p>
 </div>
 <div id="scmt-without-the-lagged-dependent-variable" class="section level2">
 <h2>SCMT without the Lagged Dependent Variable</h2>
-<p>Leaving the lagged dependent variable <code>gdpcap.mean.1960.1969</code> aside, but considering all other predictor variables as <strong>time series</strong> instead of aggregating their values leads to the following results:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>agg.fns &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;id&quot;</span>, <span class="kw">ncol</span>(times.pred))   <span class="co"># Omitting agg.fns has the same effect (as &quot;id&quot; is the default)</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>res3 &lt;-<span class="st"> </span><span class="kw">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="dt">seed=</span><span class="dv">1</span>, <span class="dt">single.v=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">FALSE</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>res3</span></code></pre></div>
+<p>Leaving the lagged dependent variable
+<code>gdpcap.mean.1960.1969</code> aside, but considering all other
+predictor variables as <strong>time series</strong> instead of
+aggregating their values leads to the following results:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>agg.fns <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">&quot;id&quot;</span>, <span class="fu">ncol</span>(times.pred))   <span class="co"># Omitting agg.fns has the same effect (as &quot;id&quot; is the default)</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>res3 <span class="ot">&lt;-</span> <span class="fu">mscmt</span>(Basque, treatment.identifier, controls.identifier, times.dep, times.pred, agg.fns, <span class="at">seed=</span><span class="dv">1</span>, <span class="at">single.v=</span><span class="cn">TRUE</span>, <span class="at">verbose=</span><span class="cn">FALSE</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>res3</span></code></pre></div>
 <pre><code>## Specification:
 ## --------------
 ## 
@@ -570,27 +622,47 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##                 pred. loss            0.013824839
 ##                 (Predictor weights V are standardized by sum(V)=1)
 ## </code></pre>
-<p>Notice that this specification’s model type is ‘SCMT’, in contrast to the previous models which were ‘SCM’ models. By using the ‘SCMT’ model, the dependent loss (0.0042124) is even smaller than that of the original model (0.0042861) which used the dependent variable’s mean as an extra economic predictor. <code>school.med</code> has now become the most important predictor with weight 0.9862872, all other predictor weights are at least 0.000127276.</p>
+<p>Notice that this specification’s model type is ‘SCMT’, in contrast to
+the previous models which were ‘SCM’ models. By using the ‘SCMT’ model,
+the dependent loss (0.0042124) is even smaller than that of the original
+model (0.0042861) which used the dependent variable’s mean as an extra
+economic predictor. <code>school.med</code> has now become the most
+important predictor with weight 0.9862872, all other predictor weights
+are at least 0.000127276.</p>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
-<p>This vignette illustrated that considering predictors as <em>true</em> time series (without intermediate aggregation) may have various benefits. In this example, by excluding the mean of the lagged dependent variable from the set of economic predictors and considering all other predictors as time series, more meaningful predictor weights could be obtained and the dependent variable’s fit could be slightly improved, too.</p>
+<p>This vignette illustrated that considering predictors as
+<em>true</em> time series (without intermediate aggregation) may have
+various benefits. In this example, by excluding the mean of the lagged
+dependent variable from the set of economic predictors and considering
+all other predictors as time series, more meaningful predictor weights
+could be obtained and the dependent variable’s fit could be slightly
+improved, too.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references hanging-indent">
-<div id="ref-Abadie2003">
-<p>Abadie, Alberto, and Javier Gardeazabal. 2003. “The Economic Costs of Conflict: A Case Study of the Basque Country.” <em>The American Economic Review</em> 93 (1): 113–32. <a href="http://dx.doi.org/10.1257/000282803321455188">http://dx.doi.org/10.1257/000282803321455188</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Abadie2003" class="csl-entry">
+Abadie, Alberto, and Javier Gardeazabal. 2003. <span>“The Economic Costs
+of Conflict: A Case Study of the Basque Country.”</span> <em>The
+American Economic Review</em> 93 (1): 113–32. <a href="http://dx.doi.org/10.1257/000282803321455188">http://dx.doi.org/10.1257/000282803321455188</a>.
 </div>
-<div id="ref-KP16">
-<p>Klößner, Stefan, and Gregor Pfeifer. 2015. “Synthesizing Cash for Clunkers: Stabilizing the Car Market, Hurting the Environment.” Annual Conference 2015 (Münster): Economic Development - Theory and Policy. Verein für Socialpolitik/German Economic Association. <a href="https://ideas.repec.org/p/zbw/vfsc15/113207.html">https://ideas.repec.org/p/zbw/vfsc15/113207.html</a>.</p>
+<div id="ref-KP16" class="csl-entry">
+Klößner, Stefan, and Gregor Pfeifer. 2015. <em><span class="nocase">Synthesizing Cash for Clunkers: Stabilizing the Car
+Market, Hurting the Environment</span></em>. Annual Conference 2015
+(M\&quot;unster): Economic Development - Theory and Policy. Verein für
+Socialpolitik/German Economic Association. <a href="https://ideas.repec.org/p/zbw/vfsc15/113207.html">https://ideas.repec.org/p/zbw/vfsc15/113207.html</a>.
 </div>
 </div>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
-<li id="fn1"><p>Notice that the weight vector <code>v</code> is obtained by maximizing the order statistics of <code>v</code> (while fixing the sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as large as possible to even the least relevant predictor(s).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>Notice that the weight vector <code>v</code> is obtained
+by maximizing the order statistics of <code>v</code> (while fixing the
+sum of <code>v</code> to 1). This choice of ‘v’ attributes weights as
+large as possible to even the least relevant predictor(s).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

@@ -1453,7 +1453,7 @@ CCCCCCCCCCCCCCCCCCCCC  BANDED SYSTEMS
 *
 *        Solve the system A*X = B, overwriting B with X.
 *
-         CALL DGBTRS( 'N', N, KL, KU, NRHS, AB, LDAB, IPIV,
+         CALL DGBTRS( 'No transpose', N, KL, KU, NRHS, AB, LDAB, IPIV,
      $                B, LDB, INFO )
       END IF
       RETURN
@@ -2990,7 +2990,7 @@ C      NB = ILAENV( 1, 'DGETRF', ' ', M, N, -1, -1 )
 *
 *        Solve the system A*X = B, overwriting B with X.
 *
-         CALL DGETRS( 'N', N, NRHS, A, LDA, IPIV, B, LDB,
+         CALL DGETRS( 'No transpose', N, NRHS, A, LDA, IPIV, B, LDB,
      $                INFO )
       END IF
       RETURN
@@ -3386,12 +3386,12 @@ C         END IF
 *
       RETURN
 *
-* 9999 FORMAT( / / ' WARNING. The value EMIN may be incorrect:-',
-*     $      '  EMIN = ', I8, /
-*     $      ' If, after inspection, the value EMIN looks',
-*     $      ' acceptable please comment out ',
-*     $      / ' the IF block as marked within the code of routine',
-*     $      ' DLAMC2,', / ' otherwise supply EMIN explicitly.', / )
+ 9999 FORMAT( / / ' WARNING. The value EMIN may be incorrect:-',
+     $      '  EMIN = ', I8, /
+     $      ' If, after inspection, the value EMIN looks',
+     $      ' acceptable please comment out ',
+     $      / ' the IF block as marked within the code of routine',
+     $      ' DLAMC2,', / ' otherwise supply EMIN explicitly.', / )
 *
 *     End of DLAMC2
 *
@@ -3520,7 +3520,7 @@ C         END IF
          QTR = ONE / 4
          SAVEC = C
          C = DLAMC3( C, -A )
-         LBETA = INT(C + QTR,4)
+         LBETA = C + QTR
 *
 *        Now determine whether rounding or chopping occurs,  by adding a
 *        bit  less  than  beta/2  and a  bit  more  than  beta/2  to  a.

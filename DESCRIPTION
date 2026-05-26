@@ -1,8 +1,8 @@
 Package: MSCMT
 Type: Package
 Encoding: UTF-8
-Version: 1.4.2
-Date: 2026-05-19
+Version: 1.4.3
+Date: 2026-05-26
 Title: Multivariate Synthetic Control Method Using Time Series
 Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     email = "martin.becker@mx.uni-saarland.de",
@@ -19,7 +19,7 @@ Authors@R: c(person("Martin","Becker", role = c("aut","cre"),
     person("LAPACK authors", role = "cph"))
 Depends: R (>= 3.2.0)
 Imports: stats, utils, parallel, lpSolve, ggplot2, lpSolveAPI, Rglpk,
-        Rdpack
+        Rdpack, rlang
 Suggests: Synth, DEoptim, rgenoud, DEoptimR, GenSA, GA, soma, cmaes,
         Rmalschains, NMOF, nloptr, pso, LowRankQP, kernlab, reshape,
         knitr, rmarkdown
@@ -34,12 +34,14 @@ Description: Three generalizations of the synthetic control method (which has
     Becker and Klößner (2018) <doi:10.1016/j.ecosta.2017.08.002>.
 License: GPL
 Copyright: inst/COPYRIGHTS
-RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 RdMacros: Rdpack
 BuildVignettes: yes
+Config/roxygen2/version: 8.0.0
+URL: https://github.com/mabe0033/MSCMT
+BugReports: https://github.com/mabe0033/MSCMT/issues
 NeedsCompilation: yes
-Packaged: 2026-05-19 13:09:36 UTC; mabe003
+Packaged: 2026-05-26 09:34:05 UTC; mabe003
 Author: Martin Becker [aut, cre] (ORCID:
     <https://orcid.org/0000-0003-2336-9751>),
   Stefan Klößner [aut],
@@ -51,4 +53,4 @@ Author: Martin Becker [aut, cre] (ORCID:
   LAPACK authors [cph]
 Maintainer: Martin Becker <martin.becker@mx.uni-saarland.de>
 Repository: CRAN
-Date/Publication: 2026-05-19 13:40:02 UTC
+Date/Publication: 2026-05-26 10:20:08 UTC

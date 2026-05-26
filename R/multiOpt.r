@@ -2,6 +2,7 @@
 ## todo (?): @export multiOpt
 ## @export multiOpt
 #' @importFrom parallel clusterApplyLB
+#' @importFrom rlang .data
 multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
                      trafo.v,info.v,n.v,names.v,inner.optim="wnnlsOpt",
                      inner.opar=list(),starting.values=NULL,
@@ -191,7 +192,7 @@ multiOpt <- function(X0,X1=0,Z0,Z1=0,check.global=TRUE,
         MDW <- ME+MA
         globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
         globals$IWORK <- integer(MDW+N)
-        globals$WORK  <- double(MDW+5*N)
+        globals$WORK  <- double(MDW+6*N)
         globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
         globals$RNORM <- double(1)
         globals$MODE  <- integer(1)
@@ -389,7 +390,7 @@ ggplotBench <- function(results,rmspe=TRUE,time.lim,loss.lim,xlab="",ylab="",
                   min=min(loss.lim),max=max(loss.lim))
     All <- rbind(if ("Time" %in% what) Time, if ("Loss" %in% what) Loss)  
     All$X2 <- factor(All$X2,levels = rev(levels(All$X2)),ordered = TRUE)
-    ggplot(All,aes_string("X2","value")) + ggplot2::geom_boxplot() + 
+    ggplot(All,aes(.data[["X2"]],.data[["value"]])) + ggplot2::geom_boxplot() + 
       ggplot2::coord_flip() + ggplot2::facet_grid(. ~ typ, scales="free") + 
       xlab(xlab) + ylab(ylab) + ggplot2::geom_blank(aes(y=min)) + 
       ggplot2::geom_blank(aes(y=max)) + ggplot2::ggtitle(title)
@@ -411,7 +412,7 @@ ggplotBench <- function(results,rmspe=TRUE,time.lim,loss.lim,xlab="",ylab="",
       All <- rbind(All,if ("Time" %in% what) Time, if ("Loss" %in% what) Loss)  
     }
     All$X2 <- factor(All$X2,levels = rev(levels(All$X2)),ordered = TRUE)
-    ggplot(All,aes_string("X2","value")) + ggplot2::geom_boxplot() + 
+    ggplot(All,aes(.data[["X2"]],.data[["value"]])) + ggplot2::geom_boxplot() + 
       ggplot2::coord_flip() + ggplot2::facet_grid(treated~typ, scales="free") + 
       xlab(xlab) + ylab(ylab) + ggplot2::ggtitle(title)  
   }    

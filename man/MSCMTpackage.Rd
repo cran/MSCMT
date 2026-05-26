@@ -36,11 +36,20 @@ browseVignettes(package="MSCMT")
 
 \insertRef{KP16}{MSCMT}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mabe0033/MSCMT}
+  \item Report bugs at \url{https://github.com/mabe0033/MSCMT/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Martin Becker \email{martin.becker@mx.uni-saarland.de} (\href{https://orcid.org/0000-0003-2336-9751}{ORCID})
 
 Authors:
 \itemize{
+  \item Martin Becker \email{martin.becker@mx.uni-saarland.de} (\href{https://orcid.org/0000-0003-2336-9751}{ORCID})
   \item Stefan Klößner \email{S.Kloessner@mx.uni-saarland.de}
 }
 

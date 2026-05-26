@@ -9,7 +9,7 @@ timingBench <- function(vs,X,Z,max.iter=1000L,debug=FALSE,sigf=5,margin=5e-04,
   MDW <- ME+MA
   globals$Ipar  <- as.integer(c(ME=ME,MA=MA,MDW=MDW,N=N)) 
   globals$IWORK <- integer(MDW+N)
-  globals$WORK  <- double(MDW+5*N)
+  globals$WORK  <- double(MDW+6*N)
   globals$IWORK[1:2] <- c(length(globals$WORK),length(globals$IWORK))
   globals$RNORM <- double(1)
   globals$MODE  <- integer(1)
@@ -59,11 +59,11 @@ wnnlsExt <- function(v,X,Z,trafo.v,debug=FALSE,return.w=FALSE,
   N   <- as.integer(ncol(X))
   MDW <- as.integer(ME+MA)
   IWORK <- integer(MDW+N)
-  IWORK[1:2] <- as.integer(c(MDW+5*N,MDW+N))
+  IWORK[1:2] <- as.integer(c(MDW+6*N,MDW+N))
   sol <-.Fortran(C_wnnls,W=.Call(C_prepareW4,X,tv),
                  MDW=MDW,ME=ME,MA=MA,N=N,L=0L,PRGOPT=1.0,X=double(N),
                  RNORM=double(1),MODE=integer(1),IWORK=IWORK,
-                 WORK=double(MDW+5*N))
+                 WORK=double(MDW+6*N))
   if ((any(is.infinite(sol$X))) || (sol$MODE>0)) warning("error in wnnls")                
   w   <- if (check.ambiguity) improveZw(Z,X,sol$X) else sol$X
   if (return.w) w else lossDep(Z,w)

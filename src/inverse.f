@@ -1991,7 +1991,7 @@ c KARLINE:
      &   MAPKE1, MDEQC, MEND, MEP1, N1, N2, NEXT, NLINK, NOPT, NP1,                &
      &   NTIMES
       LOGICAL COV, FIRST
-c      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
+      CHARACTER(LEN=8) XERN1, XERN2, XERN3, XERN4
       SAVE FIRST, DRELPR
 c
       DATA FIRST /.TRUE./
@@ -2090,7 +2090,7 @@ c     Define bound for positive values of LINK.
 c
       NLINK = 100000
       LAST = 1
-      LINK = INT(PRGOPT(1),4)
+      LINK = PRGOPT(1)
       IF (LINK.EQ.0 .OR. LINK.GT.NLINK) THEN
          CALL xXERMSG('SLATEC','xDLSEI','THE OPTION VECTOR IS UNDEFINED'            &
      &   ,2,1)
@@ -2105,7 +2105,7 @@ c
             RETURN
          ENDIF
 c
-         KEY = INT(PRGOPT(LAST+1),4)
+         KEY = PRGOPT(LAST+1)
          IF (KEY.EQ.1) THEN
             COV = PRGOPT(LAST+2) .NE. 0.D0
          ELSEIF (KEY.EQ.2 .AND. PRGOPT(LAST+2).NE.0.D0) THEN
@@ -2120,7 +2120,7 @@ c
             TAU = MAX(DRELPR,PRGOPT(LAST+2))
          ENDIF
 c
-         NEXT = INT(PRGOPT(LINK),4)
+         NEXT = PRGOPT(LINK)
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
          CALL xXERMSG ('SLATEC', 'xDLSEI',                                           &
      &      'THE OPTION VECTOR IS UNDEFINED', 2, 1)
@@ -2430,14 +2430,14 @@ c
       COV = .FALSE.
       SCLCOV = .TRUE.
       LAST = 1
-      LINK = INT(PRGOPT(1),4)
+      LINK = PRGOPT(1)
 c
   100 IF (LINK.GT.1) THEN
-         KEY = INT(PRGOPT(LAST+1),4)
+         KEY = PRGOPT(LAST+1)
          IF (KEY.EQ.1) COV = PRGOPT(LAST+2) .NE. 0.D0
          IF (KEY.EQ.10) SCLCOV = PRGOPT(LAST+2) .EQ. 0.D0
          IF (KEY.EQ.5) TOL = MAX(DRELPR,PRGOPT(LAST+2))
-         NEXT = INT(PRGOPT(LINK),4)
+         NEXT = PRGOPT(LINK)
          LAST = LINK
          LINK = NEXT
          GO TO 100
@@ -2978,7 +2978,7 @@ c
 
 
       SUBROUTINE DWNLSM (W, MDW, MME, MA, N, L, PRGOPT, X, RNORM, MODE,             &
-     &   IPIVOT, ITYPE, WD, H, SCALE, Z, TEMP, D)
+     &   IPIVOT, ITYPE, WD, H, SCALE, Z, TEMP, D, XX)
 c***BEGIN PROLOGUE  DWNLSM
 c***SUBSIDIARY
 c***PURPOSE  Subsidiary to DWNNLS
@@ -3025,7 +3025,7 @@ c         to store the diagonal matrix of weights.
 c         These are used to apply the modified Givens
 c         transformations.
 c
-c         Z(*),TEMP(*)
+c         Z(*),TEMP(*),XX(*)
 c            Working arrays of length N.
 c
 c         D(*)
@@ -3049,7 +3049,7 @@ c   900911  Restriction on value of ALAMDA included.  (WRB)
 c***END PROLOGUE  DWNLSM
       INTEGER IPIVOT(*), ITYPE(*), L, MA, MDW, MME, MODE, N
       DOUBLE PRECISION D(*), H(*), PRGOPT(*), RNORM, SCALE(*), TEMP(*),             &
-     &   W(MDW,*), WD(*), X(*), Z(*)
+     &   W(MDW,*), WD(*), X(*), Z(*), XX(*)
 c
       EXTERNAL D1MACH,xDASUM,xDAXPY,xDCOPY,xDH12,xDNRM2,xDROTM,xDROTMG,             &
      &   xDSCAL, xDSWAP, DWNLIT, xIDAMAX, xXERMSG
@@ -3105,7 +3105,7 @@ c
       NLINK = 100000
       NTIMES = 0
       LAST = 1
-      LINK = INT(PRGOPT(1),4)
+      LINK = PRGOPT(1)
       IF (LINK.LE.0 .OR. LINK.GT.NLINK) THEN
          CALL xXERMSG ('SLATEC', 'DWNLSM',                                          &
      &      'IN DWNNLS, THE OPTION VECTOR IS UNDEFINED', 3, 1)
@@ -3121,7 +3121,7 @@ c
             RETURN
          ENDIF
 c
-         KEY = INT(PRGOPT(LAST+1),4)
+         KEY = PRGOPT(LAST+1)
          IF (KEY.EQ.6 .AND. PRGOPT(LAST+2).NE.0.D0) THEN
             DO 110 J = 1,N
                T = xDNRM2(M,W(1,J),1)
@@ -3134,7 +3134,7 @@ c
          IF (KEY.EQ.8) TAU = MAX(DRELPR,PRGOPT(LAST+2))
          IF (KEY.EQ.9) BLOWUP = MAX(DRELPR,PRGOPT(LAST+2))
 c
-         NEXT = INT(PRGOPT(LINK),4)
+         NEXT = PRGOPT(LINK)
          IF (NEXT.LE.0 .OR. NEXT.GT.NLINK) THEN
             CALL xXERMSG ('SLATEC', 'DWNLSM',                                       &
      &         'IN DWNNLS, THE OPTION VECTOR IS UNDEFINED', 3, 1)
@@ -3326,7 +3326,8 @@ c
 c
 c        Similarly permute X(*) vector.
 c
-         CALL xDCOPY (N-JCON, X(JCON+1), 1, X(JCON), 1)
+         CALL xDCOPY (N-JCON, X(JCON+1), 1, XX(JCON+1), 1)
+         CALL xDCOPY (N-JCON, XX(JCON+1), 1, X(JCON), 1)
          X(N) = 0.D0
          NSOLN = NSOLN - 1
          NIV = NIV - 1
@@ -4043,7 +4044,7 @@ c     User-designated
 c     Working arrays..
 c
 c     WORK(*)      A double precision working array of length at least
-c                  M + 5*N.
+c                  M + 6*N.
 c
 c     IWORK(*)     An integer-valued working array of length at least
 c                  M+N.
@@ -4077,10 +4078,10 @@ c   900510  Convert XERRWV calls to xXERMSG calls, change Prologue
 c           comments to agree with WNNLS.  (RWC)
 c   920501  Reformatted the REFERENCES section.  (WRB)
 c***END PROLOGUE  DWNNLS
-      INTEGER IWORK(*), L, L1, L2, L3, L4, L5, LIW, LW, MA, MDW, ME,                &
+      INTEGER IWORK(*), L, L1, L2, L3, L4, L5, L6, LIW, LW, MA, MDW, ME,              &
      &     MODE, N
       DOUBLE PRECISION  PRGOPT(*), RNORM, W(MDW,*), WORK(*), X(*)
-c      CHARACTER(LEN=8) XERN1
+      CHARACTER(LEN=8) XERN1
 c***FIRST EXECUTABLE STATEMENT  DWNNLS
       MODE = 0
       IF (MA+ME.LE.0 .OR. N.LE.0) RETURN
@@ -4136,10 +4137,11 @@ c
       L3 = L2 + ME + MA
       L4 = L3 + N
       L5 = L4 + N
+      L6 = L5 + N
 c
       CALL DWNLSM(W, MDW, ME, MA, N, L, PRGOPT, X, RNORM, MODE, IWORK,              &
      &            IWORK(L1), WORK(1), WORK(L1), WORK(L2), WORK(L3),                 &
-     &            WORK(L4), WORK(L5))
+     &            WORK(L4), WORK(L5), WORK(L6))
       RETURN
       END
 
